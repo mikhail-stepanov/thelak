@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap https://cayenne.apache.org/schema/9/modelMap.xsd"
+	 project-version="9">
+	<property name="defaultPackage" value="ru.stepanov.database.entity"/>
+	<property name="defaultSchema" value="public"/>
+	<property name="quoteSqlIdentifiers" value="true"/>
+	<db-entity name="db_address" schema="public">
+		<db-attribute name="apartment" type="VARCHAR" length="32"/>
+		<db-attribute name="city" type="VARCHAR" length="128"/>
+		<db-attribute name="coordinates" type="VARCHAR" length="64"/>
+		<db-attribute name="country" type="VARCHAR" isMandatory="true" length="128"/>
+		<db-attribute name="house" type="VARCHAR" length="32"/>
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="region" type="VARCHAR" length="128"/>
+		<db-attribute name="street" type="VARCHAR" length="256"/>
+	</db-entity>
+	<db-entity name="db_appointment" schema="public">
+		<db-attribute name="comment" type="VARCHAR" length="256"/>
+		<db-attribute name="created_date" type="TIMESTAMP"/>
+		<db-attribute name="date" type="TIMESTAMP"/>
+		<db-attribute name="deleted_date" type="TIMESTAMP"/>
+		<db-attribute name="duration_min" type="INTEGER"/>
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="id_address" type="BIGINT"/>
+		<db-attribute name="id_customer" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="id_cutter" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="modified_date" type="TIMESTAMP"/>
+		<db-attribute name="price" type="INTEGER"/>
+	</db-entity>
+	<db-entity name="db_appointment_services" schema="public">
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="id_appointment" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="id_services" type="BIGINT" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="db_attachment" schema="public">
+		<db-attribute name="content" type="VARCHAR" isMandatory="true" length="100000"/>
+		<db-attribute name="created_date" type="TIMESTAMP" isMandatory="true"/>
+		<db-attribute name="deleted_date" type="TIMESTAMP"/>
+		<db-attribute name="extension" type="VARCHAR" length="16"/>
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="id_message" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="modified_date" type="TIMESTAMP"/>
+	</db-entity>
+	<db-entity name="db_chat" schema="public">
+		<db-attribute name="created_date" type="TIMESTAMP" isMandatory="true"/>
+		<db-attribute name="deleted_date" type="TIMESTAMP"/>
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="id_customer" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="id_cutter" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="modified_date" type="TIMESTAMP"/>
+	</db-entity>
+	<db-entity name="db_comment" schema="public">
+		<db-attribute name="created_date" type="TIMESTAMP" isMandatory="true"/>
+		<db-attribute name="deleted_date" type="TIMESTAMP"/>
+		<db-attribute name="grade" type="INTEGER" isMandatory="true"/>
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="id_customer" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="id_cutter" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="is_anonym" type="BOOLEAN" isMandatory="true"/>
+		<db-attribute name="modified_date" type="TIMESTAMP"/>
+		<db-attribute name="text" type="VARCHAR" length="256"/>
+	</db-entity>
+	<db-entity name="db_content" schema="public">
+		<db-attribute name="content" type="VARCHAR" isMandatory="true" length="100000"/>
+		<db-attribute name="created_date" type="TIMESTAMP" isMandatory="true"/>
+		<db-attribute name="deleted_date" type="TIMESTAMP"/>
+		<db-attribute name="extension" type="VARCHAR" length="16"/>
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="modified_date" type="TIMESTAMP"/>
+	</db-entity>
+	<db-entity name="db_customer" schema="public">
+		<db-attribute name="created_date" type="TIMESTAMP" length="29"/>
+		<db-attribute name="deleted_date" type="TIMESTAMP" length="29"/>
+		<db-attribute name="email" type="VARCHAR" length="255"/>
+		<db-attribute name="first_name" type="VARCHAR" isMandatory="true" length="64"/>
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="id_address" type="BIGINT"/>
+		<db-attribute name="last_name" type="VARCHAR" isMandatory="true" length="64"/>
+		<db-attribute name="modified_date" type="TIMESTAMP" length="29"/>
+		<db-attribute name="password" type="VARCHAR" isMandatory="true" length="64"/>
+		<db-attribute name="phone" type="VARCHAR" isMandatory="true" length="64"/>
+		<db-attribute name="salt" type="VARCHAR" isMandatory="true" length="64"/>
+	</db-entity>
+	<db-entity name="db_customer_session" schema="public">
+		<db-attribute name="created_date" type="TIMESTAMP" length="29"/>
+		<db-attribute name="deleted_date" type="TIMESTAMP" length="29"/>
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="id_customer" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="modified_date" type="TIMESTAMP" length="29"/>
+	</db-entity>
+	<db-entity name="db_cutter" schema="public">
+		<db-attribute name="created_date" type="TIMESTAMP" length="29"/>
+		<db-attribute name="deleted_date" type="TIMESTAMP" length="29"/>
+		<db-attribute name="email" type="VARCHAR" length="255"/>
+		<db-attribute name="first_name" type="VARCHAR" length="64"/>
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="id_address" type="BIGINT"/>
+		<db-attribute name="last_name" type="VARCHAR" isMandatory="true" length="64"/>
+		<db-attribute name="modified_date" type="TIMESTAMP" length="29"/>
+		<db-attribute name="password" type="VARCHAR" isMandatory="true" length="64"/>
+		<db-attribute name="phone" type="VARCHAR" isMandatory="true" length="64"/>
+		<db-attribute name="salt" type="VARCHAR" isMandatory="true" length="64"/>
+	</db-entity>
+	<db-entity name="db_cutter_services" schema="public">
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="id_cutter" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="id_services" type="BIGINT" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="db_cutter_session" schema="public">
+		<db-attribute name="created_date" type="TIMESTAMP" length="29"/>
+		<db-attribute name="deleted_date" type="TIMESTAMP" length="29"/>
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="id_cutter" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="modified_date" type="TIMESTAMP" length="29"/>
+	</db-entity>
+	<db-entity name="db_favorites" schema="public">
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="id_customer" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="id_cutter" type="BIGINT" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="db_message" schema="public">
+		<db-attribute name="created_date" type="TIMESTAMP" isMandatory="true"/>
+		<db-attribute name="deleted_date" type="TIMESTAMP"/>
+		<db-attribute name="has_attachment" type="BOOLEAN"/>
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="id_chat" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="id_customer" type="BIGINT"/>
+		<db-attribute name="id_cutter" type="BIGINT"/>
+		<db-attribute name="modified_date" type="TIMESTAMP"/>
+		<db-attribute name="text" type="VARCHAR" length="1024"/>
+	</db-entity>
+	<db-entity name="dictionary_cut_services" schema="public">
+		<db-attribute name="description" type="VARCHAR" length="256"/>
+		<db-attribute name="duration_min" type="INTEGER"/>
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="title" type="VARCHAR" isMandatory="true" length="64"/>
+	</db-entity>
+	<db-entity name="dictionary_email_template" schema="public">
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="template" type="VARCHAR" length="10000"/>
+		<db-attribute name="title" type="VARCHAR" length="64"/>
+	</db-entity>
+	<db-entity name="dictionary_gender" schema="public">
+		<db-attribute name="gender" type="VARCHAR" isMandatory="true" length="64"/>
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="dictionary_specialization" schema="public">
+		<db-attribute name="description" type="VARCHAR" length="512"/>
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="title" type="VARCHAR" isMandatory="true" length="64"/>
+	</db-entity>
+	<obj-entity name="DbAddress" className="ru.stepanov.database.entity.DbAddress" dbEntityName="db_address">
+		<obj-attribute name="apartment" type="java.lang.String" db-attribute-path="apartment"/>
+		<obj-attribute name="city" type="java.lang.String" db-attribute-path="city"/>
+		<obj-attribute name="coordinates" type="java.lang.String" db-attribute-path="coordinates"/>
+		<obj-attribute name="country" type="java.lang.String" db-attribute-path="country"/>
+		<obj-attribute name="house" type="java.lang.String" db-attribute-path="house"/>
+		<obj-attribute name="region" type="java.lang.String" db-attribute-path="region"/>
+		<obj-attribute name="street" type="java.lang.String" db-attribute-path="street"/>
+	</obj-entity>
+	<obj-entity name="DbAppointment" className="ru.stepanov.database.entity.DbAppointment" dbEntityName="db_appointment">
+		<obj-attribute name="comment" type="java.lang.String" db-attribute-path="comment"/>
+		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
+		<obj-attribute name="date" type="java.time.LocalDateTime" db-attribute-path="date"/>
+		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
+		<obj-attribute name="durationMin" type="int" db-attribute-path="duration_min"/>
+		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
+		<obj-attribute name="price" type="int" db-attribute-path="price"/>
+	</obj-entity>
+	<obj-entity name="DbAppointmentServices" className="ru.stepanov.database.entity.DbAppointmentServices" dbEntityName="db_appointment_services">
+	</obj-entity>
+	<obj-entity name="DbAttachment" className="ru.stepanov.database.entity.DbAttachment" dbEntityName="db_attachment">
+		<obj-attribute name="content" type="java.lang.String" db-attribute-path="content"/>
+		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
+		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
+		<obj-attribute name="extension" type="java.lang.String" db-attribute-path="extension"/>
+		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
+	</obj-entity>
+	<obj-entity name="DbChat" className="ru.stepanov.database.entity.DbChat" dbEntityName="db_chat">
+		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
+		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
+		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
+	</obj-entity>
+	<obj-entity name="DbComment" className="ru.stepanov.database.entity.DbComment" dbEntityName="db_comment">
+		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
+		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
+		<obj-attribute name="grade" type="int" db-attribute-path="grade"/>
+		<obj-attribute name="isAnonym" type="boolean" db-attribute-path="is_anonym"/>
+		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
+		<obj-attribute name="text" type="java.lang.String" db-attribute-path="text"/>
+	</obj-entity>
+	<obj-entity name="DbContent" className="ru.stepanov.database.entity.DbContent" dbEntityName="db_content">
+		<obj-attribute name="content" type="java.lang.String" db-attribute-path="content"/>
+		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
+		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
+		<obj-attribute name="extension" type="java.lang.String" db-attribute-path="extension"/>
+		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
+	</obj-entity>
+	<obj-entity name="DbCustomer" className="ru.stepanov.database.entity.DbCustomer" dbEntityName="db_customer">
+		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
+		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
+		<obj-attribute name="email" type="java.lang.String" db-attribute-path="email"/>
+		<obj-attribute name="firstName" type="java.lang.String" db-attribute-path="first_name"/>
+		<obj-attribute name="lastName" type="java.lang.String" db-attribute-path="last_name"/>
+		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
+		<obj-attribute name="password" type="java.lang.String" db-attribute-path="password"/>
+		<obj-attribute name="phone" type="java.lang.String" db-attribute-path="phone"/>
+		<obj-attribute name="salt" type="java.lang.String" db-attribute-path="salt"/>
+	</obj-entity>
+	<obj-entity name="DbCustomerSession" className="ru.stepanov.database.entity.DbCustomerSession" dbEntityName="db_customer_session">
+		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
+		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
+		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
+	</obj-entity>
+	<obj-entity name="DbCutter" className="ru.stepanov.database.entity.DbCutter" dbEntityName="db_cutter">
+		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
+		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
+		<obj-attribute name="email" type="java.lang.String" db-attribute-path="email"/>
+		<obj-attribute name="firstName" type="java.lang.String" db-attribute-path="first_name"/>
+		<obj-attribute name="lastName" type="java.lang.String" db-attribute-path="last_name"/>
+		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
+		<obj-attribute name="password" type="java.lang.String" db-attribute-path="password"/>
+		<obj-attribute name="phone" type="java.lang.String" db-attribute-path="phone"/>
+		<obj-attribute name="salt" type="java.lang.String" db-attribute-path="salt"/>
+	</obj-entity>
+	<obj-entity name="DbCutterServices" className="ru.stepanov.database.entity.DbCutterServices" dbEntityName="db_cutter_services">
+	</obj-entity>
+	<obj-entity name="DbCutterSession" className="ru.stepanov.database.entity.DbCutterSession" dbEntityName="db_cutter_session">
+		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
+		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
+		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
+	</obj-entity>
+	<obj-entity name="DbFavorites" className="ru.stepanov.database.entity.DbFavorites" dbEntityName="db_favorites">
+	</obj-entity>
+	<obj-entity name="DbMessage" className="ru.stepanov.database.entity.DbMessage" dbEntityName="db_message">
+		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
+		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
+		<obj-attribute name="hasAttachment" type="boolean" db-attribute-path="has_attachment"/>
+		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
+		<obj-attribute name="text" type="java.lang.String" db-attribute-path="text"/>
+	</obj-entity>
+	<obj-entity name="DictionaryCutServices" className="ru.stepanov.database.entity.DictionaryCutServices" dbEntityName="dictionary_cut_services">
+		<obj-attribute name="description" type="java.lang.String" db-attribute-path="description"/>
+		<obj-attribute name="durationMin" type="int" db-attribute-path="duration_min"/>
+		<obj-attribute name="title" type="java.lang.String" db-attribute-path="title"/>
+	</obj-entity>
+	<obj-entity name="DictionaryEmailTemplate" className="ru.stepanov.database.entity.DictionaryEmailTemplate" dbEntityName="dictionary_email_template">
+		<obj-attribute name="template" type="java.lang.String" db-attribute-path="template"/>
+		<obj-attribute name="title" type="java.lang.String" db-attribute-path="title"/>
+	</obj-entity>
+	<obj-entity name="DictionaryGender" className="ru.stepanov.database.entity.DictionaryGender" dbEntityName="dictionary_gender">
+		<obj-attribute name="gender" type="java.lang.String" db-attribute-path="gender"/>
+	</obj-entity>
+	<obj-entity name="DictionarySpecialization" className="ru.stepanov.database.entity.DictionarySpecialization" dbEntityName="dictionary_specialization">
+		<obj-attribute name="description" type="java.lang.String" db-attribute-path="description"/>
+		<obj-attribute name="title" type="java.lang.String" db-attribute-path="title"/>
+	</obj-entity>
+	<db-relationship name="addressToAppointment" source="db_address" target="db_appointment" toMany="true">
+		<db-attribute-pair source="id" target="id_address"/>
+	</db-relationship>
+	<db-relationship name="addressToCustomer" source="db_address" target="db_customer" toMany="true">
+		<db-attribute-pair source="id" target="id_address"/>
+	</db-relationship>
+	<db-relationship name="addressToCutter" source="db_address" target="db_cutter" toMany="true">
+		<db-attribute-pair source="id" target="id_address"/>
+	</db-relationship>
+	<db-relationship name="appointmentToAddress" source="db_appointment" target="db_address" toMany="false">
+		<db-attribute-pair source="id_address" target="id"/>
+	</db-relationship>
+	<db-relationship name="appointmentToAppointmentServices" source="db_appointment" target="db_appointment_services" toMany="true">
+		<db-attribute-pair source="id" target="id_appointment"/>
+	</db-relationship>
+	<db-relationship name="appointmentToCustomer" source="db_appointment" target="db_customer" toMany="false">
+		<db-attribute-pair source="id_customer" target="id"/>
+	</db-relationship>
+	<db-relationship name="appointmentToCutter" source="db_appointment" target="db_cutter" toMany="false">
+		<db-attribute-pair source="id_cutter" target="id"/>
+	</db-relationship>
+	<db-relationship name="appointmentServicesToAppointment" source="db_appointment_services" target="db_appointment" toMany="false">
+		<db-attribute-pair source="id_appointment" target="id"/>
+	</db-relationship>
+	<db-relationship name="appointmentServicesToServices" source="db_appointment_services" target="dictionary_cut_services" toMany="false">
+		<db-attribute-pair source="id_services" target="id"/>
+	</db-relationship>
+	<db-relationship name="attechmentToMessage" source="db_attachment" target="db_message" toMany="false">
+		<db-attribute-pair source="id_message" target="id"/>
+	</db-relationship>
+	<db-relationship name="chatToCustomer" source="db_chat" target="db_customer" toMany="false">
+		<db-attribute-pair source="id_customer" target="id"/>
+	</db-relationship>
+	<db-relationship name="chatToCutter" source="db_chat" target="db_cutter" toMany="false">
+		<db-attribute-pair source="id_cutter" target="id"/>
+	</db-relationship>
+	<db-relationship name="chatToMessage" source="db_chat" target="db_message" toMany="true">
+		<db-attribute-pair source="id" target="id_chat"/>
+	</db-relationship>
+	<db-relationship name="commentToCustomer" source="db_comment" target="db_customer" toMany="false">
+		<db-attribute-pair source="id_customer" target="id"/>
+	</db-relationship>
+	<db-relationship name="commentToCutter" source="db_comment" target="db_cutter" toMany="false">
+		<db-attribute-pair source="id_cutter" target="id"/>
+	</db-relationship>
+	<db-relationship name="customerToAddress" source="db_customer" target="db_address" toMany="false">
+		<db-attribute-pair source="id_address" target="id"/>
+	</db-relationship>
+	<db-relationship name="customerToAppointment" source="db_customer" target="db_appointment" toMany="true">
+		<db-attribute-pair source="id" target="id_customer"/>
+	</db-relationship>
+	<db-relationship name="customerToChat" source="db_customer" target="db_chat" toMany="true">
+		<db-attribute-pair source="id" target="id_customer"/>
+	</db-relationship>
+	<db-relationship name="customerToComment" source="db_customer" target="db_comment" toMany="true">
+		<db-attribute-pair source="id" target="id_customer"/>
+	</db-relationship>
+	<db-relationship name="customerToFavorites" source="db_customer" target="db_favorites" toMany="true">
+		<db-attribute-pair source="id" target="id_customer"/>
+	</db-relationship>
+	<db-relationship name="customerToMessage" source="db_customer" target="db_message" toMany="true">
+		<db-attribute-pair source="id" target="id_customer"/>
+	</db-relationship>
+	<db-relationship name="customerToSession" source="db_customer" target="db_customer_session" toMany="true">
+		<db-attribute-pair source="id" target="id_customer"/>
+	</db-relationship>
+	<db-relationship name="sessionToCustomer" source="db_customer_session" target="db_customer" toMany="false">
+		<db-attribute-pair source="id_customer" target="id"/>
+	</db-relationship>
+	<db-relationship name="cutterToAddress" source="db_cutter" target="db_address" toMany="false">
+		<db-attribute-pair source="id_address" target="id"/>
+	</db-relationship>
+	<db-relationship name="cutterToAppointment" source="db_cutter" target="db_appointment" toMany="true">
+		<db-attribute-pair source="id" target="id_cutter"/>
+	</db-relationship>
+	<db-relationship name="cutterToChat" source="db_cutter" target="db_chat" toMany="true">
+		<db-attribute-pair source="id" target="id_cutter"/>
+	</db-relationship>
+	<db-relationship name="cutterToComment" source="db_cutter" target="db_comment" toMany="true">
+		<db-attribute-pair source="id" target="id_cutter"/>
+	</db-relationship>
+	<db-relationship name="cutterToCutterServices" source="db_cutter" target="db_cutter_services" toMany="true">
+		<db-attribute-pair source="id" target="id_cutter"/>
+	</db-relationship>
+	<db-relationship name="cutterToFavorites" source="db_cutter" target="db_favorites" toMany="true">
+		<db-attribute-pair source="id" target="id_cutter"/>
+	</db-relationship>
+	<db-relationship name="cutterToMessage" source="db_cutter" target="db_message" toMany="true">
+		<db-attribute-pair source="id" target="id_cutter"/>
+	</db-relationship>
+	<db-relationship name="cutterToSession" source="db_cutter" target="db_cutter_session" toMany="true">
+		<db-attribute-pair source="id" target="id_cutter"/>
+	</db-relationship>
+	<db-relationship name="cutterServicesToCutter" source="db_cutter_services" target="db_cutter" toMany="false">
+		<db-attribute-pair source="id_cutter" target="id"/>
+	</db-relationship>
+	<db-relationship name="cutterServicesToServices" source="db_cutter_services" target="dictionary_cut_services" toMany="false">
+		<db-attribute-pair source="id_services" target="id"/>
+	</db-relationship>
+	<db-relationship name="sessionToCutter" source="db_cutter_session" target="db_cutter" toMany="false">
+		<db-attribute-pair source="id_cutter" target="id"/>
+	</db-relationship>
+	<db-relationship name="favoritesToCustomer" source="db_favorites" target="db_customer" toMany="false">
+		<db-attribute-pair source="id_customer" target="id"/>
+	</db-relationship>
+	<db-relationship name="favoritesToCutter" source="db_favorites" target="db_cutter" toMany="false">
+		<db-attribute-pair source="id_cutter" target="id"/>
+	</db-relationship>
+	<db-relationship name="messageToAttachment" source="db_message" target="db_attachment" toMany="true">
+		<db-attribute-pair source="id" target="id_message"/>
+	</db-relationship>
+	<db-relationship name="messageToChat" source="db_message" target="db_chat" toMany="false">
+		<db-attribute-pair source="id_chat" target="id"/>
+	</db-relationship>
+	<db-relationship name="messageToCustomer" source="db_message" target="db_customer" toMany="false">
+		<db-attribute-pair source="id_customer" target="id"/>
+	</db-relationship>
+	<db-relationship name="messageToCutter" source="db_message" target="db_cutter" toMany="false">
+		<db-attribute-pair source="id_cutter" target="id"/>
+	</db-relationship>
+	<db-relationship name="servicesToAppointmentServices" source="dictionary_cut_services" target="db_appointment_services" toMany="true">
+		<db-attribute-pair source="id" target="id_services"/>
+	</db-relationship>
+	<db-relationship name="servicesToCuttersServices" source="dictionary_cut_services" target="db_cutter_services" toMany="true">
+		<db-attribute-pair source="id" target="id_services"/>
+	</db-relationship>
+	<obj-relationship name="addressToAppointment" source="DbAddress" target="DbAppointment" deleteRule="Deny" db-relationship-path="addressToAppointment"/>
+	<obj-relationship name="appointmentToAddress" source="DbAppointment" target="DbAddress" deleteRule="Nullify" db-relationship-path="appointmentToAddress"/>
+	<obj-relationship name="appointmentToAppointmentServices" source="DbAppointment" target="DbAppointmentServices" deleteRule="Deny" db-relationship-path="appointmentToAppointmentServices"/>
+	<obj-relationship name="appointmentServicesToAppointment" source="DbAppointmentServices" target="DbAppointment" deleteRule="Nullify" db-relationship-path="appointmentServicesToAppointment"/>
+	<obj-relationship name="appointmentServicesToServices" source="DbAppointmentServices" target="DictionaryCutServices" deleteRule="Nullify" db-relationship-path="appointmentServicesToServices"/>
+	<obj-relationship name="attechmentToMessage" source="DbAttachment" target="DbMessage" deleteRule="Nullify" db-relationship-path="attechmentToMessage"/>
+	<obj-relationship name="chatToMessage" source="DbChat" target="DbMessage" deleteRule="Deny" db-relationship-path="chatToMessage"/>
+	<obj-relationship name="customerToAddress" source="DbCustomer" target="DbAddress" deleteRule="Nullify" db-relationship-path="customerToAddress"/>
+	<obj-relationship name="customerToAppointment" source="DbCustomer" target="DbAppointment" deleteRule="Deny" db-relationship-path="customerToAppointment"/>
+	<obj-relationship name="customerToChat" source="DbCustomer" target="DbChat" deleteRule="Deny" db-relationship-path="customerToChat"/>
+	<obj-relationship name="customerToComment" source="DbCustomer" target="DbComment" deleteRule="Deny" db-relationship-path="customerToComment"/>
+	<obj-relationship name="customerToFavorites" source="DbCustomer" target="DbFavorites" deleteRule="Deny" db-relationship-path="customerToFavorites"/>
+	<obj-relationship name="customerToMessage" source="DbCustomer" target="DbMessage" deleteRule="Deny" db-relationship-path="customerToMessage"/>
+	<obj-relationship name="sessionToCustomer" source="DbCustomerSession" target="DbCustomer" deleteRule="Nullify" db-relationship-path="sessionToCustomer"/>
+	<obj-relationship name="cutterToAddress" source="DbCutter" target="DbAddress" deleteRule="Nullify" db-relationship-path="cutterToAddress"/>
+	<obj-relationship name="cutterToAppointment" source="DbCutter" target="DbAppointment" deleteRule="Deny" db-relationship-path="cutterToAppointment"/>
+	<obj-relationship name="cutterToChat" source="DbCutter" target="DbChat" deleteRule="Deny" db-relationship-path="cutterToChat"/>
+	<obj-relationship name="cutterToComment" source="DbCutter" target="DbComment" deleteRule="Deny" db-relationship-path="cutterToComment"/>
+	<obj-relationship name="cutterToCutterServices" source="DbCutter" target="DbCutterServices" deleteRule="Deny" db-relationship-path="cutterToCutterServices"/>
+	<obj-relationship name="cutterToFavorites" source="DbCutter" target="DbFavorites" deleteRule="Deny" db-relationship-path="cutterToFavorites"/>
+	<obj-relationship name="cutterToMessage" source="DbCutter" target="DbMessage" deleteRule="Deny" db-relationship-path="cutterToMessage"/>
+	<obj-relationship name="cutterServicesToServices" source="DbCutterServices" target="DictionaryCutServices" deleteRule="Nullify" db-relationship-path="cutterServicesToServices"/>
+	<obj-relationship name="sessionToCutter" source="DbCutterSession" target="DbCutter" deleteRule="Nullify" db-relationship-path="sessionToCutter"/>
+	<obj-relationship name="messageToAttachment" source="DbMessage" target="DbAttachment" deleteRule="Deny" db-relationship-path="messageToAttachment"/>
+	<obj-relationship name="messageToChat" source="DbMessage" target="DbChat" deleteRule="Nullify" db-relationship-path="messageToChat"/>
+	<obj-relationship name="servicesToAppointmentServices" source="DictionaryCutServices" target="DbAppointmentServices" deleteRule="Deny" db-relationship-path="servicesToAppointmentServices"/>
+	<obj-relationship name="servicesToCuttersServices" source="DictionaryCutServices" target="DbCutterServices" deleteRule="Deny" db-relationship-path="servicesToCuttersServices"/>
+</data-map>
