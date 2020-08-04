@@ -19,7 +19,7 @@ public class CayenneConfiguration {
     @Bean
     public ServerRuntime serverRuntime(@Autowired DataSource dataSource){
         ServerRuntime serverRuntime = ServerRuntime.builder()
-                .addConfig("cayenne-thelak-core.xml")
+                .addConfig("cayenne-thelak-auth.xml")
                 .addModule(binder -> binder.bind(DbAdapterFactory.class).to(CustomAdapterFactory.class))
                 .dataSource(dataSource)
                 .build();

@@ -8,7 +8,8 @@
 	<property name="quoteSqlIdentifiers" value="true"/>
 	<db-entity name="db_user" schema="public">
 		<db-attribute name="birthday" type="DATE"/>
-		<db-attribute name="city" type="BIGINT"/>
+		<db-attribute name="city" type="VARCHAR" length="64"/>
+		<db-attribute name="country" type="VARCHAR" length="64"/>
 		<db-attribute name="created_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="deleted_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="email" type="VARCHAR" isMandatory="true" length="255"/>
@@ -28,7 +29,8 @@
 	</db-entity>
 	<obj-entity name="DbUser" className="com.thelak.database.entity.DbUser" dbEntityName="db_user">
 		<obj-attribute name="birthday" type="java.time.LocalDate" db-attribute-path="birthday"/>
-		<obj-attribute name="city" type="long" db-attribute-path="city"/>
+		<obj-attribute name="city" type="java.lang.String" db-attribute-path="city"/>
+		<obj-attribute name="country" type="java.lang.String" db-attribute-path="country"/>
 		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
 		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
 		<obj-attribute name="email" type="java.lang.String" db-attribute-path="email"/>
@@ -50,4 +52,5 @@
 		<db-attribute-pair source="id_customer" target="id"/>
 	</db-relationship>
 	<obj-relationship name="userToSession" source="DbUser" target="DbUserSession" deleteRule="Deny" db-relationship-path="userToSession"/>
+	<obj-relationship name="sessionToUser" source="DbUserSession" target="DbUser" deleteRule="Nullify" db-relationship-path="sessionToUser"/>
 </data-map>
