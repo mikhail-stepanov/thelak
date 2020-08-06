@@ -1,7 +1,6 @@
 package com.thelak.route.auth.services;
 
 import com.thelak.route.auth.interfaces.IAuthenticationService;
-import com.thelak.route.auth.models.AuthInfoRequest;
 import com.thelak.route.auth.models.AuthLoginRequest;
 import com.thelak.route.auth.models.AuthSignupRequest;
 import com.thelak.route.auth.models.UserModel;
@@ -16,8 +15,8 @@ public class AuthenticationService extends BaseMicroservice implements IAuthenti
     }
 
     @Override
-    public UserModel info(AuthInfoRequest request) throws MicroServiceException {
-        return retry(() -> restTemplate.postForEntity(buildUrl(AUTH_INFO), request, UserModel.class).getBody());
+    public UserModel info() throws MicroServiceException {
+        return retry(() -> restTemplate.postForEntity(buildUrl(AUTH_INFO), null, UserModel.class).getBody());
     }
 
     @Override

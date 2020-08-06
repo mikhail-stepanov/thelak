@@ -2,7 +2,6 @@ package com.thelak.auth.endpoints;
 
 import com.thelak.auth.services.AuthenticationService;
 import com.thelak.route.auth.interfaces.IAuthenticationService;
-import com.thelak.route.auth.models.AuthInfoRequest;
 import com.thelak.route.auth.models.AuthLoginRequest;
 import com.thelak.route.auth.models.AuthSignupRequest;
 import com.thelak.route.auth.models.UserModel;
@@ -18,9 +17,9 @@ public class AuthenticationEndpoint implements IAuthenticationService {
 
     @Override
     @CrossOrigin
-    @RequestMapping(value = AUTH_INFO, method = {RequestMethod.POST})
-    public UserModel info(@RequestBody AuthInfoRequest request) throws MicroServiceException {
-        return authenticationService.info(request);
+    @RequestMapping(value = AUTH_INFO, method = {RequestMethod.GET})
+    public UserModel info() throws MicroServiceException {
+        return authenticationService.info();
     }
 
     @Override

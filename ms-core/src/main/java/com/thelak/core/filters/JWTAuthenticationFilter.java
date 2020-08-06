@@ -2,10 +2,12 @@ package com.thelak.core.filters;
 
 import com.thelak.core.models.UserInfo;
 import com.thelak.core.services.JWTTokenService;
+import com.thelak.route.auth.models.UserModel;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.token.TokenService;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;

@@ -10,20 +10,17 @@ import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbUser;
 import com.thelak.database.entity.DbUserSession;
 import com.thelak.route.auth.interfaces.IAuthenticationService;
-import com.thelak.route.auth.models.AuthInfoRequest;
 import com.thelak.route.auth.models.AuthLoginRequest;
 import com.thelak.route.auth.models.AuthSignupRequest;
 import com.thelak.route.auth.models.UserModel;
-import com.thelak.route.exceptions.MicroServiceException;
-import com.thelak.route.exceptions.MsBadRequestException;
-import com.thelak.route.exceptions.MsNotAuthorizedException;
-import com.thelak.route.exceptions.MsObjectNotFoundException;
+import com.thelak.route.exceptions.*;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -54,9 +51,15 @@ public class AuthenticationService extends AbstractMicroservice implements IAuth
     }
 
     @Override
-    public UserModel info(AuthInfoRequest request) throws MicroServiceException {
+    public UserModel info() throws MicroServiceException {
         try {
-            DbUser user = SelectById.query(DbUser.class, request.getId()).selectFirst(objectContext);
+
+            UserInfo userInfo = (UserInfo) SecurityContextHolder
+                    .getContext()
+                    .getAuthentication()
+                    .getPrincipal();
+
+            DbUser user = SelectById.query(DbUser.class, userInfo.getUserId()).selectFirst(objectContext);
 
             return UserModel.builder()
                     .id((Long) user.getObjectId().getIdSnapshot().get("id"))
@@ -69,7 +72,7 @@ public class AuthenticationService extends AbstractMicroservice implements IAuth
                     .build();
 
         } catch (Exception e) {
-            throw new MsObjectNotFoundException("Exception while finding user with id: ", Long.toString(request.getId()));
+            throw new MsInternalErrorException("Exception while finding user info");
         }
     }
 

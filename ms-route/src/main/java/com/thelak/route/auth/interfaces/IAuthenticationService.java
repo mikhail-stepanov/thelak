@@ -1,6 +1,5 @@
 package com.thelak.route.auth.interfaces;
 
-import com.thelak.route.auth.models.AuthInfoRequest;
 import com.thelak.route.auth.models.AuthLoginRequest;
 import com.thelak.route.auth.models.AuthSignupRequest;
 import com.thelak.route.auth.models.UserModel;
@@ -12,7 +11,7 @@ public interface IAuthenticationService {
     String AUTH_SIGN_UP = "/v1/auth/signup";
     String AUTH_LOGIN = "/v1/auth/login";
 
-    UserModel info(AuthInfoRequest request) throws MicroServiceException;
+    UserModel info() throws MicroServiceException;
 
     UserModel signUp(AuthSignupRequest request) throws MicroServiceException;
 
