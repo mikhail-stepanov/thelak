@@ -19,6 +19,7 @@ CREATE TABLE "public"."db_user_session"
 (
     "id"            bigint                   NOT NULL,
     "id_customer"   bigint                   NOT NULL,
+    "token"         varchar(1024)            NULL,
     "created_date"  timestamp with time zone NULL,
     "deleted_date"  timestamp with time zone NULL,
     "modified_date" timestamp with time zone NULL,

@@ -33,7 +33,7 @@ public class AuthenticationEndpoint implements IAuthenticationService {
     @Override
     @CrossOrigin
     @RequestMapping(value = AUTH_LOGIN, method = {RequestMethod.POST})
-    public UserModel login(@RequestBody AuthLoginRequest request) throws MicroServiceException {
+    public String login(@RequestBody AuthLoginRequest request) throws MicroServiceException {
         return authenticationService.login(request);
     }
 

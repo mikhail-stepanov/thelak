@@ -16,6 +16,6 @@ public interface IAuthenticationService {
 
     UserModel signUp(AuthSignupRequest request) throws MicroServiceException;
 
-    UserModel login(AuthLoginRequest request) throws MicroServiceException;
+    String login(AuthLoginRequest request) throws MicroServiceException;
 
 }

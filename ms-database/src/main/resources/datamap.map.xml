@@ -26,6 +26,7 @@
 		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="id_customer" type="BIGINT" isMandatory="true"/>
 		<db-attribute name="modified_date" type="TIMESTAMP" length="29"/>
+		<db-attribute name="token" type="VARCHAR" length="1024"/>
 	</db-entity>
 	<obj-entity name="DbUser" className="com.thelak.database.entity.DbUser" dbEntityName="db_user">
 		<obj-attribute name="birthday" type="java.time.LocalDate" db-attribute-path="birthday"/>
@@ -44,6 +45,7 @@
 		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
 		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
 		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
+		<obj-attribute name="token" type="java.lang.String" db-attribute-path="token"/>
 	</obj-entity>
 	<db-relationship name="userToSession" source="db_user" target="db_user_session" toMany="true">
 		<db-attribute-pair source="id" target="id_customer"/>

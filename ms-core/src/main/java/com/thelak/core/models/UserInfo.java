@@ -14,13 +14,9 @@ import java.util.Map;
 @AllArgsConstructor
 public class UserInfo {
 
-    private String userId;
+    private Long userId;
 
-    private String userName;
+    private String userEmail;
 
-    private String userAccount;
-
-    private String userRoleId;
-
-    private Map<String, Map<String, Boolean>> userRights;
+    private boolean isAdmin;
 }

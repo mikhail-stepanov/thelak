@@ -1,29 +1,25 @@
 package com.thelak.core.endpoints;
 
+import com.thelak.core.models.ErrorResponse;
+import com.thelak.route.exceptions.MicroServiceException;
+import com.thelak.route.exceptions.MsBadRequestException;
+import com.thelak.route.exceptions.MsInternalErrorException;
+import com.thelak.route.exceptions.MsObjectNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
-import com.thelak.core.models.ErrorResponse;
-import com.thelak.core.validation.ModelValidator;
-import com.thelak.route.exceptions.MicroServiceException;
-import com.thelak.route.exceptions.MsBadRequestException;
-import com.thelak.route.exceptions.MsInternalErrorException;
-import com.thelak.route.exceptions.MsObjectNotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -42,15 +38,6 @@ public abstract class AbstractMicroservice {
 
     @Value("${spring.application.name}")
     protected String applicationName;
-
-    @Autowired
-    ModelValidator modelValidator;
-
-
-    @InitBinder
-    protected void initBinder(WebDataBinder binder) {
-        binder.setValidator(modelValidator);
-    }
 
     @ExceptionHandler(MsObjectNotFoundException.class)
     public final ResponseEntity<ErrorResponse> handleMsObjectNotFoundException(MsObjectNotFoundException ex, WebRequest request) {

@@ -3,6 +3,8 @@ package com.thelak.auth.services;
 import com.thelak.auth.endpoints.AuthenticationEndpoint;
 import com.thelak.auth.util.PasswordHelper;
 import com.thelak.core.endpoints.AbstractMicroservice;
+import com.thelak.core.interfaces.ITokenService;
+import com.thelak.core.models.UserInfo;
 import com.thelak.core.util.RLUCache;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbUser;
@@ -32,6 +34,9 @@ public class AuthenticationService extends AbstractMicroservice implements IAuth
 
     @Autowired
     private DatabaseService databaseService;
+
+    @Autowired
+    private ITokenService tokenService;
 
     ObjectContext objectContext;
 
@@ -101,7 +106,7 @@ public class AuthenticationService extends AbstractMicroservice implements IAuth
     }
 
     @Override
-    public UserModel login(AuthLoginRequest request) throws MicroServiceException {
+    public String login(AuthLoginRequest request) throws MicroServiceException {
         if (checkEmailExists(request.getEmail())) {
 
             DbUser user = ObjectSelect.query(DbUser.class)
@@ -110,27 +115,28 @@ public class AuthenticationService extends AbstractMicroservice implements IAuth
 
             if (user.getPassword().equals(PasswordHelper.hashPassword(request.getPassword(), user.getSalt()))) {
 
+                UserInfo userInfo = UserInfo.builder()
+                        .userId((Long) user.getObjectId().getIdSnapshot().get("id"))
+                        .userEmail(user.getEmail())
+                        .isAdmin(false)
+                        .build();
+
+                String token = tokenService.generateToken(userInfo);
                 DbUserSession session = objectContext.newObject(DbUserSession.class);
                 session.setCreatedDate(LocalDateTime.now());
                 session.setSessionToUser(user);
+                session.setToken(token);
 
                 objectContext.commitChanges();
 
-                return UserModel.builder()
-                        .id((Long) user.getObjectId().getIdSnapshot().get("id"))
-                        .name(user.getName())
-                        .email(user.getEmail())
-                        .phone(user.getPhone())
-                        .city(user.getCity())
-                        .country(user.getCountry())
-                        .birthday(user.getBirthday())
-                        .build();
+                return token;
 
             } else
                 throw new MsNotAuthorizedException();
         } else
             throw new MsObjectNotFoundException("Customer with email: ", request.getEmail());
     }
+
 
     private boolean checkEmailExists(String email) {
         try {
