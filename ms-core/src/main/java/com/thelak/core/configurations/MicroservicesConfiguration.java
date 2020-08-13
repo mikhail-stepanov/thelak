@@ -1,7 +1,6 @@
 package com.thelak.core.configurations;
 
-import com.thelak.route.auth.interfaces.IAuthenticationService;
-import com.thelak.route.auth.services.AuthenticationService;
+import com.thelak.core.filters.HttpServletRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -10,7 +9,6 @@ import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
-import com.thelak.core.filters.HttpServletRequestFilter;
 
 
 @Configuration
@@ -25,14 +23,14 @@ public class MicroservicesConfiguration {
 
     @Bean
     @LoadBalanced
-    RestTemplate restTemplate(){
+    RestTemplate restTemplate() {
         return new RestTemplate();
     }
 
-    @Bean
-    IAuthenticationService authenticationService(){
-        return new AuthenticationService(restTemplate());
-    }
+//    @Bean
+//    IAuthenticationService authenticationService(){
+//        return new AuthenticationService(restTemplate());
+//    }
 
 
     @Bean

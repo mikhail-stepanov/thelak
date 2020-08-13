@@ -39,6 +39,7 @@ public abstract class AbstractMicroservice {
     @Value("${spring.application.name}")
     protected String applicationName;
 
+
     @ExceptionHandler(MsObjectNotFoundException.class)
     public final ResponseEntity<ErrorResponse> handleMsObjectNotFoundException(MsObjectNotFoundException ex, WebRequest request) {
         return handleMicroserviceException(ex, request, HttpStatus.NOT_FOUND);
