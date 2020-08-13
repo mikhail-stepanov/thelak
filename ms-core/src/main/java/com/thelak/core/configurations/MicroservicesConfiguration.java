@@ -1,5 +1,7 @@
 package com.thelak.core.configurations;
 
+import com.thelak.route.auth.interfaces.IAuthenticationService;
+import com.thelak.route.auth.services.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -27,10 +29,10 @@ public class MicroservicesConfiguration {
         return new RestTemplate();
     }
 
-//    @Bean
-//    IAuthenticationService authenticationService(){
-//        return new AuthenticationService(restTemplate());
-//    }
+    @Bean
+    IAuthenticationService authenticationService(){
+        return new AuthenticationService(restTemplate());
+    }
 
 
     @Bean
