@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap https://cayenne.apache.org/schema/9/modelMap.xsd"
+	 project-version="9">
+	<property name="defaultPackage" value="com.thelak.database.entity"/>
+	<property name="defaultSchema" value="public"/>
+	<property name="quoteSqlIdentifiers" value="true"/>
+	<db-entity name="db_video" schema="public">
+		<db-attribute name="category" type="VARCHAR" isMandatory="true" length="255"/>
+		<db-attribute name="content_url" type="VARCHAR" isMandatory="true" length="2048"/>
+		<db-attribute name="country" type="VARCHAR" length="255"/>
+		<db-attribute name="cover_url" type="VARCHAR" length="2048"/>
+		<db-attribute name="created_date" type="TIMESTAMP" length="29"/>
+		<db-attribute name="deleted_date" type="TIMESTAMP" length="29"/>
+		<db-attribute name="description" type="VARCHAR" length="2048"/>
+		<db-attribute name="duration" type="VARCHAR" length="64"/>
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="modified_date" type="TIMESTAMP" length="29"/>
+		<db-attribute name="partner_logo_url" type="VARCHAR" length="2048"/>
+		<db-attribute name="speaker" type="VARCHAR" length="64"/>
+		<db-attribute name="speaker_information" type="VARCHAR" length="2048"/>
+		<db-attribute name="title" type="VARCHAR" isMandatory="true" length="255"/>
+		<db-attribute name="year" type="INTEGER"/>
+	</db-entity>
+	<obj-entity name="DbVideo" className="com.thelak.database.entity.DbVideo" dbEntityName="db_video">
+		<obj-attribute name="category" type="java.lang.String" db-attribute-path="category"/>
+		<obj-attribute name="contentUrl" type="java.lang.String" db-attribute-path="content_url"/>
+		<obj-attribute name="country" type="java.lang.String" db-attribute-path="country"/>
+		<obj-attribute name="coverUrl" type="java.lang.String" db-attribute-path="cover_url"/>
+		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
+		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
+		<obj-attribute name="description" type="java.lang.String" db-attribute-path="description"/>
+		<obj-attribute name="duration" type="java.lang.String" db-attribute-path="duration"/>
+		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
+		<obj-attribute name="partnerLogoUrl" type="java.lang.String" db-attribute-path="partner_logo_url"/>
+		<obj-attribute name="speaker" type="java.lang.String" db-attribute-path="speaker"/>
+		<obj-attribute name="speakerInformation" type="java.lang.String" db-attribute-path="speaker_information"/>
+		<obj-attribute name="title" type="java.lang.String" db-attribute-path="title"/>
+		<obj-attribute name="year" type="int" db-attribute-path="year"/>
+	</obj-entity>
+</data-map>

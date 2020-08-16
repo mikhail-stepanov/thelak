@@ -7,6 +7,7 @@ import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,10 +17,13 @@ import java.time.LocalDateTime;
 @Configuration
 public class CayenneConfiguration {
 
+    @Value("${database.name}")
+    String databaseName;
+
     @Bean
     public ServerRuntime serverRuntime(@Autowired DataSource dataSource){
         ServerRuntime serverRuntime = ServerRuntime.builder()
-                .addConfig("cayenne-thelak-auth.xml")
+                .addConfig("db-cayenne/cayenne-thelak-" + databaseName + ".xml")
                 .addModule(binder -> binder.bind(DbAdapterFactory.class).to(CustomAdapterFactory.class))
                 .dataSource(dataSource)
                 .build();
