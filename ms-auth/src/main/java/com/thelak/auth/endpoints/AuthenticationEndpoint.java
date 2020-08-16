@@ -21,7 +21,6 @@ public class AuthenticationEndpoint implements IAuthenticationService {
     private AuthenticationService authenticationService;
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get user info by token")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -35,7 +34,6 @@ public class AuthenticationEndpoint implements IAuthenticationService {
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Sign up")
     @RequestMapping(value = AUTH_SIGN_UP, method = {RequestMethod.POST})
     public UserModel signUp(@RequestBody AuthSignupRequest request) throws MicroServiceException {
@@ -43,7 +41,6 @@ public class AuthenticationEndpoint implements IAuthenticationService {
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Login user")
     @RequestMapping(value = AUTH_LOGIN, method = {RequestMethod.POST})
     public String login(@RequestBody AuthLoginRequest request) throws MicroServiceException {
