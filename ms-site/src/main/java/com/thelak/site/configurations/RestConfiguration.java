@@ -25,11 +25,6 @@ public class RestConfiguration implements WebMvcConfigurer {
         }
     }
 
-//        @Override
-//        public void addViewControllers(ViewControllerRegistry registry) {
-//            registry.addRedirectViewController("/", "index.html");
-//        }
-
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**").allowedMethods("GET", "POST", "OPTIONS", "PUT", "DELETE");
