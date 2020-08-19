@@ -28,7 +28,7 @@ public class RestConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/dist/").setViewName("forward:/dist/index.html");
+        registry.addViewController("/dist/").setViewName("/dist/index.html");
     }
 
     @Override
