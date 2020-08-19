@@ -3,6 +3,7 @@ package com.thelak.site.configurations;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.*;
 
@@ -25,6 +26,22 @@ public class RestConfiguration implements WebMvcConfigurer {
         }
     }
 
+    @Configuration
+    public class MyWebMvcConfig {
+
+        @Bean
+        public WebMvcConfigurerAdapter forwardToIndex() {
+            return new WebMvcConfigurerAdapter() {
+                @Override
+                public void addViewControllers(ViewControllerRegistry registry) {
+                    // forward requests to /admin and /user to their index.html
+                    registry.addViewController("/dist").setViewName(
+                            "forward:/dist/index.html");
+                }
+            };
+        }
+
+    }
 //
 //    @Override
 //    public void addViewControllers(ViewControllerRegistry registry) {
