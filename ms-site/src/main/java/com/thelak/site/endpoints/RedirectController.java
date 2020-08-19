@@ -13,6 +13,6 @@ public class RedirectController {
     @GetMapping("/dist")
     public ModelAndView redirectWithUsingRedirectPrefix(ModelMap model) {
         model.addAttribute("attribute", "redirectWithRedirectPrefix");
-        return new ModelAndView("redirect:/dist/index.html", model);
+        return new ModelAndView("/dist/index.html", model);
     }
 }
