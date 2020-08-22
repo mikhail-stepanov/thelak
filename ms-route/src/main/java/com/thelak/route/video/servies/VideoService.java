@@ -26,6 +26,11 @@ public class VideoService extends BaseMicroservice implements IVideoService {
     }
 
     @Override
+    public List<VideoModel> search(String search) throws MicroServiceException {
+        return retry(() -> restTemplate.postForEntity(buildUrl(VIDEO_SEARCH), search, List.class).getBody());
+    }
+
+    @Override
     public VideoModel create(VideoCreateRequest request) throws MicroServiceException {
         return retry(() -> restTemplate.postForEntity(buildUrl(VIDEO_CREATE), request, VideoModel.class).getBody());
     }

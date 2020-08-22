@@ -13,10 +13,13 @@ public interface IVideoService {
     String VIDEO_CREATE = "/v1/video/create";
     String VIDEO_UPDATE = "/v1/video/update";
     String VIDEO_DELETE = "/v1/video/delete";
+    String VIDEO_SEARCH = "/v1/video/search";
 
     VideoModel get(Long id) throws MicroServiceException;
 
     List<VideoModel> list() throws MicroServiceException;
+
+    List<VideoModel> search(String search) throws MicroServiceException;
 
     VideoModel create(VideoCreateRequest request) throws MicroServiceException;
 

@@ -93,6 +93,83 @@ public class VideoService extends AbstractMicroservice implements IVideoService 
     }
 
     @Override
+    public List<VideoModel> search(String search) throws MicroServiceException {
+        try {
+            List<VideoModel> videos = new ArrayList<>();
+
+            List<DbVideo> dbVideosTitle = ObjectSelect.query(DbVideo.class).
+                    where(DbVideo.DELETED_DATE.isNull()).and(DbVideo.TITLE.like("%" + search + "%"))
+                    .limit(20)
+                    .select(objectContext);
+
+            dbVideosTitle.forEach(dbVideo -> {
+                videos.add(VideoModel.builder()
+                        .id((Long) dbVideo.getObjectId().getIdSnapshot().get("id"))
+                        .title(dbVideo.getTitle())
+                        .description(dbVideo.getDescription())
+                        .year(dbVideo.getYear())
+                        .country(dbVideo.getCountry())
+                        .category(dbVideo.getCategory())
+                        .duration(dbVideo.getDuration())
+                        .speaker(dbVideo.getSpeaker())
+                        .speakerInformation(dbVideo.getSpeakerInformation())
+                        .contentUrl(dbVideo.getContentUrl())
+                        .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
+                        .coverUrl(dbVideo.getCoverUrl())
+                        .build());
+            });
+
+            List<DbVideo> dbVideosDescription = ObjectSelect.query(DbVideo.class).
+                    where(DbVideo.DELETED_DATE.isNull()).and(DbVideo.DESCRIPTION.like("%" + search + "%"))
+                    .limit(20)
+                    .select(objectContext);
+
+            dbVideosDescription.forEach(dbVideo -> {
+                videos.add(VideoModel.builder()
+                        .id((Long) dbVideo.getObjectId().getIdSnapshot().get("id"))
+                        .title(dbVideo.getTitle())
+                        .description(dbVideo.getDescription())
+                        .year(dbVideo.getYear())
+                        .country(dbVideo.getCountry())
+                        .category(dbVideo.getCategory())
+                        .duration(dbVideo.getDuration())
+                        .speaker(dbVideo.getSpeaker())
+                        .speakerInformation(dbVideo.getSpeakerInformation())
+                        .contentUrl(dbVideo.getContentUrl())
+                        .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
+                        .coverUrl(dbVideo.getCoverUrl())
+                        .build());
+            });
+
+            List<DbVideo> dbVideosSpeaker = ObjectSelect.query(DbVideo.class).
+                    where(DbVideo.DELETED_DATE.isNull()).and(DbVideo.SPEAKER.like("%" + search + "%"))
+                    .limit(20)
+                    .select(objectContext);
+
+            dbVideosSpeaker.forEach(dbVideo -> {
+                videos.add(VideoModel.builder()
+                        .id((Long) dbVideo.getObjectId().getIdSnapshot().get("id"))
+                        .title(dbVideo.getTitle())
+                        .description(dbVideo.getDescription())
+                        .year(dbVideo.getYear())
+                        .country(dbVideo.getCountry())
+                        .category(dbVideo.getCategory())
+                        .duration(dbVideo.getDuration())
+                        .speaker(dbVideo.getSpeaker())
+                        .speakerInformation(dbVideo.getSpeakerInformation())
+                        .contentUrl(dbVideo.getContentUrl())
+                        .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
+                        .coverUrl(dbVideo.getCoverUrl())
+                        .build());
+            });
+
+            return videos;
+        } catch (Exception e) {
+            throw new MsInternalErrorException("Exception while searching videos");
+        }
+    }
+
+    @Override
     public VideoModel create(VideoCreateRequest request) throws MicroServiceException {
         try {
 

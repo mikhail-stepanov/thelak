@@ -6,8 +6,6 @@ import com.thelak.route.video.models.VideoCreateRequest;
 import com.thelak.route.video.models.VideoModel;
 import com.thelak.video.services.VideoService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +31,13 @@ public class VideoEndpoint implements IVideoService {
     @RequestMapping(value = VIDEO_LIST, method = {RequestMethod.GET})
     public List<VideoModel> list() throws MicroServiceException {
         return videoService.list();
+    }
+
+    @Override
+    @ApiOperation(value = "Find videos by title/description/speaker")
+    @RequestMapping(value = VIDEO_SEARCH, method = {RequestMethod.GET})
+    public List<VideoModel> search(@RequestParam String search) throws MicroServiceException {
+        return videoService.search(search);
     }
 
     @Override
