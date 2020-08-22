@@ -98,7 +98,7 @@ public class VideoService extends AbstractMicroservice implements IVideoService 
             List<VideoModel> videos = new ArrayList<>();
 
             List<DbVideo> dbVideosTitle = ObjectSelect.query(DbVideo.class).
-                    where(DbVideo.DELETED_DATE.isNull()).and(DbVideo.TITLE.like("%" + search + "%"))
+                    where(DbVideo.DELETED_DATE.isNull()).and(DbVideo.TITLE.lower().like("%" + search.toLowerCase() + "%"))
                     .limit(20)
                     .select(objectContext);
 
@@ -120,7 +120,7 @@ public class VideoService extends AbstractMicroservice implements IVideoService 
             });
 
             List<DbVideo> dbVideosDescription = ObjectSelect.query(DbVideo.class).
-                    where(DbVideo.DELETED_DATE.isNull()).and(DbVideo.DESCRIPTION.like("%" + search + "%"))
+                    where(DbVideo.DELETED_DATE.isNull()).and(DbVideo.DESCRIPTION.lower().like("%" + search.toLowerCase() + "%"))
                     .limit(20)
                     .select(objectContext);
 
@@ -142,7 +142,7 @@ public class VideoService extends AbstractMicroservice implements IVideoService 
             });
 
             List<DbVideo> dbVideosSpeaker = ObjectSelect.query(DbVideo.class).
-                    where(DbVideo.DELETED_DATE.isNull()).and(DbVideo.SPEAKER.like("%" + search + "%"))
+                    where(DbVideo.DELETED_DATE.isNull()).and(DbVideo.SPEAKER.lower().like("%" + search.toLowerCase() + "%"))
                     .limit(20)
                     .select(objectContext);
 

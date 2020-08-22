@@ -19,3 +19,8 @@ CREATE TABLE "public"."db_video"
 );
 
 CREATE SEQUENCE "public"."pk_db_video" INCREMENT 1 START 1;
+
+CREATE INDEX db_video_id_indx ON db_video(id);
+CREATE INDEX db_video_title_indx ON db_video(title);
+CREATE INDEX db_video_description_indx ON db_video(description);
+CREATE INDEX db_video_speaker_indx ON db_video(speaker);
