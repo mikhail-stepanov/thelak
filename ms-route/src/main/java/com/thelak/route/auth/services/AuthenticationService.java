@@ -28,4 +28,9 @@ public class AuthenticationService extends BaseMicroservice implements IAuthenti
     public String login(AuthLoginRequest request) throws MicroServiceException {
         return retry(() -> restTemplate.postForEntity(buildUrl(AUTH_LOGIN), request, String.class).getBody());
     }
+
+    @Override
+    public String refresh() throws MicroServiceException {
+        return retry(() -> restTemplate.postForEntity(buildUrl(AUTH_REFRESH), null, String.class).getBody());
+    }
 }

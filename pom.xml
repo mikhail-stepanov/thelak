@@ -60,7 +60,6 @@
         <module>ms-payments</module>
         <module>ms-promo</module>
         <module>ms-personal</module>
-        <module>ms-site</module>
         <module>ms-speaker</module>
         <module>ms-video</module>
         <module>ms-smtp</module>

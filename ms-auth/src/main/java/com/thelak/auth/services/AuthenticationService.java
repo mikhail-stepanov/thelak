@@ -140,6 +140,21 @@ public class AuthenticationService extends AbstractMicroservice implements IAuth
             throw new MsObjectNotFoundException("Customer with email: ", request.getEmail());
     }
 
+    @Override
+    public String refresh() throws MicroServiceException {
+        try {
+            UserInfo userInfo = (UserInfo) SecurityContextHolder
+                    .getContext()
+                    .getAuthentication()
+                    .getPrincipal();
+
+            return tokenService.generateToken(userInfo);
+
+        } catch (Exception e) {
+            throw new MsNotAuthorizedException();
+        }
+    }
+
 
     private boolean checkEmailExists(String email) {
         try {

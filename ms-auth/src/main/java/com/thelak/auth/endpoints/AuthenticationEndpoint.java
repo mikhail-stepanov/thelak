@@ -47,4 +47,17 @@ public class AuthenticationEndpoint implements IAuthenticationService {
         return authenticationService.login(request);
     }
 
+    @Override
+    @ApiOperation(value = "Refresh token")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(required = true,
+                    defaultValue = "Bearer ",
+                    name = "Authorization",
+                    paramType = "header")}
+    )
+    @RequestMapping(value = AUTH_REFRESH, method = {RequestMethod.GET})
+    public String refresh() throws MicroServiceException {
+        return authenticationService.refresh();
+    }
+
 }
