@@ -1,5 +1,6 @@
 package com.thelak.core.configurations;
 
+import com.thelak.core.filters.ExceptionHandlerFilter;
 import com.thelak.core.filters.JWTAuthenticationFilter;
 import com.thelak.core.services.JWTTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .addFilterBefore(new JWTAuthenticationFilter(tokenService),
-                        UsernamePasswordAuthenticationFilter.class);
+                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new ExceptionHandlerFilter(), JWTAuthenticationFilter.class);
+
     }
 
 }

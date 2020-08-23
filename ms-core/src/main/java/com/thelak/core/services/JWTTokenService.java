@@ -2,10 +2,8 @@ package com.thelak.core.services;
 
 import com.thelak.core.interfaces.ITokenService;
 import com.thelak.core.models.UserInfo;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.thelak.route.exceptions.MsNotAuthorizedException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 
@@ -38,24 +36,24 @@ public class JWTTokenService implements ITokenService {
     }
 
     @Override
-    public UserInfo parseToken(String token) {
-        byte[] secretBytes = JWT_SECRET.getBytes();
+    public UserInfo parseToken(String token) throws ExpiredJwtException {
+            byte[] secretBytes = JWT_SECRET.getBytes();
 
-        Jws<Claims> jwsClaims = Jwts.parserBuilder()
-                .setSigningKey(secretBytes)
-                .build()
-                .parseClaimsJws(token);
+            Jws<Claims> jwsClaims = Jwts.parserBuilder()
+                    .setSigningKey(secretBytes)
+                    .build()
+                    .parseClaimsJws(token);
 
-        String email = jwsClaims.getBody()
-                .getSubject();
-        Long userId = jwsClaims.getBody()
-                .get("id", Long.class);
-        boolean isAdmin = jwsClaims.getBody().get("admin", Boolean.class);
+            String email = jwsClaims.getBody()
+                    .getSubject();
+            Long userId = jwsClaims.getBody()
+                    .get("id", Long.class);
+            boolean isAdmin = jwsClaims.getBody().get("admin", Boolean.class);
 
-        return UserInfo.builder()
-                .userId(userId)
-                .userEmail(email)
-                .isAdmin(isAdmin)
-                .build();
+            return UserInfo.builder()
+                    .userId(userId)
+                    .userEmail(email)
+                    .isAdmin(isAdmin)
+                    .build();
     }
 }

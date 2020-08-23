@@ -1,10 +1,7 @@
 package com.thelak.core.endpoints;
 
-import com.thelak.core.models.ErrorResponse;
-import com.thelak.route.exceptions.MicroServiceException;
-import com.thelak.route.exceptions.MsBadRequestException;
-import com.thelak.route.exceptions.MsInternalErrorException;
-import com.thelak.route.exceptions.MsObjectNotFoundException;
+import com.thelak.route.common.models.ErrorResponse;
+import com.thelak.route.exceptions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,14 +28,10 @@ import java.util.UUID;
 @ControllerAdvice
 public abstract class AbstractMicroservice {
 
-    private static final String USER_INFO_ATTRIBUTE = "USER_INFO_ATTRIBUTE";
-    private static final String HEADER_CUTT_TOKEN = "thelak-auth-token";
-
     protected static final Logger log = LoggerFactory.getLogger(AbstractMicroservice.class);
 
     @Value("${spring.application.name}")
     protected String applicationName;
-
 
     @ExceptionHandler(MsObjectNotFoundException.class)
     public final ResponseEntity<ErrorResponse> handleMsObjectNotFoundException(MsObjectNotFoundException ex, WebRequest request) {
@@ -46,12 +39,22 @@ public abstract class AbstractMicroservice {
     }
 
     @ExceptionHandler(MsBadRequestException.class)
-    public final ResponseEntity<ErrorResponse> handleMsBadRequestException(MsObjectNotFoundException ex, WebRequest request) {
+    public final ResponseEntity<ErrorResponse> handleMsBadRequestException(MsBadRequestException ex, WebRequest request) {
         return handleMicroserviceException(ex, request, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(MsNotAuthorizedException.class)
+    public final ResponseEntity<ErrorResponse> handleMsNotAuthorizedException(MsNotAuthorizedException ex, WebRequest request) {
+        return handleMicroserviceException(ex, request, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(MsNotAllowedException.class)
+    public final ResponseEntity<ErrorResponse> handleMsNotAllowedException(MsNotAllowedException ex, WebRequest request) {
+        return handleMicroserviceException(ex, request, HttpStatus.METHOD_NOT_ALLOWED);
+    }
+
     @ExceptionHandler(MsInternalErrorException.class)
-    public final ResponseEntity<ErrorResponse> handleMsInternalErrorException(MsObjectNotFoundException ex, WebRequest request) {
+    public final ResponseEntity<ErrorResponse> handleMsInternalErrorException(MsInternalErrorException ex, WebRequest request) {
         return handleMicroserviceException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -115,10 +118,8 @@ public abstract class AbstractMicroservice {
                 ex.getMessage(),
                 requestURL,
                 requestBody);
-        //пишем детальную информацию в другой лог
         log.error(errorMessage);
 
-        //возвращаем пользователю ничего не значащую информацию об ошибке
         return new ResponseEntity<>(ErrorResponse.builder()
                 .code(String.valueOf(httpStatus.value()))
                 .session(getInternalSessionId())

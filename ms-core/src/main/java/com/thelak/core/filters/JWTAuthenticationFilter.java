@@ -2,6 +2,9 @@ package com.thelak.core.filters;
 
 import com.thelak.core.models.UserInfo;
 import com.thelak.core.services.JWTTokenService;
+import com.thelak.route.exceptions.MsNotAuthorizedException;
+import io.jsonwebtoken.ExpiredJwtException;
+import lombok.SneakyThrows;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -9,10 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,10 +25,11 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         this.tokenService = tokenService;
     }
 
+    @SneakyThrows
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest,
                                     HttpServletResponse httpServletResponse,
-                                    FilterChain filterChain) throws IOException, ServletException {
+                                    FilterChain filterChain) {
         String authorizationHeader = httpServletRequest.getHeader("Authorization");
 
         if (authorizationHeaderIsInvalid(authorizationHeader)) {
@@ -46,7 +48,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 || !authorizationHeader.startsWith("Bearer ");
     }
 
-    private UsernamePasswordAuthenticationToken createToken(String authorizationHeader) {
+    private UsernamePasswordAuthenticationToken createToken(String authorizationHeader) throws ExpiredJwtException {
         String token = authorizationHeader.replace("Bearer ", "");
         UserInfo userInfo = tokenService.parseToken(token);
 
