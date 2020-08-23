@@ -25,10 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
@@ -59,6 +56,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Get user info by token")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -93,6 +91,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Sign up")
     @RequestMapping(value = AUTH_SIGN_UP, method = {RequestMethod.POST})
     public UserModel signUp(@RequestBody AuthSignupRequest request) throws MicroServiceException {
@@ -127,6 +126,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Login user")
     @RequestMapping(value = AUTH_LOGIN, method = {RequestMethod.POST})
     public String login(@RequestBody AuthLoginRequest request) throws MicroServiceException {
@@ -161,6 +161,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Refresh token")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -183,10 +184,6 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
         }
     }
 
-    @RequestMapping(value = "/v1/auth/exp", method = {RequestMethod.GET})
-    public String testExcp() throws MicroServiceException {
-        throw new MsNotAllowedException();
-    }
 
     private boolean checkEmailExists(String email) {
         try {
