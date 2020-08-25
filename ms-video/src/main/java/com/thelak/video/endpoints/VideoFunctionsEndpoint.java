@@ -1,0 +1,327 @@
+package com.thelak.video.endpoints;
+
+import com.thelak.core.endpoints.AbstractMicroservice;
+import com.thelak.core.models.UserInfo;
+import com.thelak.database.DatabaseService;
+import com.thelak.database.entity.DbVideo;
+import com.thelak.database.entity.DbVideoFavorites;
+import com.thelak.database.entity.DbVideoHistory;
+import com.thelak.database.entity.DbVideoTimecode;
+import com.thelak.route.exceptions.MicroServiceException;
+import com.thelak.route.exceptions.MsBadRequestException;
+import com.thelak.route.exceptions.MsInternalErrorException;
+import com.thelak.route.video.interfaces.IVideoFunctionsService;
+import com.thelak.route.video.models.VideoModel;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.query.SelectById;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.PostConstruct;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@RestController
+@Api(value = "Video functions API", produces = "application/json")
+public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVideoFunctionsService {
+
+    @Autowired
+    private DatabaseService databaseService;
+
+    ObjectContext objectContext;
+
+    protected static final Logger log = LoggerFactory.getLogger(VideoFunctionsEndpoint.class);
+
+    @PostConstruct
+    private void initialize() {
+        objectContext = databaseService.getContext();
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Add video to favorite")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(required = true,
+                    defaultValue = "Bearer ",
+                    name = "Authorization",
+                    paramType = "header")}
+    )
+    @RequestMapping(value = VIDEO_FAVORITES_ADD, method = {RequestMethod.GET})
+    public Boolean addFavorites(@RequestParam Long videoId) throws MicroServiceException {
+        UserInfo userInfo = (UserInfo) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        DbVideo video = SelectById.query(DbVideo.class, videoId).selectFirst(objectContext);
+
+        if (!checkInFavorites(video, userInfo.getUserId())) {
+
+            DbVideoFavorites favorites = objectContext.newObject(DbVideoFavorites.class);
+
+            favorites.setCreatedDate(LocalDateTime.now());
+            favorites.setIdUser(userInfo.getUserId());
+            favorites.setFavoriteToVideo(video);
+
+            objectContext.commitChanges();
+
+            return true;
+
+        } else
+            throw new MsBadRequestException("Always in favorites");
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Get list of favorites videos")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(required = true,
+                    defaultValue = "Bearer ",
+                    name = "Authorization",
+                    paramType = "header")}
+    )
+    @RequestMapping(value = VIDEO_FAVORITES_LIST, method = {RequestMethod.GET})
+    public List<VideoModel> listFavorites() throws MicroServiceException {
+        try {
+            UserInfo userInfo = (UserInfo) SecurityContextHolder
+                    .getContext()
+                    .getAuthentication()
+                    .getPrincipal();
+
+            List<DbVideoFavorites> dbVideoFavorites = ObjectSelect.query(DbVideoFavorites.class)
+                    .where(DbVideoFavorites.ID_USER.eq(userInfo.getUserId())).select(objectContext);
+
+            List<VideoModel> videos = new ArrayList<>();
+
+            dbVideoFavorites.forEach(favorites -> {
+                DbVideo dbVideo = favorites.getFavoriteToVideo();
+                videos.add(VideoModel.builder()
+                        .id((Long) dbVideo.getObjectId().getIdSnapshot().get("id"))
+                        .title(dbVideo.getTitle())
+                        .description(dbVideo.getDescription())
+                        .year(dbVideo.getYear())
+                        .country(dbVideo.getCountry())
+                        .category(dbVideo.getCategory())
+                        .duration(dbVideo.getDuration())
+                        .speaker(dbVideo.getSpeaker())
+                        .speakerInformation(dbVideo.getSpeakerInformation())
+                        .contentUrl(dbVideo.getContentUrl())
+                        .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
+                        .coverUrl(dbVideo.getCoverUrl())
+                        .build());
+            });
+
+            return videos;
+        } catch (Exception e) {
+            throw new MsInternalErrorException("Exception while getting list of favorites videos");
+        }
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Check video is favorite")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(required = true,
+                    defaultValue = "Bearer ",
+                    name = "Authorization",
+                    paramType = "header")}
+    )
+    @RequestMapping(value = VIDEO_FAVORITES_CHECK, method = {RequestMethod.GET})
+    public Boolean checkFavorites(@RequestParam Long videoId) throws MicroServiceException {
+        UserInfo userInfo = (UserInfo) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        DbVideo video = SelectById.query(DbVideo.class, videoId).selectFirst(objectContext);
+
+        return checkInFavorites(video, userInfo.getUserId());
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Delete video from favorite")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(required = true,
+                    defaultValue = "Bearer ",
+                    name = "Authorization",
+                    paramType = "header")}
+    )
+    @RequestMapping(value = VIDEO_FAVORITES_DELETE, method = {RequestMethod.GET})
+    public Boolean deleteFavorites(@RequestParam Long videoId) throws MicroServiceException {
+
+        UserInfo userInfo = (UserInfo) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        DbVideo video = SelectById.query(DbVideo.class, videoId).selectFirst(objectContext);
+
+        DbVideoFavorites favorites = ObjectSelect.query(DbVideoFavorites.class)
+                .where(DbVideoFavorites.ID_USER.eq(userInfo.getUserId()))
+                .and(DbVideoFavorites.FAVORITE_TO_VIDEO.eq(video))
+                .selectFirst(objectContext);
+
+        objectContext.deleteObject(favorites);
+
+        objectContext.commitChanges();
+
+        return true;
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Add video to view history")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(required = true,
+                    defaultValue = "Bearer ",
+                    name = "Authorization",
+                    paramType = "header")}
+    )
+    @RequestMapping(value = VIDEO_HISTORY_ADD, method = {RequestMethod.GET})
+    public Boolean addHistory(@RequestParam Long videoId) throws MicroServiceException {
+
+        UserInfo userInfo = (UserInfo) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        DbVideo video = SelectById.query(DbVideo.class, videoId).selectFirst(objectContext);
+
+        DbVideoHistory history = objectContext.newObject(DbVideoHistory.class);
+
+        history.setCreatedDate(LocalDateTime.now());
+        history.setIdUser(userInfo.getUserId());
+        history.setHistoryToVideo(video);
+
+        objectContext.commitChanges();
+
+        return true;
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Get list of viewed videos")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(required = true,
+                    defaultValue = "Bearer ",
+                    name = "Authorization",
+                    paramType = "header")}
+    )
+    @RequestMapping(value = VIDEO_HISTORY_LIST, method = {RequestMethod.GET})
+    public List<VideoModel> listHistory() throws MicroServiceException {
+        try {
+            UserInfo userInfo = (UserInfo) SecurityContextHolder
+                    .getContext()
+                    .getAuthentication()
+                    .getPrincipal();
+
+            List<DbVideoHistory> dbVideoHistories = ObjectSelect.query(DbVideoHistory.class)
+                    .where(DbVideoHistory.ID_USER.eq(userInfo.getUserId())).select(objectContext);
+
+            List<VideoModel> videos = new ArrayList<>();
+
+            dbVideoHistories.forEach(history -> {
+                DbVideo dbVideo = history.getHistoryToVideo();
+                videos.add(VideoModel.builder()
+                        .id((Long) dbVideo.getObjectId().getIdSnapshot().get("id"))
+                        .title(dbVideo.getTitle())
+                        .description(dbVideo.getDescription())
+                        .year(dbVideo.getYear())
+                        .country(dbVideo.getCountry())
+                        .category(dbVideo.getCategory())
+                        .duration(dbVideo.getDuration())
+                        .speaker(dbVideo.getSpeaker())
+                        .speakerInformation(dbVideo.getSpeakerInformation())
+                        .contentUrl(dbVideo.getContentUrl())
+                        .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
+                        .coverUrl(dbVideo.getCoverUrl())
+                        .build());
+            });
+
+            return videos;
+        } catch (Exception e) {
+            throw new MsInternalErrorException("Exception while getting view history");
+        }
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Add timecode of video view")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(required = true,
+                    defaultValue = "Bearer ",
+                    name = "Authorization",
+                    paramType = "header")}
+    )
+    @RequestMapping(value = VIDEO_TIMECODE_ADD, method = {RequestMethod.GET})
+    public Boolean addTimeCode(@RequestParam Long videoId, @RequestParam String timecode) throws MicroServiceException {
+        UserInfo userInfo = (UserInfo) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        DbVideo video = SelectById.query(DbVideo.class, videoId).selectFirst(objectContext);
+
+        DbVideoTimecode dbVideoTimecode = objectContext.newObject(DbVideoTimecode.class);
+
+        dbVideoTimecode.setCreatedDate(LocalDateTime.now());
+        dbVideoTimecode.setIdUser(userInfo.getUserId());
+        dbVideoTimecode.setTimecodeToVideo(video);
+        dbVideoTimecode.setTimecode(timecode);
+
+        objectContext.commitChanges();
+
+        return true;
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Get timecode of video view")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(required = true,
+                    defaultValue = "Bearer ",
+                    name = "Authorization",
+                    paramType = "header")}
+    )
+    @RequestMapping(value = VIDEO_TIMECODE_GET, method = {RequestMethod.GET})
+    public String getTimeCode(@RequestParam Long videoId) throws MicroServiceException {
+
+        UserInfo userInfo = (UserInfo) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        DbVideo video = SelectById.query(DbVideo.class, videoId).selectFirst(objectContext);
+
+        DbVideoTimecode timecode = ObjectSelect.query(DbVideoTimecode.class)
+                .where(DbVideoTimecode.ID_USER.eq(userInfo.getUserId()))
+                .and(DbVideoTimecode.TIMECODE_TO_VIDEO.eq(video))
+                .selectFirst(objectContext);
+
+        return timecode.getTimecode();
+    }
+
+    private boolean checkInFavorites(DbVideo video, Long userId) {
+        try {
+            DbVideoFavorites favorites = ObjectSelect.query(DbVideoFavorites.class)
+                    .where(DbVideoFavorites.ID_USER.eq(userId))
+                    .and(DbVideoFavorites.FAVORITE_TO_VIDEO.eq(video))
+                    .selectFirst(objectContext);
+
+            return favorites != null;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return true;
+        }
+    }
+}

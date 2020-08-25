@@ -40,6 +40,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Get video by id")
     @RequestMapping(value = VIDEO_GET, method = {RequestMethod.GET})
     public VideoModel get(@RequestParam Long id) throws MicroServiceException {
@@ -67,6 +68,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Get list of videos")
     @RequestMapping(value = VIDEO_LIST, method = {RequestMethod.GET})
     public List<VideoModel> list() throws MicroServiceException {
@@ -100,6 +102,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Find videos by title/description/speaker")
     @RequestMapping(value = VIDEO_SEARCH, method = {RequestMethod.GET})
     public List<VideoModel> search(@RequestParam String search) throws MicroServiceException {
@@ -179,6 +182,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Create video")
     @RequestMapping(value = VIDEO_CREATE, method = {RequestMethod.POST})
     public VideoModel create(@RequestBody VideoCreateRequest request) throws MicroServiceException {
@@ -221,6 +225,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Update video by id")
     @RequestMapping(value = VIDEO_UPDATE, method = {RequestMethod.POST})
     public VideoModel update(@RequestBody VideoModel request) throws MicroServiceException {
@@ -263,6 +268,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Delete video by id")
     @RequestMapping(value = VIDEO_DELETE, method = {RequestMethod.DELETE})
     public Boolean delete(@RequestParam Long id) throws MicroServiceException {
