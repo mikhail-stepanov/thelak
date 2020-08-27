@@ -13,7 +13,7 @@ public class VideoSourceModel {
 
     String src;
 
-    String type = "video/mp4";
+    String type;
 
     String label;
 
