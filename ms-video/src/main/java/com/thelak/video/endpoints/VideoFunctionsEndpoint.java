@@ -55,7 +55,7 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
                     name = "Authorization",
                     paramType = "header")}
     )
-    @RequestMapping(value = VIDEO_FAVORITES_ADD, method = {RequestMethod.GET})
+    @RequestMapping(value = VIDEO_FAVORITES_ADD, method = {RequestMethod.POST})
     public Boolean addFavorites(@RequestParam Long videoId) throws MicroServiceException {
         UserInfo userInfo = (UserInfo) SecurityContextHolder
                 .getContext()
@@ -159,7 +159,7 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
                     name = "Authorization",
                     paramType = "header")}
     )
-    @RequestMapping(value = VIDEO_FAVORITES_DELETE, method = {RequestMethod.GET})
+    @RequestMapping(value = VIDEO_FAVORITES_DELETE, method = {RequestMethod.DELETE})
     public Boolean deleteFavorites(@RequestParam Long videoId) throws MicroServiceException {
 
         UserInfo userInfo = (UserInfo) SecurityContextHolder
@@ -190,7 +190,7 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
                     name = "Authorization",
                     paramType = "header")}
     )
-    @RequestMapping(value = VIDEO_HISTORY_ADD, method = {RequestMethod.GET})
+    @RequestMapping(value = VIDEO_HISTORY_ADD, method = {RequestMethod.POST})
     public Boolean addHistory(@RequestParam Long videoId) throws MicroServiceException {
 
         UserInfo userInfo = (UserInfo) SecurityContextHolder
@@ -269,7 +269,7 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
                     name = "Authorization",
                     paramType = "header")}
     )
-    @RequestMapping(value = VIDEO_TIMECODE_ADD, method = {RequestMethod.GET})
+    @RequestMapping(value = VIDEO_TIMECODE_ADD, method = {RequestMethod.POST})
     public Boolean addTimeCode(@RequestParam Long videoId, @RequestParam String timecode) throws MicroServiceException {
         UserInfo userInfo = (UserInfo) SecurityContextHolder
                 .getContext()
@@ -326,7 +326,7 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
                     name = "Authorization",
                     paramType = "header")}
     )
-    @RequestMapping(value = VIDEO_RATING_ADD, method = {RequestMethod.GET})
+    @RequestMapping(value = VIDEO_RATING_ADD, method = {RequestMethod.POST})
     public Boolean addRating(@RequestParam Long videoId, @RequestParam Integer score) throws MicroServiceException {
         UserInfo userInfo = (UserInfo) SecurityContextHolder
                 .getContext()
@@ -361,7 +361,7 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
                     name = "Authorization",
                     paramType = "header")}
     )
-    @RequestMapping(value = VIDEO_RATING_DELETE, method = {RequestMethod.GET})
+    @RequestMapping(value = VIDEO_RATING_DELETE, method = {RequestMethod.DELETE})
     public Boolean deleteRating(@RequestParam Long videoId) throws MicroServiceException {
         UserInfo userInfo = (UserInfo) SecurityContextHolder
                 .getContext()

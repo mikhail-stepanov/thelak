@@ -10,6 +10,8 @@ import com.thelak.route.video.models.VideoCreateRequest;
 import com.thelak.route.video.models.VideoModel;
 import com.thelak.route.video.models.VideoSourceModel;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
@@ -83,6 +85,15 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     @Override
     @CrossOrigin
     @ApiOperation(value = "Get list of videos")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(
+                    name = "page",
+                    paramType = "query"),
+             @ApiImplicitParam(
+                    name = "size",
+                    paramType = "query")}
+
+    )
     @RequestMapping(value = VIDEO_LIST, method = {RequestMethod.GET})
     public List<VideoModel> list(@RequestParam Integer page, @RequestParam Integer size) throws MicroServiceException {
         try {
