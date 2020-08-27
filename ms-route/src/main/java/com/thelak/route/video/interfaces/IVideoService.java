@@ -17,7 +17,7 @@ public interface IVideoService {
 
     VideoModel get(Long id) throws MicroServiceException;
 
-    List<VideoModel> list() throws MicroServiceException;
+    List<VideoModel> list(Integer page, Integer size) throws MicroServiceException;
 
     List<VideoModel> search(String search) throws MicroServiceException;
 

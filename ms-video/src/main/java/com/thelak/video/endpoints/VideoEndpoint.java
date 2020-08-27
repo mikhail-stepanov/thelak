@@ -11,9 +11,14 @@ import com.thelak.route.video.models.VideoModel;
 import com.thelak.route.video.models.VideoSourceModel;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
+import org.apache.cayenne.reflect.ClassDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,10 +84,13 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     @CrossOrigin
     @ApiOperation(value = "Get list of videos")
     @RequestMapping(value = VIDEO_LIST, method = {RequestMethod.GET})
-    public List<VideoModel> list() throws MicroServiceException {
+    public List<VideoModel> list(@RequestParam Integer page, @RequestParam Integer size) throws MicroServiceException {
         try {
-
-            List<DbVideo> dbVideos = ObjectSelect.query(DbVideo.class).select(objectContext);
+            List<DbVideo> dbVideos;
+            if (page == null || size == null)
+                dbVideos = ObjectSelect.query(DbVideo.class).select(objectContext);
+            else
+                dbVideos = ObjectSelect.query(DbVideo.class).where(ExpressionFactory.betweenDbExp(DbVideo.ID_PK_COLUMN, page * size - size, page * size)).select(objectContext);
 
             List<VideoModel> videos = new ArrayList<>();
 
