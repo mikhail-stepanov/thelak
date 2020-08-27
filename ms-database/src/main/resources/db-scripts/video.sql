@@ -5,11 +5,16 @@ CREATE TABLE "public"."db_video"
     "description"         varchar(2048)            NULL,
     "year"                integer                  NULL,
     "country"             varchar(255)             NULL,
+    "language"            varchar(64)              NULL,
     "category"            varchar(255)             NOT NULL,
     "duration"            varchar(64)              NULL,
     "speaker"             varchar(64)              NULL,
     "speaker_information" varchar(2048)            NULL,
-    "content_url"         varchar(2048)            NOT NULL,
+    "playground"          varchar(255)             NULL,
+    "content_url_1080"    varchar(2048)            NULL,
+    "content_url_360"     varchar(2048)            NULL,
+    "content_url_480"     varchar(2048)            NULL,
+    "content_url_720"     varchar(2048)            NULL,
     "partner_logo_url"    varchar(2048)            NULL,
     "cover_url"           varchar(2048)            NULL,
     "created_date"        timestamp with time zone NULL,
@@ -17,6 +22,7 @@ CREATE TABLE "public"."db_video"
     "modified_date"       timestamp with time zone NULL,
     PRIMARY KEY ("id")
 );
+
 
 CREATE TABLE "public"."db_video_timecode"
 (

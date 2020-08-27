@@ -3,10 +3,7 @@ package com.thelak.video.endpoints;
 import com.thelak.core.endpoints.AbstractMicroservice;
 import com.thelak.core.models.UserInfo;
 import com.thelak.database.DatabaseService;
-import com.thelak.database.entity.DbVideo;
-import com.thelak.database.entity.DbVideoFavorites;
-import com.thelak.database.entity.DbVideoHistory;
-import com.thelak.database.entity.DbVideoTimecode;
+import com.thelak.database.entity.*;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.exceptions.MsBadRequestException;
 import com.thelak.route.exceptions.MsInternalErrorException;
@@ -29,6 +26,9 @@ import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.thelak.video.service.VideoHelper.avgRating;
+import static com.thelak.video.service.VideoHelper.createSources;
 
 @RestController
 @Api(value = "Video functions API", produces = "application/json")
@@ -110,11 +110,14 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
                         .description(dbVideo.getDescription())
                         .year(dbVideo.getYear())
                         .country(dbVideo.getCountry())
+                        .language(dbVideo.getLanguage())
                         .category(dbVideo.getCategory())
                         .duration(dbVideo.getDuration())
                         .speaker(dbVideo.getSpeaker())
                         .speakerInformation(dbVideo.getSpeakerInformation())
-                        .contentUrl(dbVideo.getContentUrl())
+                        .playground(dbVideo.getPlayground())
+                        .sources(createSources(dbVideo))
+                        .rating(avgRating(dbVideo))
                         .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
                         .coverUrl(dbVideo.getCoverUrl())
                         .build());
@@ -238,11 +241,14 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
                         .description(dbVideo.getDescription())
                         .year(dbVideo.getYear())
                         .country(dbVideo.getCountry())
+                        .language(dbVideo.getLanguage())
                         .category(dbVideo.getCategory())
                         .duration(dbVideo.getDuration())
                         .speaker(dbVideo.getSpeaker())
                         .speakerInformation(dbVideo.getSpeakerInformation())
-                        .contentUrl(dbVideo.getContentUrl())
+                        .playground(dbVideo.getPlayground())
+                        .sources(createSources(dbVideo))
+                        .rating(avgRating(dbVideo))
                         .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
                         .coverUrl(dbVideo.getCoverUrl())
                         .build());
@@ -311,6 +317,92 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
         return timecode.getTimecode();
     }
 
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Rate Video")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(required = true,
+                    defaultValue = "Bearer ",
+                    name = "Authorization",
+                    paramType = "header")}
+    )
+    @RequestMapping(value = VIDEO_RATING_ADD, method = {RequestMethod.GET})
+    public Boolean addRating(@RequestParam Long videoId, @RequestParam Integer score) throws MicroServiceException {
+        UserInfo userInfo = (UserInfo) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        DbVideo video = SelectById.query(DbVideo.class, videoId).selectFirst(objectContext);
+
+        if (!checkIsRate(video, userInfo.getUserId())) {
+
+            DbVideoRating rating = objectContext.newObject(DbVideoRating.class);
+
+            rating.setCreatedDate(LocalDateTime.now());
+            rating.setIdUser(userInfo.getUserId());
+            rating.setScore(score);
+            rating.setRatingToVideo(video);
+
+            objectContext.commitChanges();
+
+            return true;
+
+        } else
+            throw new MsBadRequestException("Always in favorites");
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Delete rating from video")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(required = true,
+                    defaultValue = "Bearer ",
+                    name = "Authorization",
+                    paramType = "header")}
+    )
+    @RequestMapping(value = VIDEO_RATING_DELETE, method = {RequestMethod.GET})
+    public Boolean deleteRating(@RequestParam Long videoId) throws MicroServiceException {
+        UserInfo userInfo = (UserInfo) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        DbVideo video = SelectById.query(DbVideo.class, videoId).selectFirst(objectContext);
+
+        DbVideoRating rating = ObjectSelect.query(DbVideoRating.class)
+                .where(DbVideoRating.ID_USER.eq(userInfo.getUserId()))
+                .and(DbVideoRating.RATING_TO_VIDEO.eq(video))
+                .selectFirst(objectContext);
+
+        objectContext.deleteObject(rating);
+
+        objectContext.commitChanges();
+
+        return true;
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Check video is favorite")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(required = true,
+                    defaultValue = "Bearer ",
+                    name = "Authorization",
+                    paramType = "header")}
+    )
+    @RequestMapping(value = VIDEO_RATING_CHECK, method = {RequestMethod.GET})
+    public Boolean checkRating(@RequestParam Long videoId) throws MicroServiceException {
+        UserInfo userInfo = (UserInfo) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        DbVideo video = SelectById.query(DbVideo.class, videoId).selectFirst(objectContext);
+
+        return checkIsRate(video, userInfo.getUserId());
+    }
+
     private boolean checkInFavorites(DbVideo video, Long userId) {
         try {
             DbVideoFavorites favorites = ObjectSelect.query(DbVideoFavorites.class)
@@ -321,7 +413,23 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
             return favorites != null;
         } catch (Exception e) {
             log.error(e.getMessage());
-            return true;
+            return false;
         }
     }
+
+    private boolean checkIsRate(DbVideo video, Long userId) {
+        try {
+            DbVideoRating rating = ObjectSelect.query(DbVideoRating.class)
+                    .where(DbVideoRating.ID_USER.eq(userId))
+                    .and(DbVideoRating.RATING_TO_VIDEO.eq(video))
+                    .selectFirst(objectContext);
+
+            return rating != null;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return false;
+        }
+    }
+
+
 }

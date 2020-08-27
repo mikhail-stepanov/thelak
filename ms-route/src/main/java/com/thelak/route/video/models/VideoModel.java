@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -21,7 +22,11 @@ public class VideoModel {
 
     Integer year;
 
+    Integer rating;
+
     String country;
+
+    String language;
 
     String category;
 
@@ -31,7 +36,9 @@ public class VideoModel {
 
     String speakerInformation;
 
-    String contentUrl;
+    String playground;
+
+    List<VideoSourceModel> sources;
 
     String partnerLogoUrl;
 

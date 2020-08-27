@@ -8,7 +8,10 @@
 	<property name="quoteSqlIdentifiers" value="true"/>
 	<db-entity name="db_video" schema="public">
 		<db-attribute name="category" type="VARCHAR" isMandatory="true" length="255"/>
-		<db-attribute name="content_url" type="VARCHAR" isMandatory="true" length="2048"/>
+		<db-attribute name="content_url_1080" type="VARCHAR" isMandatory="true" length="2048"/>
+		<db-attribute name="content_url_360" type="VARCHAR" isMandatory="true" length="2048"/>
+		<db-attribute name="content_url_480" type="VARCHAR" isMandatory="true" length="2048"/>
+		<db-attribute name="content_url_720" type="VARCHAR" isMandatory="true" length="2048"/>
 		<db-attribute name="country" type="VARCHAR" length="255"/>
 		<db-attribute name="cover_url" type="VARCHAR" length="2048"/>
 		<db-attribute name="created_date" type="TIMESTAMP" length="29"/>
@@ -16,8 +19,10 @@
 		<db-attribute name="description" type="VARCHAR" length="2048"/>
 		<db-attribute name="duration" type="VARCHAR" length="64"/>
 		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="language" type="VARCHAR" length="64"/>
 		<db-attribute name="modified_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="partner_logo_url" type="VARCHAR" length="2048"/>
+		<db-attribute name="playground" type="VARCHAR" length="255"/>
 		<db-attribute name="speaker" type="VARCHAR" length="64"/>
 		<db-attribute name="speaker_information" type="VARCHAR" length="2048"/>
 		<db-attribute name="title" type="VARCHAR" isMandatory="true" length="255"/>
@@ -39,6 +44,15 @@
 		<db-attribute name="id_video" type="BIGINT" isMandatory="true"/>
 		<db-attribute name="modified_date" type="TIMESTAMP" length="29"/>
 	</db-entity>
+	<db-entity name="db_video_rating" schema="public">
+		<db-attribute name="created_date" type="TIMESTAMP" length="29"/>
+		<db-attribute name="deleted_date" type="TIMESTAMP" length="29"/>
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="id_user" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="id_video" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="modified_date" type="TIMESTAMP" length="29"/>
+		<db-attribute name="score" type="INTEGER" isMandatory="true"/>
+	</db-entity>
 	<db-entity name="db_video_timecode" schema="public">
 		<db-attribute name="created_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="deleted_date" type="TIMESTAMP" length="29"/>
@@ -50,7 +64,7 @@
 	</db-entity>
 	<obj-entity name="DbVideo" className="com.thelak.database.entity.DbVideo" dbEntityName="db_video">
 		<obj-attribute name="category" type="java.lang.String" db-attribute-path="category"/>
-		<obj-attribute name="contentUrl" type="java.lang.String" db-attribute-path="content_url"/>
+		<obj-attribute name="contentUrl" type="java.lang.String" db-attribute-path="content_url_360"/>
 		<obj-attribute name="country" type="java.lang.String" db-attribute-path="country"/>
 		<obj-attribute name="coverUrl" type="java.lang.String" db-attribute-path="cover_url"/>
 		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
@@ -89,6 +103,9 @@
 	<db-relationship name="videoToHistory" source="db_video" target="db_video_history" toMany="true">
 		<db-attribute-pair source="id" target="id_video"/>
 	</db-relationship>
+	<db-relationship name="videoToRating" source="db_video" target="db_video_rating" toMany="true">
+		<db-attribute-pair source="id" target="id_video"/>
+	</db-relationship>
 	<db-relationship name="videoToTimecode" source="db_video" target="db_video_timecode" toMany="true">
 		<db-attribute-pair source="id" target="id_video"/>
 	</db-relationship>
@@ -96,6 +113,9 @@
 		<db-attribute-pair source="id_video" target="id"/>
 	</db-relationship>
 	<db-relationship name="historyToVideo" source="db_video_history" target="db_video" toMany="false">
+		<db-attribute-pair source="id_video" target="id"/>
+	</db-relationship>
+	<db-relationship name="ratingToVideo" source="db_video_rating" target="db_video" toMany="false">
 		<db-attribute-pair source="id_video" target="id"/>
 	</db-relationship>
 	<db-relationship name="timecodeToVideo" source="db_video_timecode" target="db_video" toMany="false">

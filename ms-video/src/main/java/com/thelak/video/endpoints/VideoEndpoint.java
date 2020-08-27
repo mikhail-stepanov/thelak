@@ -8,6 +8,7 @@ import com.thelak.route.exceptions.MsInternalErrorException;
 import com.thelak.route.video.interfaces.IVideoService;
 import com.thelak.route.video.models.VideoCreateRequest;
 import com.thelak.route.video.models.VideoModel;
+import com.thelak.route.video.models.VideoSourceModel;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.cayenne.ObjectContext;
@@ -22,6 +23,9 @@ import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.thelak.video.service.VideoHelper.avgRating;
+import static com.thelak.video.service.VideoHelper.createSources;
 
 @RestController
 @Api(value = "Video API", produces = "application/json")
@@ -54,14 +58,18 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                     .description(dbVideo.getDescription())
                     .year(dbVideo.getYear())
                     .country(dbVideo.getCountry())
+                    .language(dbVideo.getLanguage())
                     .category(dbVideo.getCategory())
                     .duration(dbVideo.getDuration())
                     .speaker(dbVideo.getSpeaker())
                     .speakerInformation(dbVideo.getSpeakerInformation())
-                    .contentUrl(dbVideo.getContentUrl())
+                    .playground(dbVideo.getPlayground())
+                    .sources(createSources(dbVideo))
+                    .rating(avgRating(dbVideo))
                     .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
                     .coverUrl(dbVideo.getCoverUrl())
                     .build();
+
         } catch (Exception e) {
             throw new MsInternalErrorException("Exception while get video");
         }
@@ -85,11 +93,14 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                         .description(dbVideo.getDescription())
                         .year(dbVideo.getYear())
                         .country(dbVideo.getCountry())
+                        .language(dbVideo.getLanguage())
                         .category(dbVideo.getCategory())
                         .duration(dbVideo.getDuration())
                         .speaker(dbVideo.getSpeaker())
                         .speakerInformation(dbVideo.getSpeakerInformation())
-                        .contentUrl(dbVideo.getContentUrl())
+                        .playground(dbVideo.getPlayground())
+                        .sources(createSources(dbVideo))
+                        .rating(avgRating(dbVideo))
                         .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
                         .coverUrl(dbVideo.getCoverUrl())
                         .build());
@@ -121,11 +132,14 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                         .description(dbVideo.getDescription())
                         .year(dbVideo.getYear())
                         .country(dbVideo.getCountry())
+                        .language(dbVideo.getLanguage())
                         .category(dbVideo.getCategory())
                         .duration(dbVideo.getDuration())
                         .speaker(dbVideo.getSpeaker())
                         .speakerInformation(dbVideo.getSpeakerInformation())
-                        .contentUrl(dbVideo.getContentUrl())
+                        .playground(dbVideo.getPlayground())
+                        .sources(createSources(dbVideo))
+                        .rating(avgRating(dbVideo))
                         .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
                         .coverUrl(dbVideo.getCoverUrl())
                         .build());
@@ -143,11 +157,14 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                         .description(dbVideo.getDescription())
                         .year(dbVideo.getYear())
                         .country(dbVideo.getCountry())
+                        .language(dbVideo.getLanguage())
                         .category(dbVideo.getCategory())
                         .duration(dbVideo.getDuration())
                         .speaker(dbVideo.getSpeaker())
                         .speakerInformation(dbVideo.getSpeakerInformation())
-                        .contentUrl(dbVideo.getContentUrl())
+                        .playground(dbVideo.getPlayground())
+                        .sources(createSources(dbVideo))
+                        .rating(avgRating(dbVideo))
                         .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
                         .coverUrl(dbVideo.getCoverUrl())
                         .build());
@@ -165,11 +182,14 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                         .description(dbVideo.getDescription())
                         .year(dbVideo.getYear())
                         .country(dbVideo.getCountry())
+                        .language(dbVideo.getLanguage())
                         .category(dbVideo.getCategory())
                         .duration(dbVideo.getDuration())
                         .speaker(dbVideo.getSpeaker())
                         .speakerInformation(dbVideo.getSpeakerInformation())
-                        .contentUrl(dbVideo.getContentUrl())
+                        .playground(dbVideo.getPlayground())
+                        .sources(createSources(dbVideo))
+                        .rating(avgRating(dbVideo))
                         .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
                         .coverUrl(dbVideo.getCoverUrl())
                         .build());
@@ -197,10 +217,21 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
             dbVideo.setCategory(request.getCategory());
             dbVideo.setSpeaker(request.getSpeaker());
             dbVideo.setSpeakerInformation(request.getSpeakerInformation());
-            dbVideo.setContentUrl(request.getContentUrl());
             dbVideo.setPartnerLogoUrl(request.getPartnerLogoUrl());
             dbVideo.setCoverUrl(request.getCoverUrl());
             dbVideo.setCreatedDate(LocalDateTime.now());
+
+            List<VideoSourceModel> sources = request.getSources();
+            sources.forEach(source -> {
+                if (source.getRes() == 360)
+                    dbVideo.setContentUrl360(source.getSrc());
+                if (source.getRes() == 480)
+                    dbVideo.setContentUrl480(source.getSrc());
+                if (source.getRes() == 720)
+                    dbVideo.setContentUrl720(source.getSrc());
+                if (source.getRes() == 1080)
+                    dbVideo.setContentUrl1080(source.getSrc());
+            });
 
             objectContext.commitChanges();
 
@@ -210,11 +241,13 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                     .description(dbVideo.getDescription())
                     .year(dbVideo.getYear())
                     .country(dbVideo.getCountry())
+                    .language(dbVideo.getLanguage())
                     .category(dbVideo.getCategory())
                     .duration(dbVideo.getDuration())
                     .speaker(dbVideo.getSpeaker())
                     .speakerInformation(dbVideo.getSpeakerInformation())
-                    .contentUrl(dbVideo.getContentUrl())
+                    .playground(dbVideo.getPlayground())
+                    .sources(createSources(dbVideo))
                     .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
                     .coverUrl(dbVideo.getCoverUrl())
                     .build();
@@ -233,6 +266,18 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
 
             DbVideo dbVideo = SelectById.query(DbVideo.class, request.getId()).selectFirst(objectContext);
 
+            List<VideoSourceModel> sources = request.getSources();
+            sources.forEach(source -> {
+                if (source.getRes() == 360)
+                    dbVideo.setContentUrl360(source.getSrc());
+                if (source.getRes() == 480)
+                    dbVideo.setContentUrl480(source.getSrc());
+                if (source.getRes() == 720)
+                    dbVideo.setContentUrl720(source.getSrc());
+                if (source.getRes() == 1080)
+                    dbVideo.setContentUrl1080(source.getSrc());
+            });
+
             dbVideo.setTitle(request.getTitle());
             dbVideo.setDescription(request.getDescription());
             dbVideo.setYear(request.getYear());
@@ -240,7 +285,6 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
             dbVideo.setDuration(request.getDuration());
             dbVideo.setSpeaker(request.getSpeaker());
             dbVideo.setSpeakerInformation(request.getSpeakerInformation());
-            dbVideo.setContentUrl(request.getContentUrl());
             dbVideo.setPartnerLogoUrl(request.getPartnerLogoUrl());
             dbVideo.setCoverUrl(request.getCoverUrl());
             dbVideo.setCreatedDate(LocalDateTime.now());
@@ -253,11 +297,14 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                     .description(dbVideo.getDescription())
                     .year(dbVideo.getYear())
                     .country(dbVideo.getCountry())
+                    .language(dbVideo.getLanguage())
                     .category(dbVideo.getCategory())
                     .duration(dbVideo.getDuration())
                     .speaker(dbVideo.getSpeaker())
                     .speakerInformation(dbVideo.getSpeakerInformation())
-                    .contentUrl(dbVideo.getContentUrl())
+                    .playground(dbVideo.getPlayground())
+                    .sources(createSources(dbVideo))
+                    .rating(avgRating(dbVideo))
                     .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
                     .coverUrl(dbVideo.getCoverUrl())
                     .build();

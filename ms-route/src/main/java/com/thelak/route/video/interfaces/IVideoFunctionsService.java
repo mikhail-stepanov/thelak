@@ -18,6 +18,10 @@ public interface IVideoFunctionsService {
     String VIDEO_TIMECODE_ADD = "/v1/video/timecode/add";
     String VIDEO_TIMECODE_GET = "/v1/video/timecode/get";
 
+    String VIDEO_RATING_ADD = "/v1/video/rating/add";
+    String VIDEO_RATING_DELETE = "/v1/video/rating/delete";
+    String VIDEO_RATING_CHECK = "/v1/video/rating/check";
+
     Boolean addFavorites(Long videoId) throws MicroServiceException;
 
     List<VideoModel> listFavorites() throws MicroServiceException;
@@ -33,5 +37,11 @@ public interface IVideoFunctionsService {
     Boolean addTimeCode(Long videoId, String timecode) throws MicroServiceException;
 
     String getTimeCode(Long videoId) throws MicroServiceException;
+
+    Boolean addRating(Long videoId, Integer rating) throws MicroServiceException;
+
+    Boolean deleteRating(Long videoId) throws MicroServiceException;
+
+    Boolean checkRating(Long videoId) throws MicroServiceException;
 
 }
