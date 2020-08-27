@@ -3,7 +3,6 @@ package com.thelak.video.service;
 import com.thelak.database.entity.DbVideo;
 import com.thelak.database.entity.DbVideoRating;
 import com.thelak.route.video.models.VideoSourceModel;
-import io.swagger.models.auth.In;
 
 import java.util.ArrayList;
 import java.util.List;
