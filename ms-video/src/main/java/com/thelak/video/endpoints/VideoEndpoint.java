@@ -105,7 +105,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                     dataType = "com.thelak.route.video.enums.VideoSortTypeEnum",
                     paramType = "query")})
     @RequestMapping(value = VIDEO_LIST, method = {RequestMethod.GET})
-    public List<VideoModel> list(@RequestParam Integer page, @RequestParam Integer size, @RequestParam VideoSortEnum sort, @RequestParam VideoSortTypeEnum sortType) throws MicroServiceException {
+    public List<VideoModel> list(@RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size, @RequestParam(required = false) VideoSortEnum sort, @RequestParam(required = false) VideoSortTypeEnum sortType) throws MicroServiceException {
         try {
             List<DbVideo> dbVideos;
             if (page == null || size == null)
@@ -159,7 +159,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                     name = "size",
                     paramType = "query")})
     @RequestMapping(value = VIDEO_SEARCH, method = {RequestMethod.GET})
-    public List<VideoModel> search(@RequestParam String search, @RequestParam Integer page, @RequestParam Integer size) throws MicroServiceException {
+    public List<VideoModel> search(@RequestParam String search, @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) throws MicroServiceException {
         try {
 
             List<DbVideo> dbVideos;
