@@ -12,6 +12,7 @@ import com.thelak.route.auth.interfaces.IAuthenticationService;
 import com.thelak.route.auth.models.AuthLoginRequest;
 import com.thelak.route.auth.models.AuthSignupRequest;
 import com.thelak.route.auth.models.UserModel;
+import com.thelak.route.auth.models.VueHelpModel;
 import com.thelak.route.exceptions.*;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.annotations.Api;
@@ -65,7 +66,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
                     paramType = "header")}
     )
     @RequestMapping(value = AUTH_INFO, method = {RequestMethod.GET})
-    public UserModel info() throws MicroServiceException {
+    public VueHelpModel info() throws MicroServiceException {
         try {
 
             UserInfo userInfo = (UserInfo) SecurityContextHolder
@@ -75,15 +76,17 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
 
             DbUser user = SelectById.query(DbUser.class, userInfo.getUserId()).selectFirst(objectContext);
 
-            return UserModel.builder()
-                    .id((Long) user.getObjectId().getIdSnapshot().get("id"))
-                    .name(user.getName())
-                    .email(user.getEmail())
-                    .phone(user.getPhone())
-                    .city(user.getCity())
-                    .country(user.getCountry())
-                    .birthday(user.getBirthday())
-                    .build();
+            return VueHelpModel.builder()
+                    .data(UserModel.builder()
+                            .id((Long) user.getObjectId().getIdSnapshot().get("id"))
+                            .name(user.getName())
+                            .email(user.getEmail())
+                            .phone(user.getPhone())
+                            .city(user.getCity())
+                            .country(user.getCountry())
+                            .birthday(user.getBirthday())
+                            .build())
+                    .status("success").build();
 
         } catch (Exception e) {
             throw new MsInternalErrorException("Exception while finding user info");
@@ -94,7 +97,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
     @CrossOrigin
     @ApiOperation(value = "Sign up")
     @RequestMapping(value = AUTH_SIGN_UP, method = {RequestMethod.POST})
-    public UserModel signUp(@RequestBody AuthSignupRequest request) throws MicroServiceException {
+    public VueHelpModel signUp(@RequestBody AuthSignupRequest request) throws MicroServiceException {
         if (!checkEmailExists(request.getEmail())) {
 
             DbUser user = objectContext.newObject(DbUser.class);
@@ -111,15 +114,17 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
 
             objectContext.commitChanges();
 
-            return UserModel.builder()
-                    .id((Long) user.getObjectId().getIdSnapshot().get("id"))
-                    .name(user.getName())
-                    .email(user.getEmail())
-                    .phone(user.getPhone())
-                    .city(user.getCity())
-                    .country(user.getCountry())
-                    .birthday(user.getBirthday())
-                    .build();
+            return VueHelpModel.builder()
+                    .data(UserModel.builder()
+                            .id((Long) user.getObjectId().getIdSnapshot().get("id"))
+                            .name(user.getName())
+                            .email(user.getEmail())
+                            .phone(user.getPhone())
+                            .city(user.getCity())
+                            .country(user.getCountry())
+                            .birthday(user.getBirthday())
+                            .build())
+                    .status("success").build();
 
         } else
             throw new MsBadRequestException(request.getEmail());

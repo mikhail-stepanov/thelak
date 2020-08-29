@@ -3,6 +3,7 @@ package com.thelak.route.auth.interfaces;
 import com.thelak.route.auth.models.AuthLoginRequest;
 import com.thelak.route.auth.models.AuthSignupRequest;
 import com.thelak.route.auth.models.UserModel;
+import com.thelak.route.auth.models.VueHelpModel;
 import com.thelak.route.exceptions.MicroServiceException;
 
 public interface IAuthenticationService {
@@ -12,9 +13,9 @@ public interface IAuthenticationService {
     String AUTH_LOGIN = "/v1/auth/login";
     String AUTH_REFRESH = "/v1/auth/refresh";
 
-    UserModel info() throws MicroServiceException;
+    VueHelpModel info() throws MicroServiceException;
 
-    UserModel signUp(AuthSignupRequest request) throws MicroServiceException;
+    VueHelpModel signUp(AuthSignupRequest request) throws MicroServiceException;
 
     String login(AuthLoginRequest request) throws MicroServiceException;
 
