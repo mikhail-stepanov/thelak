@@ -1,5 +1,6 @@
 package com.thelak.route.video.models;
 
+import io.swagger.models.auth.In;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,7 +24,7 @@ public class VideoCreateRequest {
 
     String category;
 
-    String duration;
+    Integer duration;
 
     String speaker;
 

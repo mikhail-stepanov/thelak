@@ -1,10 +1,14 @@
 package com.thelak.video.endpoints;
 
 import com.thelak.core.endpoints.AbstractMicroservice;
+import com.thelak.core.models.UserInfo;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbVideo;
+import com.thelak.database.entity.DbVideoViews;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.exceptions.MsInternalErrorException;
+import com.thelak.route.video.enums.VideoSortEnum;
+import com.thelak.route.video.enums.VideoSortTypeEnum;
 import com.thelak.route.video.interfaces.IVideoService;
 import com.thelak.route.video.models.VideoCreateRequest;
 import com.thelak.route.video.models.VideoModel;
@@ -13,26 +17,24 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
-import org.apache.cayenne.reflect.ClassDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
-import static com.thelak.video.service.VideoHelper.avgRating;
-import static com.thelak.video.service.VideoHelper.createSources;
+import static com.thelak.video.service.VideoHelper.buildVideoModel;
 
 @RestController
 @Api(value = "Video API", produces = "application/json")
@@ -57,25 +59,27 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     public VideoModel get(@RequestParam Long id) throws MicroServiceException {
         try {
 
+            long userId;
+            try {
+                UserInfo userInfo = (UserInfo) SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getPrincipal();
+                userId = userInfo.getUserId();
+            } catch (Exception e) {
+                userId = -1;
+            }
+
             DbVideo dbVideo = SelectById.query(DbVideo.class, id).selectFirst(objectContext);
 
-            return VideoModel.builder()
-                    .id((Long) dbVideo.getObjectId().getIdSnapshot().get("id"))
-                    .title(dbVideo.getTitle())
-                    .description(dbVideo.getDescription())
-                    .year(dbVideo.getYear())
-                    .country(dbVideo.getCountry())
-                    .language(dbVideo.getLanguage())
-                    .category(dbVideo.getCategory())
-                    .duration(dbVideo.getDuration())
-                    .speaker(dbVideo.getSpeaker())
-                    .speakerInformation(dbVideo.getSpeakerInformation())
-                    .playground(dbVideo.getPlayground())
-                    .sources(createSources(dbVideo))
-                    .rating(avgRating(dbVideo))
-                    .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
-                    .coverUrl(dbVideo.getCoverUrl())
-                    .build();
+            DbVideoViews dbVideoViews = objectContext.newObject(DbVideoViews.class);
+            dbVideoViews.setCreatedDate(LocalDateTime.now());
+            dbVideoViews.setIdUser(userId);
+            dbVideoViews.setViewToVideo(dbVideo);
+
+            objectContext.commitChanges();
+
+            return buildVideoModel(dbVideo);
 
         } catch (Exception e) {
             throw new MsInternalErrorException("Exception while get video");
@@ -85,17 +89,23 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     @Override
     @CrossOrigin
     @ApiOperation(value = "Get list of videos")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(
+    @ApiImplicitParams({
+            @ApiImplicitParam(
                     name = "page",
                     paramType = "query"),
-             @ApiImplicitParam(
+            @ApiImplicitParam(
                     name = "size",
-                    paramType = "query")}
-
-    )
+                    paramType = "query"),
+            @ApiImplicitParam(
+                    name = "sort",
+                    dataType = "com.thelak.route.video.enums.VideoSortEnum",
+                    paramType = "query"),
+            @ApiImplicitParam(
+                    name = "sortType",
+                    dataType = "com.thelak.route.video.enums.VideoSortTypeEnum",
+                    paramType = "query")})
     @RequestMapping(value = VIDEO_LIST, method = {RequestMethod.GET})
-    public List<VideoModel> list(@RequestParam Integer page, @RequestParam Integer size) throws MicroServiceException {
+    public List<VideoModel> list(@RequestParam Integer page, @RequestParam Integer size, @RequestParam VideoSortEnum sort, @RequestParam VideoSortTypeEnum sortType) throws MicroServiceException {
         try {
             List<DbVideo> dbVideos;
             if (page == null || size == null)
@@ -106,24 +116,31 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
             List<VideoModel> videos = new ArrayList<>();
 
             dbVideos.forEach(dbVideo -> {
-                videos.add(VideoModel.builder()
-                        .id((Long) dbVideo.getObjectId().getIdSnapshot().get("id"))
-                        .title(dbVideo.getTitle())
-                        .description(dbVideo.getDescription())
-                        .year(dbVideo.getYear())
-                        .country(dbVideo.getCountry())
-                        .language(dbVideo.getLanguage())
-                        .category(dbVideo.getCategory())
-                        .duration(dbVideo.getDuration())
-                        .speaker(dbVideo.getSpeaker())
-                        .speakerInformation(dbVideo.getSpeakerInformation())
-                        .playground(dbVideo.getPlayground())
-                        .sources(createSources(dbVideo))
-                        .rating(avgRating(dbVideo))
-                        .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
-                        .coverUrl(dbVideo.getCoverUrl())
-                        .build());
+                videos.add(buildVideoModel(dbVideo));
             });
+
+            if (sort != null) {
+                if (sort == VideoSortEnum.NEW) {
+                    videos.sort(Comparators.NEW);
+                    if (sortType == VideoSortTypeEnum.DESC)
+                        Collections.reverse(videos);
+                }
+                if (sort == VideoSortEnum.POPULAR) {
+                    videos.sort(Comparators.POPULAR);
+                    if (sortType == VideoSortTypeEnum.DESC)
+                        Collections.reverse(videos);
+                }
+                if (sort == VideoSortEnum.RATING) {
+                    videos.sort(Comparators.RATING);
+                    if (sortType == VideoSortTypeEnum.DESC)
+                        Collections.reverse(videos);
+                }
+                if (sort == VideoSortEnum.DURATION) {
+                    videos.sort(Comparators.DURATION);
+                    if (sortType == VideoSortTypeEnum.DESC)
+                        Collections.reverse(videos);
+                }
+            }
 
             return videos;
         } catch (Exception e) {
@@ -134,84 +151,38 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     @Override
     @CrossOrigin
     @ApiOperation(value = "Find videos by title/description/speaker")
+    @ApiImplicitParams({
+            @ApiImplicitParam(
+                    name = "page",
+                    paramType = "query"),
+            @ApiImplicitParam(
+                    name = "size",
+                    paramType = "query")})
     @RequestMapping(value = VIDEO_SEARCH, method = {RequestMethod.GET})
-    public List<VideoModel> search(@RequestParam String search) throws MicroServiceException {
+    public List<VideoModel> search(@RequestParam String search, @RequestParam Integer page, @RequestParam Integer size) throws MicroServiceException {
         try {
+
+            List<DbVideo> dbVideos;
+            if (page == null || size == null)
+                dbVideos = ObjectSelect.query(DbVideo.class).
+                        where(DbVideo.DELETED_DATE.isNull())
+                        .and(DbVideo.DESCRIPTION.lower().like("%" + search.toLowerCase() + "%"))
+                        .or(DbVideo.TITLE.lower().like("%" + search.toLowerCase() + "%"))
+                        .or(DbVideo.SPEAKER.lower().like("%" + search.toLowerCase() + "%"))
+                        .select(objectContext);
+            else
+                dbVideos = ObjectSelect.query(DbVideo.class).
+                        where(DbVideo.DELETED_DATE.isNull())
+                        .and(DbVideo.DESCRIPTION.lower().like("%" + search.toLowerCase() + "%"))
+                        .or(DbVideo.TITLE.lower().like("%" + search.toLowerCase() + "%"))
+                        .or(DbVideo.SPEAKER.lower().like("%" + search.toLowerCase() + "%"))
+                        .and(ExpressionFactory.betweenDbExp(DbVideo.ID_PK_COLUMN, page * size - size, page * size))
+                        .select(objectContext);
+
             List<VideoModel> videos = new ArrayList<>();
 
-            List<DbVideo> dbVideosTitle = ObjectSelect.query(DbVideo.class).
-                    where(DbVideo.DELETED_DATE.isNull()).and(DbVideo.TITLE.lower().like("%" + search.toLowerCase() + "%"))
-                    .limit(20)
-                    .select(objectContext);
-
-            dbVideosTitle.forEach(dbVideo -> {
-                videos.add(VideoModel.builder()
-                        .id((Long) dbVideo.getObjectId().getIdSnapshot().get("id"))
-                        .title(dbVideo.getTitle())
-                        .description(dbVideo.getDescription())
-                        .year(dbVideo.getYear())
-                        .country(dbVideo.getCountry())
-                        .language(dbVideo.getLanguage())
-                        .category(dbVideo.getCategory())
-                        .duration(dbVideo.getDuration())
-                        .speaker(dbVideo.getSpeaker())
-                        .speakerInformation(dbVideo.getSpeakerInformation())
-                        .playground(dbVideo.getPlayground())
-                        .sources(createSources(dbVideo))
-                        .rating(avgRating(dbVideo))
-                        .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
-                        .coverUrl(dbVideo.getCoverUrl())
-                        .build());
-            });
-
-            List<DbVideo> dbVideosDescription = ObjectSelect.query(DbVideo.class).
-                    where(DbVideo.DELETED_DATE.isNull()).and(DbVideo.DESCRIPTION.lower().like("%" + search.toLowerCase() + "%"))
-                    .limit(20)
-                    .select(objectContext);
-
-            dbVideosDescription.forEach(dbVideo -> {
-                videos.add(VideoModel.builder()
-                        .id((Long) dbVideo.getObjectId().getIdSnapshot().get("id"))
-                        .title(dbVideo.getTitle())
-                        .description(dbVideo.getDescription())
-                        .year(dbVideo.getYear())
-                        .country(dbVideo.getCountry())
-                        .language(dbVideo.getLanguage())
-                        .category(dbVideo.getCategory())
-                        .duration(dbVideo.getDuration())
-                        .speaker(dbVideo.getSpeaker())
-                        .speakerInformation(dbVideo.getSpeakerInformation())
-                        .playground(dbVideo.getPlayground())
-                        .sources(createSources(dbVideo))
-                        .rating(avgRating(dbVideo))
-                        .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
-                        .coverUrl(dbVideo.getCoverUrl())
-                        .build());
-            });
-
-            List<DbVideo> dbVideosSpeaker = ObjectSelect.query(DbVideo.class).
-                    where(DbVideo.DELETED_DATE.isNull()).and(DbVideo.SPEAKER.lower().like("%" + search.toLowerCase() + "%"))
-                    .limit(20)
-                    .select(objectContext);
-
-            dbVideosSpeaker.forEach(dbVideo -> {
-                videos.add(VideoModel.builder()
-                        .id((Long) dbVideo.getObjectId().getIdSnapshot().get("id"))
-                        .title(dbVideo.getTitle())
-                        .description(dbVideo.getDescription())
-                        .year(dbVideo.getYear())
-                        .country(dbVideo.getCountry())
-                        .language(dbVideo.getLanguage())
-                        .category(dbVideo.getCategory())
-                        .duration(dbVideo.getDuration())
-                        .speaker(dbVideo.getSpeaker())
-                        .speakerInformation(dbVideo.getSpeakerInformation())
-                        .playground(dbVideo.getPlayground())
-                        .sources(createSources(dbVideo))
-                        .rating(avgRating(dbVideo))
-                        .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
-                        .coverUrl(dbVideo.getCoverUrl())
-                        .build());
+            dbVideos.forEach(dbVideo -> {
+                videos.add(buildVideoModel(dbVideo));
             });
 
             return videos;
@@ -254,22 +225,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
 
             objectContext.commitChanges();
 
-            return VideoModel.builder()
-                    .id((Long) dbVideo.getObjectId().getIdSnapshot().get("id"))
-                    .title(dbVideo.getTitle())
-                    .description(dbVideo.getDescription())
-                    .year(dbVideo.getYear())
-                    .country(dbVideo.getCountry())
-                    .language(dbVideo.getLanguage())
-                    .category(dbVideo.getCategory())
-                    .duration(dbVideo.getDuration())
-                    .speaker(dbVideo.getSpeaker())
-                    .speakerInformation(dbVideo.getSpeakerInformation())
-                    .playground(dbVideo.getPlayground())
-                    .sources(createSources(dbVideo))
-                    .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
-                    .coverUrl(dbVideo.getCoverUrl())
-                    .build();
+            return buildVideoModel(dbVideo);
 
         } catch (Exception e) {
             throw new MsInternalErrorException("Exception while create video: " + e.getLocalizedMessage());
@@ -310,23 +266,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
 
             objectContext.commitChanges();
 
-            return VideoModel.builder()
-                    .id((Long) dbVideo.getObjectId().getIdSnapshot().get("id"))
-                    .title(dbVideo.getTitle())
-                    .description(dbVideo.getDescription())
-                    .year(dbVideo.getYear())
-                    .country(dbVideo.getCountry())
-                    .language(dbVideo.getLanguage())
-                    .category(dbVideo.getCategory())
-                    .duration(dbVideo.getDuration())
-                    .speaker(dbVideo.getSpeaker())
-                    .speakerInformation(dbVideo.getSpeakerInformation())
-                    .playground(dbVideo.getPlayground())
-                    .sources(createSources(dbVideo))
-                    .rating(avgRating(dbVideo))
-                    .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
-                    .coverUrl(dbVideo.getCoverUrl())
-                    .build();
+            return buildVideoModel(dbVideo);
 
         } catch (Exception e) {
             throw new MsInternalErrorException("Exception while updating video");
@@ -350,5 +290,13 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
         } catch (Exception e) {
             throw new MsInternalErrorException("Exception while deleting video");
         }
+    }
+
+    public static class Comparators {
+        public static final Comparator<VideoModel> POPULAR = Comparator.comparing(VideoModel::getViewsCount);
+        public static final Comparator<VideoModel> DURATION = Comparator.comparing(VideoModel::getDuration);
+        public static final Comparator<VideoModel> RATING = Comparator.comparing(VideoModel::getRating);
+        public static final Comparator<VideoModel> NEW = Comparator.comparing(VideoModel::getCreatedDate);
+
     }
 }

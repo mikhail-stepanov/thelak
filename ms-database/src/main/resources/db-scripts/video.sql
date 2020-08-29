@@ -7,7 +7,7 @@ CREATE TABLE "public"."db_video"
     "country"             varchar(255)             NULL,
     "language"            varchar(64)              NULL,
     "category"            varchar(255)             NOT NULL,
-    "duration"            varchar(64)              NULL,
+    "duration"            integer                  NULL,
     "speaker"             varchar(64)              NULL,
     "speaker_information" varchar(2048)            NULL,
     "playground"          varchar(255)             NULL,
@@ -58,23 +58,31 @@ CREATE TABLE "public"."db_video_favorites"
     PRIMARY KEY ("id")
 );
 
+CREATE TABLE "public"."db_video_views"
+(
+    "id"            bigint                   NOT NULL,
+    "id_user"       bigint                   NOT NULL,
+    "id_video"      bigint                   NOT NULL,
+    "created_date"  timestamp with time zone NULL,
+    "deleted_date"  timestamp with time zone NULL,
+    "modified_date" timestamp with time zone NULL,
+    PRIMARY KEY ("id")
+);
+
 ALTER TABLE "public"."db_video_timecode"
     ADD FOREIGN KEY ("id_video") REFERENCES "public"."db_video" ("id");
-
 ALTER TABLE "public"."db_video_history"
     ADD FOREIGN KEY ("id_video") REFERENCES "public"."db_video" ("id");
-
 ALTER TABLE "public"."db_video_favorites"
+    ADD FOREIGN KEY ("id_video") REFERENCES "public"."db_video" ("id");
+ALTER TABLE "public"."db_video_views"
     ADD FOREIGN KEY ("id_video") REFERENCES "public"."db_video" ("id");
 
 CREATE SEQUENCE "public"."pk_db_video" INCREMENT 1 START 1;
-
 CREATE SEQUENCE "public"."pk_db_video_favorites" INCREMENT 1 START 1;
-
 CREATE SEQUENCE "public"."pk_db_video_history" INCREMENT 1 START 1;
-
 CREATE SEQUENCE "public"."pk_db_video_timecode" INCREMENT 1 START 1;
-
+CREATE SEQUENCE "public"."pk_db_video_views" INCREMENT 1 START 1;
 
 CREATE INDEX db_video_id_indx ON db_video(id);
 CREATE INDEX db_video_title_indx ON db_video(title);

@@ -2,6 +2,8 @@ package com.thelak.route.video.servies;
 
 import com.thelak.route.common.services.BaseMicroservice;
 import com.thelak.route.exceptions.MicroServiceException;
+import com.thelak.route.video.enums.VideoSortEnum;
+import com.thelak.route.video.enums.VideoSortTypeEnum;
 import com.thelak.route.video.interfaces.IVideoService;
 import com.thelak.route.video.models.VideoCreateRequest;
 import com.thelak.route.video.models.VideoModel;
@@ -21,12 +23,12 @@ public class VideoService extends BaseMicroservice implements IVideoService {
     }
 
     @Override
-    public List<VideoModel> list(Integer page, Integer size) throws MicroServiceException {
+    public List<VideoModel> list(Integer page, Integer size, VideoSortEnum sort, VideoSortTypeEnum sortType) throws MicroServiceException {
         return retry(() -> restTemplate.postForEntity(buildUrl(VIDEO_LIST), page, List.class).getBody());
     }
 
     @Override
-    public List<VideoModel> search(String search) throws MicroServiceException {
+    public List<VideoModel> search(String search, Integer page, Integer size) throws MicroServiceException {
         return retry(() -> restTemplate.postForEntity(buildUrl(VIDEO_SEARCH), search, List.class).getBody());
     }
 

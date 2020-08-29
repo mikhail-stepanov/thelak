@@ -27,8 +27,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.thelak.video.service.VideoHelper.avgRating;
-import static com.thelak.video.service.VideoHelper.createSources;
+import static com.thelak.video.service.VideoHelper.buildVideoModel;
 
 @RestController
 @Api(value = "Video functions API", produces = "application/json")
@@ -104,23 +103,7 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
 
             dbVideoFavorites.forEach(favorites -> {
                 DbVideo dbVideo = favorites.getFavoriteToVideo();
-                videos.add(VideoModel.builder()
-                        .id((Long) dbVideo.getObjectId().getIdSnapshot().get("id"))
-                        .title(dbVideo.getTitle())
-                        .description(dbVideo.getDescription())
-                        .year(dbVideo.getYear())
-                        .country(dbVideo.getCountry())
-                        .language(dbVideo.getLanguage())
-                        .category(dbVideo.getCategory())
-                        .duration(dbVideo.getDuration())
-                        .speaker(dbVideo.getSpeaker())
-                        .speakerInformation(dbVideo.getSpeakerInformation())
-                        .playground(dbVideo.getPlayground())
-                        .sources(createSources(dbVideo))
-                        .rating(avgRating(dbVideo))
-                        .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
-                        .coverUrl(dbVideo.getCoverUrl())
-                        .build());
+                videos.add(buildVideoModel(dbVideo));
             });
 
             return videos;
@@ -235,23 +218,7 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
 
             dbVideoHistories.forEach(history -> {
                 DbVideo dbVideo = history.getHistoryToVideo();
-                videos.add(VideoModel.builder()
-                        .id((Long) dbVideo.getObjectId().getIdSnapshot().get("id"))
-                        .title(dbVideo.getTitle())
-                        .description(dbVideo.getDescription())
-                        .year(dbVideo.getYear())
-                        .country(dbVideo.getCountry())
-                        .language(dbVideo.getLanguage())
-                        .category(dbVideo.getCategory())
-                        .duration(dbVideo.getDuration())
-                        .speaker(dbVideo.getSpeaker())
-                        .speakerInformation(dbVideo.getSpeakerInformation())
-                        .playground(dbVideo.getPlayground())
-                        .sources(createSources(dbVideo))
-                        .rating(avgRating(dbVideo))
-                        .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
-                        .coverUrl(dbVideo.getCoverUrl())
-                        .build());
+                videos.add(buildVideoModel(dbVideo));
             });
 
             return videos;

@@ -1,6 +1,8 @@
 package com.thelak.route.video.interfaces;
 
 import com.thelak.route.exceptions.MicroServiceException;
+import com.thelak.route.video.enums.VideoSortEnum;
+import com.thelak.route.video.enums.VideoSortTypeEnum;
 import com.thelak.route.video.models.VideoCreateRequest;
 import com.thelak.route.video.models.VideoModel;
 
@@ -17,9 +19,9 @@ public interface IVideoService {
 
     VideoModel get(Long id) throws MicroServiceException;
 
-    List<VideoModel> list(Integer page, Integer size) throws MicroServiceException;
+    List<VideoModel> list(Integer page, Integer size, VideoSortEnum sort, VideoSortTypeEnum sortType) throws MicroServiceException;
 
-    List<VideoModel> search(String search) throws MicroServiceException;
+    List<VideoModel> search(String search, Integer page, Integer size) throws MicroServiceException;
 
     VideoModel create(VideoCreateRequest request) throws MicroServiceException;
 

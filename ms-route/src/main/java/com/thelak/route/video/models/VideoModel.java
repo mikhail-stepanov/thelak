@@ -24,13 +24,15 @@ public class VideoModel {
 
     Integer rating;
 
+    Long viewsCount;
+
     String country;
 
     String language;
 
     String category;
 
-    String duration;
+    Integer duration;
 
     String speaker;
 

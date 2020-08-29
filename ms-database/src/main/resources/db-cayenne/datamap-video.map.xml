@@ -17,7 +17,7 @@
 		<db-attribute name="created_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="deleted_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="description" type="VARCHAR" length="2048"/>
-		<db-attribute name="duration" type="VARCHAR" length="64"/>
+		<db-attribute name="duration" type="INTEGER"/>
 		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="language" type="VARCHAR" length="64"/>
 		<db-attribute name="modified_date" type="TIMESTAMP" length="29"/>
@@ -62,6 +62,14 @@
 		<db-attribute name="modified_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="timecode" type="VARCHAR" isMandatory="true" length="256"/>
 	</db-entity>
+	<db-entity name="db_video_views" schema="public">
+		<db-attribute name="created_date" type="TIMESTAMP" length="29"/>
+		<db-attribute name="deleted_date" type="TIMESTAMP" length="29"/>
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="id_user" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="id_video" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="modified_date" type="TIMESTAMP" length="29"/>
+	</db-entity>
 	<obj-entity name="DbVideo" className="com.thelak.database.entity.DbVideo" dbEntityName="db_video">
 		<obj-attribute name="category" type="java.lang.String" db-attribute-path="category"/>
 		<obj-attribute name="contentUrl1080" type="java.lang.String" db-attribute-path="content_url_1080"/>
@@ -73,7 +81,7 @@
 		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
 		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
 		<obj-attribute name="description" type="java.lang.String" db-attribute-path="description"/>
-		<obj-attribute name="duration" type="java.lang.String" db-attribute-path="duration"/>
+		<obj-attribute name="duration" type="int" db-attribute-path="duration"/>
 		<obj-attribute name="language" type="java.lang.String" db-attribute-path="language"/>
 		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
 		<obj-attribute name="partnerLogoUrl" type="java.lang.String" db-attribute-path="partner_logo_url"/>
@@ -109,6 +117,12 @@
 		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
 		<obj-attribute name="timecode" type="java.lang.String" db-attribute-path="timecode"/>
 	</obj-entity>
+	<obj-entity name="DbVideoViews" className="com.thelak.database.entity.DbVideoViews" dbEntityName="db_video_views">
+		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
+		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
+		<obj-attribute name="idUser" type="long" db-attribute-path="id_user"/>
+		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
+	</obj-entity>
 	<db-relationship name="videoToFavorite" source="db_video" target="db_video_favorites" toMany="true">
 		<db-attribute-pair source="id" target="id_video"/>
 	</db-relationship>
@@ -119,6 +133,9 @@
 		<db-attribute-pair source="id" target="id_video"/>
 	</db-relationship>
 	<db-relationship name="videoToTimecode" source="db_video" target="db_video_timecode" toMany="true">
+		<db-attribute-pair source="id" target="id_video"/>
+	</db-relationship>
+	<db-relationship name="videoToView" source="db_video" target="db_video_views" toMany="true">
 		<db-attribute-pair source="id" target="id_video"/>
 	</db-relationship>
 	<db-relationship name="favoriteToVideo" source="db_video_favorites" target="db_video" toMany="false">
@@ -133,12 +150,17 @@
 	<db-relationship name="timecodeToVideo" source="db_video_timecode" target="db_video" toMany="false">
 		<db-attribute-pair source="id_video" target="id"/>
 	</db-relationship>
+	<db-relationship name="viewToVideo" source="db_video_views" target="db_video" toMany="false">
+		<db-attribute-pair source="id_video" target="id"/>
+	</db-relationship>
 	<obj-relationship name="videoToFavorite" source="DbVideo" target="DbVideoFavorites" deleteRule="Deny" db-relationship-path="videoToFavorite"/>
 	<obj-relationship name="videoToHistory" source="DbVideo" target="DbVideoHistory" deleteRule="Deny" db-relationship-path="videoToHistory"/>
 	<obj-relationship name="videoToRating" source="DbVideo" target="DbVideoRating" deleteRule="Deny" db-relationship-path="videoToRating"/>
 	<obj-relationship name="videoToTimecode" source="DbVideo" target="DbVideoTimecode" deleteRule="Deny" db-relationship-path="videoToTimecode"/>
+	<obj-relationship name="videoToView" source="DbVideo" target="DbVideoViews" deleteRule="Deny" db-relationship-path="videoToView"/>
 	<obj-relationship name="favoriteToVideo" source="DbVideoFavorites" target="DbVideo" deleteRule="Nullify" db-relationship-path="favoriteToVideo"/>
 	<obj-relationship name="historyToVideo" source="DbVideoHistory" target="DbVideo" deleteRule="Nullify" db-relationship-path="historyToVideo"/>
 	<obj-relationship name="ratingToVideo" source="DbVideoRating" target="DbVideo" deleteRule="Nullify" db-relationship-path="ratingToVideo"/>
 	<obj-relationship name="timecodeToVideo" source="DbVideoTimecode" target="DbVideo" deleteRule="Nullify" db-relationship-path="timecodeToVideo"/>
+	<obj-relationship name="viewToVideo" source="DbVideoViews" target="DbVideo" deleteRule="Nullify" db-relationship-path="viewToVideo"/>
 </data-map>
