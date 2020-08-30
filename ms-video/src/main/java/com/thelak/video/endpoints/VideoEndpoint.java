@@ -11,6 +11,7 @@ import com.thelak.route.video.enums.VideoSortEnum;
 import com.thelak.route.video.enums.VideoSortTypeEnum;
 import com.thelak.route.video.interfaces.IVideoService;
 import com.thelak.route.video.models.VideoCreateRequest;
+import com.thelak.route.video.models.VideoFilterModel;
 import com.thelak.route.video.models.VideoModel;
 import com.thelak.route.video.models.VideoSourceModel;
 import io.swagger.annotations.Api;
@@ -112,12 +113,15 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                     paramType = "query"),
             @ApiImplicitParam(
                     name = "playgroundFilter",
+                    paramType = "query"),
+            @ApiImplicitParam(
+                    name = "languageFilter",
                     paramType = "query")})
     @RequestMapping(value = VIDEO_LIST, method = {RequestMethod.GET})
     public List<VideoModel> list(@RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size,
                                  @RequestParam(required = false) VideoSortEnum sort, @RequestParam(required = false) VideoSortTypeEnum sortType,
                                  @RequestParam(required = false) List<String> countryFilter, @RequestParam(required = false) List<Integer> yearFilter,
-                                 @RequestParam(required = false) List<String> playgroundFilter) throws MicroServiceException {
+                                 @RequestParam(required = false) List<String> playgroundFilter, @RequestParam(required = false) List<String> languageFilter) throws MicroServiceException {
         try {
             final Expression countryFilterExpression;
             if (countryFilter != null)
@@ -134,6 +138,11 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                 playgroundFilterExpression = DbVideo.PLAYGROUND.in(playgroundFilter);
             else playgroundFilterExpression = DbVideo.TITLE.isNotNull();
 
+            final Expression languageFilterExpression;
+            if (playgroundFilter != null)
+                languageFilterExpression = DbVideo.PLAYGROUND.in(playgroundFilter);
+            else languageFilterExpression = DbVideo.TITLE.isNotNull();
+
 
             List<DbVideo> dbVideos;
             if (page == null || size == null)
@@ -141,12 +150,15 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                         .where(countryFilterExpression)
                         .and(yearFilterExpression)
                         .and(playgroundFilterExpression)
+                        .and(playgroundFilterExpression)
+                        .pageSize(30)
                         .select(objectContext);
             else {
                 dbVideos = ObjectSelect.query(DbVideo.class)
                         .where(countryFilterExpression)
                         .and(yearFilterExpression)
                         .and(playgroundFilterExpression)
+                        .and(languageFilterExpression)
                         .pageSize(size)
                         .select(objectContext);
                 dbVideos = dbVideos.subList(page * size - size, page * size);
@@ -208,6 +220,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                         .and(DbVideo.DESCRIPTION.containsIgnoreCase(search.toLowerCase()))
                         .or(DbVideo.TITLE.containsIgnoreCase(search.toLowerCase()))
                         .or(DbVideo.SPEAKER.containsIgnoreCase(search.toLowerCase()))
+                        .pageSize(30)
                         .select(objectContext);
             else {
                 dbVideos = ObjectSelect.query(DbVideo.class).
@@ -331,6 +344,25 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
         } catch (Exception e) {
             throw new MsInternalErrorException("Exception while deleting video");
         }
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Get video filters")
+    @RequestMapping(value = VIDEO_FILTER_GET, method = {RequestMethod.GET})
+    public VideoFilterModel getFilters() throws MicroServiceException {
+
+        List<String> countries = ObjectSelect.columnQuery(DbVideo.class, DbVideo.COUNTRY).distinct().select(objectContext);
+        List<String> playgrounds = ObjectSelect.columnQuery(DbVideo.class, DbVideo.PLAYGROUND).distinct().select(objectContext);
+        List<String> languages = ObjectSelect.columnQuery(DbVideo.class, DbVideo.LANGUAGE).distinct().select(objectContext);
+        List<Integer> years = ObjectSelect.columnQuery(DbVideo.class, DbVideo.YEAR).distinct().select(objectContext);
+
+        return VideoFilterModel.builder()
+                .countries(countries)
+                .playgrounds(playgrounds)
+                .languages(languages)
+                .years(years)
+                .build();
     }
 
     public static class Comparators {

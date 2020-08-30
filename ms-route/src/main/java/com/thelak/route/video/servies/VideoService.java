@@ -6,6 +6,7 @@ import com.thelak.route.video.enums.VideoSortEnum;
 import com.thelak.route.video.enums.VideoSortTypeEnum;
 import com.thelak.route.video.interfaces.IVideoService;
 import com.thelak.route.video.models.VideoCreateRequest;
+import com.thelak.route.video.models.VideoFilterModel;
 import com.thelak.route.video.models.VideoModel;
 import org.springframework.web.client.RestTemplate;
 
@@ -25,7 +26,7 @@ public class VideoService extends BaseMicroservice implements IVideoService {
     @Override
     public List<VideoModel> list(Integer page, Integer size, VideoSortEnum sort, VideoSortTypeEnum sortType,
                                  List<String> countryFilter, List<Integer> yearFilter,
-                                 List<String> playgroundFilter) throws MicroServiceException {
+                                 List<String> playgroundFilter, List<String> languageFilter) throws MicroServiceException {
         return retry(() -> restTemplate.postForEntity(buildUrl(VIDEO_LIST), page, List.class).getBody());
     }
 
@@ -47,5 +48,10 @@ public class VideoService extends BaseMicroservice implements IVideoService {
     @Override
     public Boolean delete(Long id) throws MicroServiceException {
         return retry(() -> restTemplate.postForEntity(buildUrl(VIDEO_DELETE), id, Boolean.class).getBody());
+    }
+
+    @Override
+    public VideoFilterModel getFilters() throws MicroServiceException {
+        return retry(() -> restTemplate.postForEntity(buildUrl(VIDEO_FILTER_GET), null, VideoFilterModel.class).getBody());
     }
 }
