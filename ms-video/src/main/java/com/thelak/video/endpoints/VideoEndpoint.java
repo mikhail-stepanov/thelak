@@ -18,7 +18,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
 import org.slf4j.Logger;
@@ -103,15 +103,54 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
             @ApiImplicitParam(
                     name = "sortType",
                     dataType = "com.thelak.route.video.enums.VideoSortTypeEnum",
+                    paramType = "query"),
+            @ApiImplicitParam(
+                    name = "countryFilter",
+                    paramType = "query"),
+            @ApiImplicitParam(
+                    name = "yearFilter",
+                    paramType = "query"),
+            @ApiImplicitParam(
+                    name = "playgroundFilter",
                     paramType = "query")})
     @RequestMapping(value = VIDEO_LIST, method = {RequestMethod.GET})
-    public List<VideoModel> list(@RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size, @RequestParam(required = false) VideoSortEnum sort, @RequestParam(required = false) VideoSortTypeEnum sortType) throws MicroServiceException {
+    public List<VideoModel> list(@RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size,
+                                 @RequestParam(required = false) VideoSortEnum sort, @RequestParam(required = false) VideoSortTypeEnum sortType,
+                                 @RequestParam(required = false) List<String> countryFilter, @RequestParam(required = false) List<Integer> yearFilter,
+                                 @RequestParam(required = false) List<String> playgroundFilter) throws MicroServiceException {
         try {
+            final Expression countryFilterExpression;
+            if (countryFilter != null)
+                countryFilterExpression = DbVideo.COUNTRY.in(countryFilter);
+            else countryFilterExpression = DbVideo.TITLE.isNotNull();
+
+            final Expression yearFilterExpression;
+            if (yearFilter != null)
+                yearFilterExpression = DbVideo.YEAR.in(yearFilter);
+            else yearFilterExpression = DbVideo.TITLE.isNotNull();
+
+            final Expression playgroundFilterExpression;
+            if (playgroundFilter != null)
+                playgroundFilterExpression = DbVideo.PLAYGROUND.in(playgroundFilter);
+            else playgroundFilterExpression = DbVideo.TITLE.isNotNull();
+
+
             List<DbVideo> dbVideos;
             if (page == null || size == null)
-                dbVideos = ObjectSelect.query(DbVideo.class).select(objectContext);
-            else
-                dbVideos = ObjectSelect.query(DbVideo.class).where(ExpressionFactory.betweenDbExp(DbVideo.ID_PK_COLUMN, page * size - size, page * size)).select(objectContext);
+                dbVideos = ObjectSelect.query(DbVideo.class)
+                        .where(countryFilterExpression)
+                        .and(yearFilterExpression)
+                        .and(playgroundFilterExpression)
+                        .select(objectContext);
+            else {
+                dbVideos = ObjectSelect.query(DbVideo.class)
+                        .where(countryFilterExpression)
+                        .and(yearFilterExpression)
+                        .and(playgroundFilterExpression)
+                        .pageSize(size)
+                        .select(objectContext);
+                dbVideos = dbVideos.subList(page * size - size, page * size);
+            }
 
             List<VideoModel> videos = new ArrayList<>();
 
@@ -166,18 +205,20 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
             if (page == null || size == null)
                 dbVideos = ObjectSelect.query(DbVideo.class).
                         where(DbVideo.DELETED_DATE.isNull())
-                        .and(DbVideo.DESCRIPTION.lower().like("%" + search.toLowerCase() + "%"))
-                        .or(DbVideo.TITLE.lower().like("%" + search.toLowerCase() + "%"))
-                        .or(DbVideo.SPEAKER.lower().like("%" + search.toLowerCase() + "%"))
+                        .and(DbVideo.DESCRIPTION.containsIgnoreCase(search.toLowerCase()))
+                        .or(DbVideo.TITLE.containsIgnoreCase(search.toLowerCase()))
+                        .or(DbVideo.SPEAKER.containsIgnoreCase(search.toLowerCase()))
                         .select(objectContext);
-            else
+            else {
                 dbVideos = ObjectSelect.query(DbVideo.class).
                         where(DbVideo.DELETED_DATE.isNull())
-                        .and(DbVideo.DESCRIPTION.lower().like("%" + search.toLowerCase() + "%"))
-                        .or(DbVideo.TITLE.lower().like("%" + search.toLowerCase() + "%"))
-                        .or(DbVideo.SPEAKER.lower().like("%" + search.toLowerCase() + "%"))
-                        .and(ExpressionFactory.betweenDbExp(DbVideo.ID_PK_COLUMN, page * size - size, page * size))
+                        .and(DbVideo.DESCRIPTION.containsIgnoreCase(search.toLowerCase()))
+                        .or(DbVideo.TITLE.containsIgnoreCase(search.toLowerCase()))
+                        .or(DbVideo.SPEAKER.containsIgnoreCase(search.toLowerCase()))
+                        .pageSize(size)
                         .select(objectContext);
+                dbVideos = dbVideos.subList(page * size - size, page * size);
+            }
 
             List<VideoModel> videos = new ArrayList<>();
 
