@@ -17,4 +17,14 @@
 		<db-attribute name="source_url" type="VARCHAR" isMandatory="true" length="2048"/>
 		<db-attribute name="title" type="VARCHAR" length="1048"/>
 	</db-entity>
+	<obj-entity name="DbArticle" className="com.thelak.database.entity.DbArticle" dbEntityName="db_article">
+		<obj-attribute name="author" type="java.lang.String" db-attribute-path="author"/>
+		<obj-attribute name="content" type="java.lang.String" db-attribute-path="content"/>
+		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
+		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
+		<obj-attribute name="description" type="java.lang.String" db-attribute-path="description"/>
+		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
+		<obj-attribute name="sourceUrl" type="java.lang.String" db-attribute-path="source_url"/>
+		<obj-attribute name="title" type="java.lang.String" db-attribute-path="title"/>
+	</obj-entity>
 </data-map>
