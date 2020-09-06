@@ -12,6 +12,7 @@ public class SpeakerHelper {
                 .shortDescription(dbSpeaker.getShortDescription())
                 .description(dbSpeaker.getDescription())
                 .country(dbSpeaker.getCountry())
+                .countryFlagCode(dbSpeaker.getCountryFlagCode())
                 .photoUrl(dbSpeaker.getPhotoUrl())
                 .createdDate(dbSpeaker.getCreatedDate())
                 .build();

@@ -27,6 +27,8 @@ public class SpeakerModel {
 
     String country;
 
+    String countryFlagCode;
+
     String photoUrl;
 
     List<CategoryModel> categories;

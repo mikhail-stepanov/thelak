@@ -218,7 +218,7 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
             dbSpeaker.setShortDescription(request.getShortDescription());
             dbSpeaker.setCountry(request.getCountry());
             dbSpeaker.setPhotoUrl(request.getPhotoUrl());
-            dbSpeaker.setCreatedDate(LocalDateTime.now());
+            dbSpeaker.setModifiedDate(LocalDateTime.now());
 
             objectContext.commitChanges();
 

@@ -1,8 +1,12 @@
 package com.thelak.core.configurations;
 
 import com.thelak.core.filters.HttpServletRequestFilter;
+import com.thelak.route.article.interfaces.IArticleService;
+import com.thelak.route.article.services.ArticleService;
 import com.thelak.route.auth.interfaces.IAuthenticationService;
 import com.thelak.route.auth.services.AuthenticationService;
+import com.thelak.route.speaker.interfaces.ISpeakerService;
+import com.thelak.route.speaker.services.SpeakerService;
 import com.thelak.route.video.interfaces.IVideoService;
 import com.thelak.route.video.servies.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,14 +69,22 @@ public class MicroservicesConfiguration {
 
     @Bean
     IAuthenticationService authenticationService() {
-        AuthenticationService service = new AuthenticationService(restTemplate());
-        service.setApplicationContext(applicationContext);
-        return service;
+        return new AuthenticationService(restTemplate());
     }
 
     @Bean
     IVideoService videoService() {
         return new VideoService(restTemplate());
+    }
+
+    @Bean
+    ISpeakerService speakerService() {
+        return new SpeakerService(restTemplate());
+    }
+
+    @Bean
+    IArticleService articleService() {
+        return new ArticleService(restTemplate());
     }
 
 

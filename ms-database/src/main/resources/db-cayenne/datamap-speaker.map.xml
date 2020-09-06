@@ -8,6 +8,7 @@
 	<property name="quoteSqlIdentifiers" value="true"/>
 	<db-entity name="db_speaker" schema="public">
 		<db-attribute name="country" type="VARCHAR" length="64"/>
+		<db-attribute name="country_flag_code" type="VARCHAR" length="64"/>
 		<db-attribute name="created_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="deleted_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="description" type="VARCHAR" length="4096"/>
@@ -34,6 +35,7 @@
 	</db-entity>
 	<obj-entity name="DbSpeaker" className="com.thelak.database.entity.DbSpeaker" dbEntityName="db_speaker">
 		<obj-attribute name="country" type="java.lang.String" db-attribute-path="country"/>
+		<obj-attribute name="countryFlagCode" type="java.lang.String" db-attribute-path="country_flag_code"/>
 		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
 		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
 		<obj-attribute name="description" type="java.lang.String" db-attribute-path="description"/>

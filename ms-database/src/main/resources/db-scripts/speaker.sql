@@ -5,6 +5,7 @@ CREATE TABLE "public"."db_speaker"
     "short_description" varchar(255)             NULL,
     "description"       text                     NULL,
     "country"           varchar(64)              NULL,
+    "country_flag_code" varchar(64)              NULL,
     "created_date"      timestamp with time zone NULL,
     "deleted_date"      timestamp with time zone NULL,
     "modified_date"     timestamp with time zone NULL,
