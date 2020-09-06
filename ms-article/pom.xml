@@ -8,7 +8,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>ms-paper</artifactId>
+    <artifactId>ms-article</artifactId>
 
     <dependencies>
         <dependency>
