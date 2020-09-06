@@ -20,6 +20,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
 import org.slf4j.Logger;
@@ -35,7 +36,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import static com.thelak.video.service.VideoHelper.buildVideoModel;
+import static com.thelak.video.services.VideoHelper.buildVideoModel;
 
 @RestController
 @Api(value = "Video API", produces = "application/json")
@@ -59,7 +60,6 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     @RequestMapping(value = VIDEO_GET, method = {RequestMethod.GET})
     public VideoModel get(@RequestParam Long id) throws MicroServiceException {
         try {
-
             long userId;
             try {
                 UserInfo userInfo = (UserInfo) SecurityContextHolder
@@ -84,6 +84,29 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
 
         } catch (Exception e) {
             throw new MsInternalErrorException("Exception while get video");
+        }
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Get list of video by ids")
+    @RequestMapping(value = VIDEO_GET_IDS, method = {RequestMethod.GET})
+    public List<VideoModel> getByIds(@RequestParam List<Long> ids) throws MicroServiceException {
+        try {
+            List<DbVideo> dbVideos;
+            dbVideos = ObjectSelect.query(DbVideo.class).
+                    where(ExpressionFactory.inDbExp(DbVideo.ID_PK_COLUMN, ids))
+                    .select(objectContext);
+
+            List<VideoModel> videos = new ArrayList<>();
+
+            dbVideos.forEach(dbVideo -> {
+                videos.add(buildVideoModel(dbVideo));
+            });
+
+            return videos;
+        } catch (Exception e) {
+            throw new MsInternalErrorException("Exception while getting videos by ids");
         }
     }
 
@@ -289,7 +312,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     @Override
     @CrossOrigin
     @ApiOperation(value = "Update video by id")
-    @RequestMapping(value = VIDEO_UPDATE, method = {RequestMethod.POST})
+    @RequestMapping(value = VIDEO_UPDATE, method = {RequestMethod.PUT})
     public VideoModel update(@RequestBody VideoModel request) throws MicroServiceException {
         try {
 

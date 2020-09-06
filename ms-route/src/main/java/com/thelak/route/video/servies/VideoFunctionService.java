@@ -21,17 +21,17 @@ public class VideoFunctionService extends BaseMicroservice implements IVideoFunc
 
     @Override
     public List<VideoModel> listFavorites() throws MicroServiceException {
-        return retry(() -> restTemplate.postForEntity(buildUrl(VIDEO_FAVORITES_LIST), null, List.class).getBody());
+        return retry(() -> restTemplate.getForEntity(buildUrl(VIDEO_FAVORITES_LIST), List.class).getBody());
     }
 
     @Override
     public Boolean checkFavorites(Long videoId) throws MicroServiceException {
-        return retry(() -> restTemplate.postForEntity(buildUrl(VIDEO_FAVORITES_CHECK), videoId, Boolean.class).getBody());
+        return retry(() -> restTemplate.getForEntity(buildUrl(VIDEO_FAVORITES_CHECK), Boolean.class, videoId).getBody());
     }
 
     @Override
     public Boolean deleteFavorites(Long videoId) throws MicroServiceException {
-        return retry(() -> restTemplate.postForEntity(buildUrl(VIDEO_FAVORITES_DELETE), videoId, Boolean.class).getBody());
+        return false;
     }
 
     @Override
@@ -41,31 +41,31 @@ public class VideoFunctionService extends BaseMicroservice implements IVideoFunc
 
     @Override
     public List<VideoModel> listHistory() throws MicroServiceException {
-        return retry(() -> restTemplate.postForEntity(buildUrl(VIDEO_HISTORY_LIST), null, List.class).getBody());
+        return retry(() -> restTemplate.getForEntity(buildUrl(VIDEO_HISTORY_LIST), List.class).getBody());
     }
 
     @Override
     public Boolean addTimeCode(Long videoId, String timecode) throws MicroServiceException {
-        return retry(() -> restTemplate.postForEntity(buildUrl(VIDEO_TIMECODE_ADD), videoId, Boolean.class).getBody());
+        return retry(() -> restTemplate.postForEntity(buildUrl(VIDEO_TIMECODE_ADD), videoId, Boolean.class, timecode).getBody());
     }
 
     @Override
     public String getTimeCode(Long videoId) throws MicroServiceException {
-        return retry(() -> restTemplate.postForEntity(buildUrl(VIDEO_TIMECODE_GET), videoId, String.class).getBody());
+        return retry(() -> restTemplate.getForEntity(buildUrl(VIDEO_TIMECODE_GET), String.class, videoId).getBody());
     }
 
     @Override
     public Boolean addRating(Long videoId, Integer rating) throws MicroServiceException {
-        return retry(() -> restTemplate.postForEntity(buildUrl(VIDEO_RATING_ADD), videoId, Boolean.class).getBody());
+        return retry(() -> restTemplate.postForEntity(buildUrl(VIDEO_RATING_ADD), videoId, Boolean.class, rating).getBody());
     }
 
     @Override
     public Boolean deleteRating(Long videoId) throws MicroServiceException {
-        return retry(() -> restTemplate.postForEntity(buildUrl(VIDEO_RATING_DELETE), videoId, Boolean.class).getBody());
+        return false;
     }
 
     @Override
     public Boolean checkRating(Long videoId) throws MicroServiceException {
-        return retry(() -> restTemplate.postForEntity(buildUrl(VIDEO_RATING_DELETE), videoId, Boolean.class).getBody());
+        return retry(() -> restTemplate.getForEntity(buildUrl(VIDEO_RATING_DELETE), Boolean.class, videoId).getBody());
     }
 }

@@ -29,7 +29,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
+import java.text.ParseException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @RestController
 @Api(value = "Authorization API", produces = "application/json")
@@ -97,7 +100,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
     @CrossOrigin
     @ApiOperation(value = "Sign up")
     @RequestMapping(value = AUTH_SIGN_UP, method = {RequestMethod.POST})
-    public VueHelpModel signUp(@RequestBody AuthSignupRequest request) throws MicroServiceException {
+    public VueHelpModel signUp(@RequestBody AuthSignupRequest request) throws MicroServiceException, ParseException {
         if (!checkEmailExists(request.getEmail())) {
 
             DbUser user = objectContext.newObject(DbUser.class);
@@ -108,7 +111,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
             user.setPhone(request.getPhone());
             user.setCity(request.getCity());
             user.setCountry(request.getCountry());
-            user.setBirthday(request.getBirthday());
+            user.setBirthday(LocalDate.parse(request.getBirthday(), DateTimeFormatter.ofPattern("dd.MM.yyyy")));
             user.setSalt(PasswordHelper.generateSalt());
             user.setPassword(PasswordHelper.hashPassword(request.getPassword(), user.getSalt()));
 

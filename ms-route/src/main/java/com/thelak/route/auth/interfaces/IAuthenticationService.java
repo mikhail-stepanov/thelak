@@ -6,6 +6,8 @@ import com.thelak.route.auth.models.UserModel;
 import com.thelak.route.auth.models.VueHelpModel;
 import com.thelak.route.exceptions.MicroServiceException;
 
+import java.text.ParseException;
+
 public interface IAuthenticationService {
 
     String AUTH_INFO = "/v1/auth/info";
@@ -15,7 +17,7 @@ public interface IAuthenticationService {
 
     VueHelpModel info() throws MicroServiceException;
 
-    VueHelpModel signUp(AuthSignupRequest request) throws MicroServiceException;
+    VueHelpModel signUp(AuthSignupRequest request) throws MicroServiceException, ParseException;
 
     String login(AuthLoginRequest request) throws MicroServiceException;
 

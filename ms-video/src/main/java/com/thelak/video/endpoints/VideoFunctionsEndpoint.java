@@ -27,7 +27,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.thelak.video.service.VideoHelper.buildVideoModel;
+import static com.thelak.video.services.VideoHelper.buildVideoModel;
 
 @RestController
 @Api(value = "Video functions API", produces = "application/json")

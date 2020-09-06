@@ -20,19 +20,25 @@ public class VideoService extends BaseMicroservice implements IVideoService {
 
     @Override
     public VideoModel get(Long id) throws MicroServiceException {
-        return retry(() -> restTemplate.postForEntity(buildUrl(VIDEO_GET), id, VideoModel.class).getBody());
+        return retry(() -> restTemplate.getForEntity(buildUrl(VIDEO_GET), VideoModel.class, id).getBody());
+    }
+
+    @Override
+    public List<VideoModel> getByIds(List<Long> ids) throws MicroServiceException {
+        return retry(() -> restTemplate.getForEntity(buildUrl(VIDEO_GET_IDS), List.class, ids).getBody());
     }
 
     @Override
     public List<VideoModel> list(Integer page, Integer size, VideoSortEnum sort, VideoSortTypeEnum sortType,
                                  List<String> countryFilter, List<Integer> yearFilter,
                                  List<String> playgroundFilter, List<String> languageFilter) throws MicroServiceException {
-        return retry(() -> restTemplate.postForEntity(buildUrl(VIDEO_LIST), page, List.class).getBody());
+        return retry(() -> restTemplate.getForEntity(buildUrl(VIDEO_LIST), List.class,
+                page, size, sort, sortType, countryFilter, yearFilter, playgroundFilter, languageFilter).getBody());
     }
 
     @Override
     public List<VideoModel> search(String search, Integer page, Integer size) throws MicroServiceException {
-        return retry(() -> restTemplate.postForEntity(buildUrl(VIDEO_SEARCH), search, List.class).getBody());
+        return retry(() -> restTemplate.getForEntity(buildUrl(VIDEO_SEARCH), List.class, search, page, size).getBody());
     }
 
     @Override
@@ -42,16 +48,16 @@ public class VideoService extends BaseMicroservice implements IVideoService {
 
     @Override
     public VideoModel update(VideoModel request) throws MicroServiceException {
-        return retry(() -> restTemplate.postForEntity(buildUrl(VIDEO_UPDATE), request, VideoModel.class).getBody());
+        return null;
     }
 
     @Override
     public Boolean delete(Long id) throws MicroServiceException {
-        return retry(() -> restTemplate.postForEntity(buildUrl(VIDEO_DELETE), id, Boolean.class).getBody());
+        return false;
     }
 
     @Override
     public VideoFilterModel getFilters() throws MicroServiceException {
-        return retry(() -> restTemplate.postForEntity(buildUrl(VIDEO_FILTER_GET), null, VideoFilterModel.class).getBody());
+        return retry(() -> restTemplate.getForEntity(buildUrl(VIDEO_FILTER_GET), VideoFilterModel.class).getBody());
     }
 }

@@ -29,6 +29,6 @@ public class AuthSignupRequest {
 
     String country;
 
-    LocalDate birthday;
+    String birthday;
 
 }
