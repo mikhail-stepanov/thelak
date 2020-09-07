@@ -9,6 +9,7 @@
 	<db-entity name="db_article" schema="public">
 		<db-attribute name="author" type="VARCHAR" length="1048"/>
 		<db-attribute name="content" type="VARCHAR" length="65000"/>
+		<db-attribute name="cover_url" type="VARCHAR" length="2048"/>
 		<db-attribute name="created_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="deleted_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="description" type="VARCHAR" length="4096"/>
@@ -20,6 +21,7 @@
 	<obj-entity name="DbArticle" className="com.thelak.database.entity.DbArticle" dbEntityName="db_article">
 		<obj-attribute name="author" type="java.lang.String" db-attribute-path="author"/>
 		<obj-attribute name="content" type="java.lang.String" db-attribute-path="content"/>
+		<obj-attribute name="coverUrl" type="java.lang.String" db-attribute-path="cover_url"/>
 		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
 		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
 		<obj-attribute name="description" type="java.lang.String" db-attribute-path="description"/>

@@ -27,6 +27,8 @@ public class ArticleModel {
 
     String sourceUrl;
 
+    String coverUrl;
+
     List<CategoryModel> categories;
 
     LocalDateTime createdDate;

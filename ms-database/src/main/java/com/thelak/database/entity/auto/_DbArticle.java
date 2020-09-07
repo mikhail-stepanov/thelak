@@ -19,6 +19,7 @@ public abstract class _DbArticle extends CayenneDataObject {
 
     public static final Property<String> AUTHOR = Property.create("author", String.class);
     public static final Property<String> CONTENT = Property.create("content", String.class);
+    public static final Property<String> COVER_URL = Property.create("coverUrl", String.class);
     public static final Property<LocalDateTime> CREATED_DATE = Property.create("createdDate", LocalDateTime.class);
     public static final Property<LocalDateTime> DELETED_DATE = Property.create("deletedDate", LocalDateTime.class);
     public static final Property<String> DESCRIPTION = Property.create("description", String.class);
@@ -38,6 +39,13 @@ public abstract class _DbArticle extends CayenneDataObject {
     }
     public String getContent() {
         return (String)readProperty("content");
+    }
+
+    public void setCoverUrl(String coverUrl) {
+        writeProperty("coverUrl", coverUrl);
+    }
+    public String getCoverUrl() {
+        return (String)readProperty("coverUrl");
     }
 
     public void setCreatedDate(LocalDateTime createdDate) {

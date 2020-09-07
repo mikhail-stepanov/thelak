@@ -13,6 +13,7 @@ public class ArticleHelper {
                 .description(dbArticle.getDescription())
                 .content(dbArticle.getContent())
                 .sourceUrl(dbArticle.getSourceUrl())
+                .coverUrl(dbArticle.getCoverUrl())
                 .createdDate(dbArticle.getCreatedDate())
                 .build();
     }

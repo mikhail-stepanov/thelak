@@ -6,6 +6,7 @@ CREATE TABLE "public"."db_article"
     "description"   varchar(4096)            NULL,
     "content"       varchar(65000)           NULL,
     "source_url"    varchar(2048)            NULL,
+    "cover_url"     varchar(2048)            NULL,
     "created_date"  timestamp with time zone NULL,
     "deleted_date"  timestamp with time zone NULL,
     "modified_date" timestamp with time zone NULL,

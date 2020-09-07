@@ -6,73 +6,69 @@
 	<property name="defaultPackage" value="com.thelak.database.entity"/>
 	<property name="defaultSchema" value="public"/>
 	<property name="quoteSqlIdentifiers" value="true"/>
-	<db-entity name="db_speaker" schema="public">
-		<db-attribute name="country" type="VARCHAR" length="64"/>
+	<db-entity name="db_category" schema="public">
+		<db-attribute name="cover_url" type="VARCHAR" length="2048"/>
 		<db-attribute name="created_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="deleted_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="description" type="VARCHAR" length="4096"/>
 		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="modified_date" type="TIMESTAMP" length="29"/>
-		<db-attribute name="name" type="VARCHAR" isMandatory="true" length="255"/>
-		<db-attribute name="photo_url" type="VARCHAR" length="2048"/>
-		<db-attribute name="short_description" type="VARCHAR" length="255"/>
+		<db-attribute name="title" type="VARCHAR" isMandatory="true" length="255"/>
 	</db-entity>
-	<db-entity name="db_speaker_articles" schema="public">
+	<db-entity name="db_category_articles" schema="public">
 		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="id_article" type="BIGINT" isMandatory="true"/>
-		<db-attribute name="id_speaker" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="id_category" type="BIGINT" isMandatory="true"/>
 	</db-entity>
-	<db-entity name="db_speaker_events" schema="public">
+	<db-entity name="db_category_events" schema="public">
 		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="id_category" type="BIGINT" isMandatory="true"/>
 		<db-attribute name="id_event" type="BIGINT" isMandatory="true"/>
-		<db-attribute name="id_speaker" type="BIGINT" isMandatory="true"/>
 	</db-entity>
-	<db-entity name="db_speaker_videos" schema="public">
+	<db-entity name="db_category_videos" schema="public">
 		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="id_speaker" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="id_category" type="BIGINT" isMandatory="true"/>
 		<db-attribute name="id_video" type="BIGINT" isMandatory="true"/>
 	</db-entity>
-	<obj-entity name="DbSpeaker" className="com.thelak.database.entity.DbSpeaker" dbEntityName="db_speaker">
-		<obj-attribute name="country" type="java.lang.String" db-attribute-path="country"/>
+	<obj-entity name="DbCategory" className="com.thelak.database.entity.DbCategory" dbEntityName="db_category">
+		<obj-attribute name="coverUrl" type="java.lang.String" db-attribute-path="cover_url"/>
 		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
 		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
 		<obj-attribute name="description" type="java.lang.String" db-attribute-path="description"/>
 		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
-		<obj-attribute name="photoUrl" type="java.lang.String" db-attribute-path="photo_url"/>
-		<obj-attribute name="shortDescription" type="java.lang.String" db-attribute-path="short_description"/>
+		<obj-attribute name="title" type="java.lang.String" db-attribute-path="title"/>
 	</obj-entity>
-	<obj-entity name="DbSpeakerArticles" className="com.thelak.database.entity.DbSpeakerArticles" dbEntityName="db_speaker_articles">
+	<obj-entity name="DbCategoryArticles" className="com.thelak.database.entity.DbCategoryArticles" dbEntityName="db_category_articles">
 		<obj-attribute name="idArticle" type="long" db-attribute-path="id_article"/>
 	</obj-entity>
-	<obj-entity name="DbSpeakerEvents" className="com.thelak.database.entity.DbSpeakerEvents" dbEntityName="db_speaker_events">
+	<obj-entity name="DbCategoryEvents" className="com.thelak.database.entity.DbCategoryEvents" dbEntityName="db_category_events">
 		<obj-attribute name="idEvent" type="long" db-attribute-path="id_event"/>
 	</obj-entity>
-	<obj-entity name="DbSpeakerVideos" className="com.thelak.database.entity.DbSpeakerVideos" dbEntityName="db_speaker_videos">
+	<obj-entity name="DbCategoryVideos" className="com.thelak.database.entity.DbCategoryVideos" dbEntityName="db_category_videos">
 		<obj-attribute name="idVideo" type="long" db-attribute-path="id_video"/>
 	</obj-entity>
-	<db-relationship name="speakerToArticles" source="db_speaker" target="db_speaker_articles" toMany="true">
-		<db-attribute-pair source="id" target="id_speaker"/>
+	<db-relationship name="categoryToArticles" source="db_category" target="db_category_articles" toMany="true">
+		<db-attribute-pair source="id" target="id_category"/>
 	</db-relationship>
-	<db-relationship name="speakerToEvents" source="db_speaker" target="db_speaker_events" toMany="true">
-		<db-attribute-pair source="id" target="id_speaker"/>
+	<db-relationship name="categoryToEvents" source="db_category" target="db_category_events" toMany="true">
+		<db-attribute-pair source="id" target="id_category"/>
 	</db-relationship>
-	<db-relationship name="speakerToVideo" source="db_speaker" target="db_speaker_videos" toMany="true">
-		<db-attribute-pair source="id" target="id_speaker"/>
+	<db-relationship name="categoryToVideo" source="db_category" target="db_category_videos" toMany="true">
+		<db-attribute-pair source="id" target="id_category"/>
 	</db-relationship>
-	<db-relationship name="articleToSpeaker" source="db_speaker_articles" target="db_speaker" toMany="false">
-		<db-attribute-pair source="id_speaker" target="id"/>
+	<db-relationship name="articleToCategory" source="db_category_articles" target="db_category" toMany="false">
+		<db-attribute-pair source="id_category" target="id"/>
 	</db-relationship>
-	<db-relationship name="eventToSpeaker" source="db_speaker_events" target="db_speaker" toMany="false">
-		<db-attribute-pair source="id_speaker" target="id"/>
+	<db-relationship name="eventToCategory" source="db_category_events" target="db_category" toMany="false">
+		<db-attribute-pair source="id_category" target="id"/>
 	</db-relationship>
-	<db-relationship name="videoToSpeaker" source="db_speaker_videos" target="db_speaker" toMany="false">
-		<db-attribute-pair source="id_speaker" target="id"/>
+	<db-relationship name="videoToCategory" source="db_category_videos" target="db_category" toMany="false">
+		<db-attribute-pair source="id_category" target="id"/>
 	</db-relationship>
-	<obj-relationship name="speakerToArticles" source="DbSpeaker" target="DbSpeakerArticles" deleteRule="Deny" db-relationship-path="speakerToArticles"/>
-	<obj-relationship name="speakerToEvents" source="DbSpeaker" target="DbSpeakerEvents" deleteRule="Deny" db-relationship-path="speakerToEvents"/>
-	<obj-relationship name="speakerToVideo" source="DbSpeaker" target="DbSpeakerVideos" deleteRule="Deny" db-relationship-path="speakerToVideo"/>
-	<obj-relationship name="articleToSpeaker" source="DbSpeakerArticles" target="DbSpeaker" deleteRule="Nullify" db-relationship-path="articleToSpeaker"/>
-	<obj-relationship name="eventToSpeaker" source="DbSpeakerEvents" target="DbSpeaker" deleteRule="Nullify" db-relationship-path="eventToSpeaker"/>
-	<obj-relationship name="videoToSpeaker" source="DbSpeakerVideos" target="DbSpeaker" deleteRule="Nullify" db-relationship-path="videoToSpeaker"/>
+	<obj-relationship name="categoryToArticles" source="DbCategory" target="DbCategoryArticles" deleteRule="Deny" db-relationship-path="categoryToArticles"/>
+	<obj-relationship name="categoryToEvents" source="DbCategory" target="DbCategoryEvents" deleteRule="Deny" db-relationship-path="categoryToEvents"/>
+	<obj-relationship name="categoryToVideo" source="DbCategory" target="DbCategoryVideos" deleteRule="Deny" db-relationship-path="categoryToVideo"/>
+	<obj-relationship name="articleToCategory" source="DbCategoryArticles" target="DbCategory" deleteRule="Nullify" db-relationship-path="articleToCategory"/>
+	<obj-relationship name="eventToCategory" source="DbCategoryEvents" target="DbCategory" deleteRule="Nullify" db-relationship-path="eventToCategory"/>
+	<obj-relationship name="videoToCategory" source="DbCategoryVideos" target="DbCategory" deleteRule="Nullify" db-relationship-path="videoToCategory"/>
 </data-map>
