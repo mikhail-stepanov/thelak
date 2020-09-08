@@ -68,7 +68,7 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
         try {
             List<DbArticle> dbArticles;
             dbArticles = ObjectSelect.query(DbArticle.class).
-                    where(ExpressionFactory.inDbExp(DbVideo.ID_PK_COLUMN, ids))
+                    where(ExpressionFactory.inDbExp(DbArticle.ID_PK_COLUMN, ids))
                     .select(objectContext);
 
             List<ArticleModel> articleModels = new ArrayList<>();
@@ -85,7 +85,7 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
 
     @Override
     @CrossOrigin
-    @ApiOperation(value = "Get list of speakers")
+    @ApiOperation(value = "Get list of articles")
     @ApiImplicitParams({
             @ApiImplicitParam(
                     name = "page",

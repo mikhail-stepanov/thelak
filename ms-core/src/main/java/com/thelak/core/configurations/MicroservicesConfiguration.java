@@ -5,9 +5,15 @@ import com.thelak.route.article.interfaces.IArticleService;
 import com.thelak.route.article.services.ArticleService;
 import com.thelak.route.auth.interfaces.IAuthenticationService;
 import com.thelak.route.auth.services.AuthenticationService;
+import com.thelak.route.category.interfaces.ICategoryContentService;
+import com.thelak.route.category.interfaces.ICategoryService;
+import com.thelak.route.category.services.CategoryContentService;
+import com.thelak.route.category.services.CategoryService;
 import com.thelak.route.speaker.interfaces.ISpeakerService;
 import com.thelak.route.speaker.services.SpeakerService;
+import com.thelak.route.video.interfaces.IVideoFunctionsService;
 import com.thelak.route.video.interfaces.IVideoService;
+import com.thelak.route.video.servies.VideoFunctionService;
 import com.thelak.route.video.servies.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -78,6 +84,11 @@ public class MicroservicesConfiguration {
     }
 
     @Bean
+    IVideoFunctionsService videoFunctionsService() {
+        return new VideoFunctionService(restTemplate());
+    }
+
+    @Bean
     ISpeakerService speakerService() {
         return new SpeakerService(restTemplate());
     }
@@ -87,6 +98,15 @@ public class MicroservicesConfiguration {
         return new ArticleService(restTemplate());
     }
 
+    @Bean
+    ICategoryService categoryService() {
+        return new CategoryService(restTemplate());
+    }
+
+    @Bean
+    ICategoryContentService categoryContentService() {
+        return new CategoryContentService(restTemplate());
+    }
 
     @Bean
     public FilterRegistrationBean filterRegistrationService() {
