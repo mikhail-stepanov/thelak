@@ -62,7 +62,7 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
     @Override
     @CrossOrigin
     @ApiOperation(value = "Get category by videoId")
-    @RequestMapping(value = CATEGORY_GET, method = {RequestMethod.GET})
+    @RequestMapping(value = CATEGORY_GET_VIDEO, method = {RequestMethod.GET})
     public CategoryModel getByVideo(@RequestParam Long videoId) throws MicroServiceException {
         try {
             DbCategoryVideos dbCategoryVideos = ObjectSelect.query(DbCategoryVideos.class)
@@ -78,7 +78,7 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
     @Override
     @CrossOrigin
     @ApiOperation(value = "Get category by articleId")
-    @RequestMapping(value = CATEGORY_GET, method = {RequestMethod.GET})
+    @RequestMapping(value = CATEGORY_GET_ARTICLE, method = {RequestMethod.GET})
     public CategoryModel getByArticle(@RequestParam Long articleId) throws MicroServiceException {
         try {
             DbCategoryArticles categoryArticles = ObjectSelect.query(DbCategoryArticles.class)
@@ -94,7 +94,7 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
     @Override
     @CrossOrigin
     @ApiOperation(value = "Get category by eventId")
-    @RequestMapping(value = CATEGORY_GET, method = {RequestMethod.GET})
+    @RequestMapping(value = CATEGORY_GET_EVENT, method = {RequestMethod.GET})
     public CategoryModel getByEvent(@RequestParam Long eventId) throws MicroServiceException {
         try {
             DbCategoryEvents dbCategoryEvents = ObjectSelect.query(DbCategoryEvents.class)
