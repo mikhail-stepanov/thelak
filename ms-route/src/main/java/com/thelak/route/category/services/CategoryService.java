@@ -21,6 +21,21 @@ public class CategoryService extends BaseMicroservice implements ICategoryServic
     }
 
     @Override
+    public CategoryModel getByVideo(Long videoId) throws MicroServiceException {
+        return retry(() -> restTemplate.getForEntity(buildUrl(CATEGORY_GET_VIDEO), CategoryModel.class, videoId).getBody());
+    }
+
+    @Override
+    public CategoryModel getByArticle(Long articleId) throws MicroServiceException {
+        return retry(() -> restTemplate.getForEntity(buildUrl(CATEGORY_GET_ARTICLE), CategoryModel.class, articleId).getBody());
+    }
+
+    @Override
+    public CategoryModel getByEvent(Long eventId) throws MicroServiceException {
+        return retry(() -> restTemplate.getForEntity(buildUrl(CATEGORY_GET_EVENT), CategoryModel.class, eventId).getBody());
+    }
+
+    @Override
     public List<CategoryModel> list() throws MicroServiceException {
         return retry(() -> restTemplate.getForEntity(buildUrl(CATEGORY_LIST), List.class).getBody());
     }

@@ -5,6 +5,7 @@ import com.thelak.core.models.UserInfo;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbVideo;
 import com.thelak.database.entity.DbVideoViews;
+import com.thelak.route.category.interfaces.ICategoryContentService;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.exceptions.MsInternalErrorException;
 import com.thelak.route.video.enums.VideoSortEnum;
@@ -44,6 +45,9 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
 
     @Autowired
     private DatabaseService databaseService;
+
+    @Autowired
+    private ICategoryContentService categoryContentService;
 
     ObjectContext objectContext;
 

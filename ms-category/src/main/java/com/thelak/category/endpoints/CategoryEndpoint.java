@@ -3,6 +3,9 @@ package com.thelak.category.endpoints;
 import com.thelak.core.endpoints.AbstractMicroservice;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbCategory;
+import com.thelak.database.entity.DbCategoryArticles;
+import com.thelak.database.entity.DbCategoryEvents;
+import com.thelak.database.entity.DbCategoryVideos;
 import com.thelak.route.category.interfaces.ICategoryService;
 import com.thelak.route.category.models.CategoryCreateModel;
 import com.thelak.route.category.models.CategoryModel;
@@ -50,6 +53,54 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
             DbCategory dbCategory = SelectById.query(DbCategory.class, id).selectFirst(objectContext);
 
             return buildCategoryModel(dbCategory);
+
+        } catch (Exception e) {
+            throw new MsInternalErrorException("Exception while get category");
+        }
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Get category by videoId")
+    @RequestMapping(value = CATEGORY_GET, method = {RequestMethod.GET})
+    public CategoryModel getByVideo(@RequestParam Long videoId) throws MicroServiceException {
+        try {
+            DbCategoryVideos dbCategoryVideos = ObjectSelect.query(DbCategoryVideos.class)
+                    .where(DbCategoryVideos.ID_VIDEO.eq(videoId)).selectFirst(objectContext);
+
+            return buildCategoryModel(dbCategoryVideos.getVideoToCategory());
+
+        } catch (Exception e) {
+            throw new MsInternalErrorException("Exception while get category");
+        }
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Get category by articleId")
+    @RequestMapping(value = CATEGORY_GET, method = {RequestMethod.GET})
+    public CategoryModel getByArticle(@RequestParam Long articleId) throws MicroServiceException {
+        try {
+            DbCategoryArticles categoryArticles = ObjectSelect.query(DbCategoryArticles.class)
+                    .where(DbCategoryArticles.ID_ARTICLE.eq(articleId)).selectFirst(objectContext);
+
+            return buildCategoryModel(categoryArticles.getArticleToCategory());
+
+        } catch (Exception e) {
+            throw new MsInternalErrorException("Exception while get category");
+        }
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Get category by eventId")
+    @RequestMapping(value = CATEGORY_GET, method = {RequestMethod.GET})
+    public CategoryModel getByEvent(@RequestParam Long eventId) throws MicroServiceException {
+        try {
+            DbCategoryEvents dbCategoryEvents = ObjectSelect.query(DbCategoryEvents.class)
+                    .where(DbCategoryEvents.ID_EVENT.eq(eventId)).selectFirst(objectContext);
+
+            return buildCategoryModel(dbCategoryEvents.getEventToCategory());
 
         } catch (Exception e) {
             throw new MsInternalErrorException("Exception while get category");
