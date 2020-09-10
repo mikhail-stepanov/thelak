@@ -60,7 +60,7 @@ public class BaseMicroservice implements ApplicationContextAware {
                     } else {
                         log.error(ex.getCause().getMessage());
                     }
-                    attempt--;
+//                    attempt--;
                     Thread.sleep(sleepTime * 1000);
                 } catch (HttpStatusCodeException ex) {
                     throw createException(ex);

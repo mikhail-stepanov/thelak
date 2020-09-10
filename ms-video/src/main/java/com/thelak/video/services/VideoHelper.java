@@ -3,6 +3,7 @@ package com.thelak.video.services;
 import com.thelak.database.entity.DbVideo;
 import com.thelak.database.entity.DbVideoRating;
 import com.thelak.database.entity.DbVideoViews;
+import com.thelak.route.category.models.CategoryModel;
 import com.thelak.route.video.models.VideoModel;
 import com.thelak.route.video.models.VideoSourceModel;
 
@@ -63,7 +64,7 @@ public class VideoHelper {
         }
     }
 
-    public static VideoModel buildVideoModel(DbVideo dbVideo) {
+    public static VideoModel buildVideoModel(DbVideo dbVideo, CategoryModel categoryModel) {
         return VideoModel.builder()
                 .id((Long) dbVideo.getObjectId().getIdSnapshot().get("id"))
                 .title(dbVideo.getTitle())
@@ -71,7 +72,7 @@ public class VideoHelper {
                 .year(dbVideo.getYear())
                 .country(dbVideo.getCountry())
                 .language(dbVideo.getLanguage())
-                .category(dbVideo.getCategory())
+                .category(categoryModel)
                 .duration(dbVideo.getDuration())
                 .speaker(dbVideo.getSpeaker())
                 .speakerInformation(dbVideo.getSpeakerInformation())

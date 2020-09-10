@@ -6,6 +6,8 @@ import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbVideo;
 import com.thelak.database.entity.DbVideoViews;
 import com.thelak.route.category.interfaces.ICategoryContentService;
+import com.thelak.route.category.interfaces.ICategoryService;
+import com.thelak.route.category.models.CategoryModel;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.exceptions.MsInternalErrorException;
 import com.thelak.route.video.enums.VideoSortEnum;
@@ -49,6 +51,9 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     @Autowired
     private ICategoryContentService categoryContentService;
 
+    @Autowired
+    private ICategoryService categoryService;
+
     ObjectContext objectContext;
 
     protected static final Logger log = LoggerFactory.getLogger(VideoEndpoint.class);
@@ -84,7 +89,9 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
 
             objectContext.commitChanges();
 
-            return buildVideoModel(dbVideo);
+            CategoryModel categoryModel = categoryService.getByVideo(id);
+
+            return buildVideoModel(dbVideo, categoryModel);
 
         } catch (Exception e) {
             throw new MsInternalErrorException("Exception while get video");
@@ -105,7 +112,13 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
             List<VideoModel> videos = new ArrayList<>();
 
             dbVideos.forEach(dbVideo -> {
-                videos.add(buildVideoModel(dbVideo));
+                CategoryModel categoryModel = null;
+                try {
+                    categoryModel = categoryService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
+                } catch (MicroServiceException e) {
+                    log.error(e.staticMessage());
+                }
+                videos.add(buildVideoModel(dbVideo, categoryModel));
             });
 
             return videos;
@@ -143,13 +156,26 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                     paramType = "query"),
             @ApiImplicitParam(
                     name = "languageFilter",
+                    paramType = "query"),
+            @ApiImplicitParam(
+                    name = "categoryFilter",
                     paramType = "query")})
     @RequestMapping(value = VIDEO_LIST, method = {RequestMethod.GET})
     public List<VideoModel> list(@RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size,
                                  @RequestParam(required = false) VideoSortEnum sort, @RequestParam(required = false) VideoSortTypeEnum sortType,
                                  @RequestParam(required = false) List<String> countryFilter, @RequestParam(required = false) List<Integer> yearFilter,
-                                 @RequestParam(required = false) List<String> playgroundFilter, @RequestParam(required = false) List<String> languageFilter) throws MicroServiceException {
+                                 @RequestParam(required = false) List<String> playgroundFilter, @RequestParam(required = false) List<String> languageFilter,
+                                 @RequestParam(required = false) List<Long> categoryFilter) throws MicroServiceException {
         try {
+
+            List<Long> videoIds = new ArrayList<>();
+            final Expression categoryExpression;
+            if (categoryFilter != null) {
+                videoIds.addAll(categoryContentService.videoIds(categoryFilter));
+                categoryExpression = ExpressionFactory.inDbExp(DbVideo.ID_PK_COLUMN, videoIds);
+            } else
+                categoryExpression = DbVideo.TITLE.isNotNull();
+
             final Expression countryFilterExpression;
             if (countryFilter != null)
                 countryFilterExpression = DbVideo.COUNTRY.in(countryFilter);
@@ -178,6 +204,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                         .and(yearFilterExpression)
                         .and(playgroundFilterExpression)
                         .and(playgroundFilterExpression)
+                        .and(categoryExpression)
                         .pageSize(30)
                         .select(objectContext);
             else {
@@ -186,6 +213,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                         .and(yearFilterExpression)
                         .and(playgroundFilterExpression)
                         .and(languageFilterExpression)
+                        .and(categoryExpression)
                         .pageSize(size)
                         .select(objectContext);
                 dbVideos = dbVideos.subList(page * size - size, page * size);
@@ -194,7 +222,13 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
             List<VideoModel> videos = new ArrayList<>();
 
             dbVideos.forEach(dbVideo -> {
-                videos.add(buildVideoModel(dbVideo));
+                CategoryModel categoryModel = null;
+                try {
+                    categoryModel = categoryService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
+                } catch (MicroServiceException e) {
+                    log.error(e.staticMessage());
+                }
+                videos.add(buildVideoModel(dbVideo, categoryModel));
             });
 
             if (sort != null) {
@@ -263,7 +297,13 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
             List<VideoModel> videos = new ArrayList<>();
 
             dbVideos.forEach(dbVideo -> {
-                videos.add(buildVideoModel(dbVideo));
+                CategoryModel categoryModel = null;
+                try {
+                    categoryModel = categoryService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
+                } catch (MicroServiceException e) {
+                    log.error(e.staticMessage());
+                }
+                videos.add(buildVideoModel(dbVideo, categoryModel));
             });
 
             return videos;
@@ -306,8 +346,9 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
 
             objectContext.commitChanges();
 
-            return buildVideoModel(dbVideo);
+            CategoryModel categoryModel = categoryService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
 
+            return buildVideoModel(dbVideo, categoryModel);
         } catch (Exception e) {
             throw new MsInternalErrorException("Exception while create video: " + e.getLocalizedMessage());
         }
@@ -347,7 +388,9 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
 
             objectContext.commitChanges();
 
-            return buildVideoModel(dbVideo);
+            CategoryModel categoryModel = categoryService.getByVideo(request.getId());
+
+            return buildVideoModel(dbVideo, categoryModel);
 
         } catch (Exception e) {
             throw new MsInternalErrorException("Exception while updating video");

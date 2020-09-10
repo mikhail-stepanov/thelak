@@ -6,6 +6,7 @@ import com.thelak.route.category.models.CategoryModel;
 import com.thelak.route.common.services.BaseMicroservice;
 import com.thelak.route.exceptions.MicroServiceException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
@@ -17,22 +18,34 @@ public class CategoryService extends BaseMicroservice implements ICategoryServic
 
     @Override
     public CategoryModel get(Long id) throws MicroServiceException {
-        return retry(() -> restTemplate.getForEntity(buildUrl(CATEGORY_GET), CategoryModel.class, id).getBody());
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(buildUrl(CATEGORY_GET))
+                .queryParam("id", id);
+
+        return retry(() -> restTemplate.getForEntity(builder.toUriString(), CategoryModel.class, id).getBody());
     }
 
     @Override
     public CategoryModel getByVideo(Long videoId) throws MicroServiceException {
-        return retry(() -> restTemplate.getForEntity(buildUrl(CATEGORY_GET_VIDEO), CategoryModel.class, videoId).getBody());
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(buildUrl(CATEGORY_GET_VIDEO))
+                .queryParam("videoId", videoId);
+
+        return retry(() -> restTemplate.getForEntity(builder.toUriString(), CategoryModel.class, videoId).getBody());
     }
 
     @Override
     public CategoryModel getByArticle(Long articleId) throws MicroServiceException {
-        return retry(() -> restTemplate.getForEntity(buildUrl(CATEGORY_GET_ARTICLE), CategoryModel.class, articleId).getBody());
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(buildUrl(CATEGORY_GET_ARTICLE))
+                .queryParam("articleId", articleId);
+
+        return retry(() -> restTemplate.getForEntity(builder.toUriString(), CategoryModel.class, articleId).getBody());
     }
 
     @Override
     public CategoryModel getByEvent(Long eventId) throws MicroServiceException {
-        return retry(() -> restTemplate.getForEntity(buildUrl(CATEGORY_GET_EVENT), CategoryModel.class, eventId).getBody());
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(buildUrl(CATEGORY_GET_EVENT))
+                .queryParam("eventId", eventId);
+
+        return retry(() -> restTemplate.getForEntity(builder.toUriString(), CategoryModel.class, eventId).getBody());
     }
 
     @Override

@@ -4,6 +4,8 @@ import com.thelak.core.endpoints.AbstractMicroservice;
 import com.thelak.core.models.UserInfo;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.*;
+import com.thelak.route.category.interfaces.ICategoryService;
+import com.thelak.route.category.models.CategoryModel;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.exceptions.MsBadRequestException;
 import com.thelak.route.exceptions.MsInternalErrorException;
@@ -35,6 +37,9 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
 
     @Autowired
     private DatabaseService databaseService;
+
+    @Autowired
+    private ICategoryService categoryService;
 
     ObjectContext objectContext;
 
@@ -103,7 +108,13 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
 
             dbVideoFavorites.forEach(favorites -> {
                 DbVideo dbVideo = favorites.getFavoriteToVideo();
-                videos.add(buildVideoModel(dbVideo));
+                CategoryModel categoryModel = null;
+                try {
+                    categoryModel = categoryService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
+                } catch (MicroServiceException e) {
+                    log.error(e.staticMessage());
+                }
+                videos.add(buildVideoModel(dbVideo, categoryModel));
             });
 
             return videos;
@@ -218,7 +229,13 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
 
             dbVideoHistories.forEach(history -> {
                 DbVideo dbVideo = history.getHistoryToVideo();
-                videos.add(buildVideoModel(dbVideo));
+                CategoryModel categoryModel = null;
+                try {
+                    categoryModel = categoryService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
+                } catch (MicroServiceException e) {
+                    log.error(e.staticMessage());
+                }
+                videos.add(buildVideoModel(dbVideo, categoryModel));
             });
 
             return videos;

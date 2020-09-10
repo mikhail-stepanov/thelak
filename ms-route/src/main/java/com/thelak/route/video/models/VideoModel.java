@@ -1,5 +1,6 @@
 package com.thelak.route.video.models;
 
+import com.thelak.route.category.models.CategoryModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,7 +31,7 @@ public class VideoModel {
 
     String language;
 
-    String category;
+    CategoryModel category;
 
     Integer duration;
 

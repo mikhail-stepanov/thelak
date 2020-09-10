@@ -31,9 +31,9 @@ public class VideoService extends BaseMicroservice implements IVideoService {
     @Override
     public List<VideoModel> list(Integer page, Integer size, VideoSortEnum sort, VideoSortTypeEnum sortType,
                                  List<String> countryFilter, List<Integer> yearFilter,
-                                 List<String> playgroundFilter, List<String> languageFilter) throws MicroServiceException {
+                                 List<String> playgroundFilter, List<String> languageFilter, List<Long> categoryFilter) throws MicroServiceException {
         return retry(() -> restTemplate.getForEntity(buildUrl(VIDEO_LIST), List.class,
-                page, size, sort, sortType, countryFilter, yearFilter, playgroundFilter, languageFilter).getBody());
+                page, size, sort, sortType, countryFilter, yearFilter, playgroundFilter, languageFilter, categoryFilter).getBody());
     }
 
     @Override
