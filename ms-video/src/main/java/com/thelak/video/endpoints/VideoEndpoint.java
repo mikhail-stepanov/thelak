@@ -232,6 +232,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                         .and(yearFilterExpression)
                         .and(playgroundFilterExpression)
                         .and(languageFilterExpression)
+                        .pageSize(30)
                         .select(objectContext);
             else {
                 dbVideos = ObjectSelect.query(DbVideo.class)
@@ -241,9 +242,13 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                         .and(yearFilterExpression)
                         .and(playgroundFilterExpression)
                         .and(languageFilterExpression)
+                        .pageSize(size)
                         .select(objectContext);
 
-                dbVideos = dbVideos.subList(page * size - size, page * size);
+                if (dbVideos.size() > size)
+                    dbVideos = dbVideos.subList(page * size - size, page * size);
+                else dbVideos = dbVideos.subList(page * dbVideos.size() - dbVideos.size(), page * dbVideos.size());
+
             }
 
             List<VideoModel> videos = new ArrayList<>();
@@ -264,7 +269,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                 videos.add(buildVideoModel(dbVideo, categoryModel, speakerModel));
             });
 
-            if (sort != null) {
+            if (sort != null && !videos.isEmpty()) {
                 if (sort == VideoSortEnum.NEW) {
                     videos.sort(Comparators.NEW);
                     if (sortType == VideoSortTypeEnum.DESC)
@@ -289,7 +294,6 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
 
             return videos;
         } catch (Exception e) {
-            e.printStackTrace();
             throw new MsInternalErrorException(e.getMessage());
         }
     }
