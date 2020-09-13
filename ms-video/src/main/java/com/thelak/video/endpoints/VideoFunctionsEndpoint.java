@@ -9,6 +9,8 @@ import com.thelak.route.category.models.CategoryModel;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.exceptions.MsBadRequestException;
 import com.thelak.route.exceptions.MsInternalErrorException;
+import com.thelak.route.speaker.interfaces.ISpeakerService;
+import com.thelak.route.speaker.models.SpeakerModel;
 import com.thelak.route.video.interfaces.IVideoFunctionsService;
 import com.thelak.route.video.models.VideoModel;
 import io.swagger.annotations.Api;
@@ -40,6 +42,9 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
 
     @Autowired
     private ICategoryService categoryService;
+
+    @Autowired
+    private ISpeakerService speakerService;
 
     ObjectContext objectContext;
 
@@ -114,12 +119,18 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
                 } catch (MicroServiceException e) {
                     log.error(e.staticMessage());
                 }
-                videos.add(buildVideoModel(dbVideo, categoryModel));
+                SpeakerModel speakerModel = null;
+                try {
+                    speakerModel = speakerService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
+                } catch (MicroServiceException e) {
+                    log.error(e.staticMessage());
+                }
+                videos.add(buildVideoModel(dbVideo, categoryModel, speakerModel));
             });
 
             return videos;
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while getting list of favorites videos");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -235,12 +246,18 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
                 } catch (MicroServiceException e) {
                     log.error(e.staticMessage());
                 }
-                videos.add(buildVideoModel(dbVideo, categoryModel));
+                SpeakerModel speakerModel = null;
+                try {
+                    speakerModel = speakerService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
+                } catch (MicroServiceException e) {
+                    log.error(e.staticMessage());
+                }
+                videos.add(buildVideoModel(dbVideo, categoryModel, speakerModel));
             });
 
             return videos;
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while getting view history");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -255,23 +272,40 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     )
     @RequestMapping(value = VIDEO_TIMECODE_ADD, method = {RequestMethod.POST})
     public Boolean addTimeCode(@RequestParam Long videoId, @RequestParam String timecode) throws MicroServiceException {
-        UserInfo userInfo = (UserInfo) SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getPrincipal();
+        try {
+            UserInfo userInfo = (UserInfo) SecurityContextHolder
+                    .getContext()
+                    .getAuthentication()
+                    .getPrincipal();
 
-        DbVideo video = SelectById.query(DbVideo.class, videoId).selectFirst(objectContext);
+            DbVideo video = SelectById.query(DbVideo.class, videoId).selectFirst(objectContext);
 
-        DbVideoTimecode dbVideoTimecode = objectContext.newObject(DbVideoTimecode.class);
+            try {
+                DbVideoTimecode dbVideoTimecode = ObjectSelect.query(DbVideoTimecode.class)
+                        .where(DbVideoTimecode.ID_USER.eq(userInfo.getUserId()))
+                        .and(DbVideoTimecode.TIMECODE_TO_VIDEO.eq(video))
+                        .selectFirst(objectContext);
 
-        dbVideoTimecode.setCreatedDate(LocalDateTime.now());
-        dbVideoTimecode.setIdUser(userInfo.getUserId());
-        dbVideoTimecode.setTimecodeToVideo(video);
-        dbVideoTimecode.setTimecode(timecode);
+                dbVideoTimecode.setTimecode(timecode);
 
-        objectContext.commitChanges();
+                objectContext.commitChanges();
 
-        return true;
+                return true;
+            } catch (Exception e) {
+                DbVideoTimecode dbVideoTimecode = objectContext.newObject(DbVideoTimecode.class);
+
+                dbVideoTimecode.setCreatedDate(LocalDateTime.now());
+                dbVideoTimecode.setIdUser(userInfo.getUserId());
+                dbVideoTimecode.setTimecodeToVideo(video);
+                dbVideoTimecode.setTimecode(timecode);
+
+                objectContext.commitChanges();
+
+                return true;
+            }
+        } catch (Exception e) {
+            throw new MsInternalErrorException(e.getMessage());
+        }
     }
 
     @Override
@@ -409,6 +443,20 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
                     .selectFirst(objectContext);
 
             return rating != null;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return false;
+        }
+    }
+
+    private boolean checkIsTimecode(DbVideo video, Long userId) {
+        try {
+            DbVideoTimecode timecode = ObjectSelect.query(DbVideoTimecode.class)
+                    .where(DbVideoTimecode.ID_USER.eq(userId))
+                    .and(DbVideoTimecode.TIMECODE_TO_VIDEO.eq(video))
+                    .selectFirst(objectContext);
+
+            return timecode != null;
         } catch (Exception e) {
             log.error(e.getMessage());
             return false;

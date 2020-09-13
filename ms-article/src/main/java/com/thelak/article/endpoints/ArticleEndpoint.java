@@ -56,7 +56,7 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
             return buildArticleModel(dbArticle);
 
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while get article");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -79,7 +79,7 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
 
             return articleModels;
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while getting articles by ids");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -118,7 +118,7 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
 
             return articleModels;
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while get list of Articles");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -166,7 +166,7 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
 
             return articleModels;
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while searching articles");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -190,7 +190,7 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
             return buildArticleModel(dbArticle);
 
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while create article: " + e.getLocalizedMessage());
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -215,7 +215,7 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
             return buildArticleModel(dbArticle);
 
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while updating article");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -233,7 +233,7 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
 
             return true;
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while deleting article");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 }

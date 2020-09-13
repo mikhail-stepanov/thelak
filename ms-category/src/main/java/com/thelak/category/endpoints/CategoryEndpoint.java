@@ -55,7 +55,7 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
             return buildCategoryModel(dbCategory);
 
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while get category");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -71,7 +71,7 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
             return buildCategoryModel(dbCategoryVideos.getVideoToCategory());
 
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while get category");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -87,7 +87,7 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
             return buildCategoryModel(categoryArticles.getArticleToCategory());
 
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while get category");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -103,7 +103,7 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
             return buildCategoryModel(dbCategoryEvents.getEventToCategory());
 
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while get category");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -126,7 +126,7 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
 
             return categoryModels;
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while getting list of categories");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -151,7 +151,7 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
 
             return categoryModels;
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while searching categories");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -171,7 +171,7 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
             return buildCategoryModel(dbCategory);
 
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while create category: " + e.getLocalizedMessage());
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -193,7 +193,7 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
             return buildCategoryModel(dbCategory);
 
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while updating category");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -210,7 +210,7 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
 
             return true;
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while deleting category");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 }

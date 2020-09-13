@@ -92,7 +92,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
                     .status("success").build();
 
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while finding user info");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 

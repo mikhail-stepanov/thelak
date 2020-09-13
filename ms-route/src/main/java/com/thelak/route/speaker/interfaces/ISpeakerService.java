@@ -10,6 +10,9 @@ public interface ISpeakerService {
 
     String SPEAKER_GET = "/v1/speaker/get";
     String SPEAKER_GET_IDS = "/v1/speaker/get/ids";
+    String SPEAKER_GET_VIDEO = "/v1/category/get/video";
+    String SPEAKER_GET_ARTICLE = "/v1/category/get/article";
+    String SPEAKER_GET_EVENT = "/v1/category/get/event";
     String SPEAKER_LIST = "/v1/speaker/list";
     String SPEAKER_CREATE = "/v1/speaker/create";
     String SPEAKER_UPDATE = "/v1/speaker/update";
@@ -19,6 +22,12 @@ public interface ISpeakerService {
     SpeakerModel get(Long id) throws MicroServiceException;
 
     List<SpeakerModel> getByIds(List<Long> ids) throws MicroServiceException;
+
+    SpeakerModel getByVideo(Long videoId) throws MicroServiceException;
+
+    SpeakerModel getByArticle(Long articleId) throws MicroServiceException;
+
+    SpeakerModel getByEvent(Long eventId) throws MicroServiceException;
 
     List<SpeakerModel> list(Integer page, Integer size,
                             List<String> countryFilter) throws MicroServiceException;

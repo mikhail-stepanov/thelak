@@ -31,7 +31,7 @@ public class CategoryContentEndpoint extends AbstractMicroservice implements ICa
 
     ObjectContext objectContext;
 
-    protected static final Logger log = LoggerFactory.getLogger(CategoryEndpoint.class);
+    protected static final Logger log = LoggerFactory.getLogger(CategoryContentEndpoint.class);
 
     @PostConstruct
     private void initialize() {
@@ -52,7 +52,7 @@ public class CategoryContentEndpoint extends AbstractMicroservice implements ICa
                     .where(DbCategoryVideos.VIDEO_TO_CATEGORY.in(dbCategories)).select(objectContext);
 
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while get video ids by category ids");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -70,7 +70,7 @@ public class CategoryContentEndpoint extends AbstractMicroservice implements ICa
                     .where(DbCategoryArticles.ARTICLE_TO_CATEGORY.in(dbCategories)).select(objectContext);
 
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while get article ids by category ids");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -88,7 +88,7 @@ public class CategoryContentEndpoint extends AbstractMicroservice implements ICa
                     .where(DbCategoryEvents.EVENT_TO_CATEGORY.in(dbCategories)).select(objectContext);
 
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while get events ids by category ids");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 }

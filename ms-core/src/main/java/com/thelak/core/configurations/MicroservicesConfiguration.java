@@ -9,7 +9,9 @@ import com.thelak.route.category.interfaces.ICategoryContentService;
 import com.thelak.route.category.interfaces.ICategoryService;
 import com.thelak.route.category.services.CategoryContentService;
 import com.thelak.route.category.services.CategoryService;
+import com.thelak.route.speaker.interfaces.ISpeakerContentService;
 import com.thelak.route.speaker.interfaces.ISpeakerService;
+import com.thelak.route.speaker.services.SpeakerContentService;
 import com.thelak.route.speaker.services.SpeakerService;
 import com.thelak.route.video.interfaces.IVideoFunctionsService;
 import com.thelak.route.video.interfaces.IVideoService;
@@ -91,6 +93,11 @@ public class MicroservicesConfiguration {
     @Bean
     ISpeakerService speakerService() {
         return new SpeakerService(restTemplate());
+    }
+
+    @Bean
+    ISpeakerContentService speakerContentService() {
+        return new SpeakerContentService(restTemplate());
     }
 
     @Bean

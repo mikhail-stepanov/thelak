@@ -1,6 +1,7 @@
 package com.thelak.route.video.models;
 
 import com.thelak.route.category.models.CategoryModel;
+import com.thelak.route.speaker.models.SpeakerModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,9 +36,7 @@ public class VideoModel {
 
     Integer duration;
 
-    String speaker;
-
-    String speakerInformation;
+    SpeakerModel speaker;
 
     String playground;
 

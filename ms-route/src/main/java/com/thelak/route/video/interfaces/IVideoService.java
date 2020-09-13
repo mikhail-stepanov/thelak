@@ -27,7 +27,8 @@ public interface IVideoService {
 
     List<VideoModel> list(Integer page, Integer size, VideoSortEnum sort, VideoSortTypeEnum sortType,
                           List<String> countryFilter, List<Integer> yearFilter,
-                          List<String> playgroundFilter, List<String> languageFilter, List<Long> categoryFilter) throws MicroServiceException;
+                          List<String> playgroundFilter, List<String> languageFilter,
+                          List<Long> categoryFilter, List<Long> speakerFilter) throws MicroServiceException;
 
     List<VideoModel> search(String search, Integer page, Integer size) throws MicroServiceException;
 

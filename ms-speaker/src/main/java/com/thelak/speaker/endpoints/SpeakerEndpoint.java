@@ -2,8 +2,7 @@ package com.thelak.speaker.endpoints;
 
 import com.thelak.core.endpoints.AbstractMicroservice;
 import com.thelak.database.DatabaseService;
-import com.thelak.database.entity.DbSpeaker;
-import com.thelak.database.entity.DbVideo;
+import com.thelak.database.entity.*;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.exceptions.MsInternalErrorException;
 import com.thelak.route.speaker.interfaces.ISpeakerService;
@@ -58,7 +57,7 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
             return buildSpeakerModel(dbSpeaker);
 
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while get speaker");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -81,7 +80,55 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
 
             return speakerModels;
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while getting speakers by ids");
+            throw new MsInternalErrorException(e.getMessage());
+        }
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Get speaker by videoId")
+    @RequestMapping(value = SPEAKER_GET_VIDEO, method = {RequestMethod.GET})
+    public SpeakerModel getByVideo(@RequestParam Long videoId) throws MicroServiceException {
+        try {
+            DbSpeakerVideos dbSpeakerVideos = ObjectSelect.query(DbSpeakerVideos.class)
+                    .where(DbSpeakerVideos.ID_VIDEO.eq(videoId)).selectFirst(objectContext);
+
+            return buildSpeakerModel(dbSpeakerVideos.getVideoToSpeaker());
+
+        } catch (Exception e) {
+            throw new MsInternalErrorException(e.getMessage());
+        }
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Get speaker by articleId")
+    @RequestMapping(value = SPEAKER_GET_ARTICLE, method = {RequestMethod.GET})
+    public SpeakerModel getByArticle(@RequestParam Long articleId) throws MicroServiceException {
+        try {
+            DbSpeakerArticles speakerArticles = ObjectSelect.query(DbSpeakerArticles.class)
+                    .where(DbSpeakerArticles.ID_ARTICLE.eq(articleId)).selectFirst(objectContext);
+
+            return buildSpeakerModel(speakerArticles.getArticleToSpeaker());
+
+        } catch (Exception e) {
+            throw new MsInternalErrorException(e.getMessage());
+        }
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Get speaker by eventId")
+    @RequestMapping(value = SPEAKER_GET_EVENT, method = {RequestMethod.GET})
+    public SpeakerModel getByEvent(@RequestParam Long eventId) throws MicroServiceException {
+        try {
+            DbSpeakerEvents dbSpeakerEvents = ObjectSelect.query(DbSpeakerEvents.class)
+                    .where(DbSpeakerEvents.ID_EVENT.eq(eventId)).selectFirst(objectContext);
+
+            return buildSpeakerModel(dbSpeakerEvents.getEventToSpeaker());
+
+        } catch (Exception e) {
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -130,7 +177,7 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
 
             return speakers;
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while get list of speakers");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -176,7 +223,7 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
 
             return speakers;
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while searching speakers");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -200,7 +247,7 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
             return buildSpeakerModel(dbSpeaker);
 
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while create speaker: " + e.getLocalizedMessage());
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -225,7 +272,7 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
             return buildSpeakerModel(dbSpeaker);
 
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while updating speaker");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -243,7 +290,7 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
 
             return true;
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while deleting speaker");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 }

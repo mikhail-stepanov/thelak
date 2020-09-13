@@ -10,6 +10,9 @@ import com.thelak.route.category.interfaces.ICategoryService;
 import com.thelak.route.category.models.CategoryModel;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.exceptions.MsInternalErrorException;
+import com.thelak.route.speaker.interfaces.ISpeakerContentService;
+import com.thelak.route.speaker.interfaces.ISpeakerService;
+import com.thelak.route.speaker.models.SpeakerModel;
 import com.thelak.route.video.enums.VideoSortEnum;
 import com.thelak.route.video.enums.VideoSortTypeEnum;
 import com.thelak.route.video.interfaces.IVideoService;
@@ -52,6 +55,12 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     private ICategoryContentService categoryContentService;
 
     @Autowired
+    private ISpeakerContentService speakerContentService;
+
+    @Autowired
+    private ISpeakerService speakerService;
+
+    @Autowired
     private ICategoryService categoryService;
 
     ObjectContext objectContext;
@@ -91,10 +100,12 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
 
             CategoryModel categoryModel = categoryService.getByVideo(id);
 
-            return buildVideoModel(dbVideo, categoryModel);
+            SpeakerModel speakerModel = speakerService.getByVideo(id);
+
+            return buildVideoModel(dbVideo, categoryModel, speakerModel);
 
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while get video");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -118,12 +129,18 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                 } catch (MicroServiceException e) {
                     log.error(e.staticMessage());
                 }
-                videos.add(buildVideoModel(dbVideo, categoryModel));
+                SpeakerModel speakerModel = null;
+                try {
+                    speakerModel = speakerService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
+                } catch (MicroServiceException e) {
+                    log.error(e.staticMessage());
+                }
+                videos.add(buildVideoModel(dbVideo, categoryModel, speakerModel));
             });
 
             return videos;
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while getting videos by ids");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -159,22 +176,31 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                     paramType = "query"),
             @ApiImplicitParam(
                     name = "categoryFilter",
+                    paramType = "query"),
+            @ApiImplicitParam(
+                    name = "speakerFilter",
                     paramType = "query")})
     @RequestMapping(value = VIDEO_LIST, method = {RequestMethod.GET})
     public List<VideoModel> list(@RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size,
                                  @RequestParam(required = false) VideoSortEnum sort, @RequestParam(required = false) VideoSortTypeEnum sortType,
                                  @RequestParam(required = false) List<String> countryFilter, @RequestParam(required = false) List<Integer> yearFilter,
                                  @RequestParam(required = false) List<String> playgroundFilter, @RequestParam(required = false) List<String> languageFilter,
-                                 @RequestParam(required = false) List<Long> categoryFilter) throws MicroServiceException {
+                                 @RequestParam(required = false) List<Long> categoryFilter, @RequestParam(required = false) List<Long> speakerFilter) throws MicroServiceException {
         try {
 
-            List<Long> videoIds = new ArrayList<>();
+            List<Long> videoIdsByCategory = new ArrayList<>();
             final Expression categoryExpression;
-            if (categoryFilter != null) {
-                videoIds.addAll(categoryContentService.videoIds(categoryFilter));
-                categoryExpression = ExpressionFactory.inDbExp(DbVideo.ID_PK_COLUMN, videoIds);
-            } else
-                categoryExpression = DbVideo.TITLE.isNotNull();
+            if (categoryFilter != null || categoryFilter.get(0) == 0) {
+                videoIdsByCategory.addAll(categoryContentService.videoIds(categoryFilter));
+                categoryExpression = ExpressionFactory.inDbExp(DbVideo.ID_PK_COLUMN, videoIdsByCategory);
+            } else categoryExpression = DbVideo.TITLE.isNotNull();
+
+            List<Long> videoIdsBySpeaker = new ArrayList<>();
+            final Expression speakerExpression;
+            if (categoryFilter != null || categoryFilter.get(0) == 0) {
+                videoIdsBySpeaker.addAll(speakerContentService.videoIds(categoryFilter));
+                speakerExpression = ExpressionFactory.inDbExp(DbVideo.ID_PK_COLUMN, videoIdsBySpeaker);
+            } else speakerExpression = DbVideo.TITLE.isNotNull();
 
             final Expression countryFilterExpression;
             if (countryFilter != null)
@@ -204,6 +230,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                         .and(yearFilterExpression)
                         .and(playgroundFilterExpression)
                         .and(playgroundFilterExpression)
+                        .and(speakerExpression)
                         .and(categoryExpression)
                         .pageSize(30)
                         .select(objectContext);
@@ -213,6 +240,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                         .and(yearFilterExpression)
                         .and(playgroundFilterExpression)
                         .and(languageFilterExpression)
+                        .and(speakerExpression)
                         .and(categoryExpression)
                         .pageSize(size)
                         .select(objectContext);
@@ -228,7 +256,13 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                 } catch (MicroServiceException e) {
                     log.error(e.staticMessage());
                 }
-                videos.add(buildVideoModel(dbVideo, categoryModel));
+                SpeakerModel speakerModel = null;
+                try {
+                    speakerModel = speakerService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
+                } catch (MicroServiceException e) {
+                    log.error(e.staticMessage());
+                }
+                videos.add(buildVideoModel(dbVideo, categoryModel, speakerModel));
             });
 
             if (sort != null) {
@@ -256,7 +290,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
 
             return videos;
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while get list of videos");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -303,12 +337,18 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                 } catch (MicroServiceException e) {
                     log.error(e.staticMessage());
                 }
-                videos.add(buildVideoModel(dbVideo, categoryModel));
+                SpeakerModel speakerModel = null;
+                try {
+                    speakerModel = speakerService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
+                } catch (MicroServiceException e) {
+                    log.error(e.staticMessage());
+                }
+                videos.add(buildVideoModel(dbVideo, categoryModel, speakerModel));
             });
 
             return videos;
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while searching videos");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -348,9 +388,11 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
 
             CategoryModel categoryModel = categoryService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
 
-            return buildVideoModel(dbVideo, categoryModel);
+            SpeakerModel speakerModel = speakerService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
+
+            return buildVideoModel(dbVideo, categoryModel, speakerModel);
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while create video: " + e.getLocalizedMessage());
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -380,8 +422,6 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
             dbVideo.setYear(request.getYear());
             dbVideo.setCountry(request.getCountry());
             dbVideo.setDuration(request.getDuration());
-            dbVideo.setSpeaker(request.getSpeaker());
-            dbVideo.setSpeakerInformation(request.getSpeakerInformation());
             dbVideo.setPartnerLogoUrl(request.getPartnerLogoUrl());
             dbVideo.setCoverUrl(request.getCoverUrl());
             dbVideo.setCreatedDate(LocalDateTime.now());
@@ -390,10 +430,11 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
 
             CategoryModel categoryModel = categoryService.getByVideo(request.getId());
 
-            return buildVideoModel(dbVideo, categoryModel);
+            SpeakerModel speakerModel = speakerService.getByVideo(request.getId());
 
+            return buildVideoModel(dbVideo, categoryModel, speakerModel);
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while updating video");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 
@@ -412,7 +453,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
 
             return true;
         } catch (Exception e) {
-            throw new MsInternalErrorException("Exception while deleting video");
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 

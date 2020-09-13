@@ -6,6 +6,7 @@ import com.thelak.route.speaker.interfaces.ISpeakerService;
 import com.thelak.route.speaker.models.SpeakerCreateRequest;
 import com.thelak.route.speaker.models.SpeakerModel;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
@@ -24,6 +25,30 @@ public class SpeakerService extends BaseMicroservice implements ISpeakerService 
     public List<SpeakerModel> getByIds(List<Long> ids) throws MicroServiceException {
         return retry(() -> restTemplate.getForEntity(buildUrl(SPEAKER_GET_IDS), List.class, ids).getBody());
 
+    }
+
+    @Override
+    public SpeakerModel getByVideo(Long videoId) throws MicroServiceException {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(buildUrl(SPEAKER_GET_VIDEO))
+                .queryParam("videoId", videoId);
+
+        return retry(() -> restTemplate.getForEntity(builder.toUriString(), SpeakerModel.class, videoId).getBody());
+    }
+
+    @Override
+    public SpeakerModel getByArticle(Long articleId) throws MicroServiceException {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(buildUrl(SPEAKER_GET_ARTICLE))
+                .queryParam("articleId", articleId);
+
+        return retry(() -> restTemplate.getForEntity(builder.toUriString(), SpeakerModel.class, articleId).getBody());
+    }
+
+    @Override
+    public SpeakerModel getByEvent(Long eventId) throws MicroServiceException {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(buildUrl(SPEAKER_GET_EVENT))
+                .queryParam("eventId", eventId);
+
+        return retry(() -> restTemplate.getForEntity(builder.toUriString(), SpeakerModel.class, eventId).getBody());
     }
 
     @Override
