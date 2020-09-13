@@ -226,24 +226,23 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
             List<DbVideo> dbVideos;
             if (page == null || size == null)
                 dbVideos = ObjectSelect.query(DbVideo.class)
-                        .where(countryFilterExpression)
-                        .and(yearFilterExpression)
-                        .and(playgroundFilterExpression)
-                        .and(playgroundFilterExpression)
-                        .and(speakerExpression)
+                        .where(speakerExpression)
                         .and(categoryExpression)
-                        .pageSize(30)
-                        .select(objectContext);
-            else {
-                dbVideos = ObjectSelect.query(DbVideo.class)
-                        .where(countryFilterExpression)
+                        .and(countryFilterExpression)
                         .and(yearFilterExpression)
                         .and(playgroundFilterExpression)
                         .and(languageFilterExpression)
-                        .and(speakerExpression)
-                        .and(categoryExpression)
-                        .pageSize(size)
                         .select(objectContext);
+            else {
+                dbVideos = ObjectSelect.query(DbVideo.class)
+                        .where(speakerExpression)
+                        .and(categoryExpression)
+                        .and(countryFilterExpression)
+                        .and(yearFilterExpression)
+                        .and(playgroundFilterExpression)
+                        .and(languageFilterExpression)
+                        .select(objectContext);
+
                 dbVideos = dbVideos.subList(page * size - size, page * size);
             }
 
@@ -290,6 +289,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
 
             return videos;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new MsInternalErrorException(e.getMessage());
         }
     }
