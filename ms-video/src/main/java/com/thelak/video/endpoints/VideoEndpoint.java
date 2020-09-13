@@ -190,14 +190,14 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
 
             List<Long> videoIdsByCategory = new ArrayList<>();
             final Expression categoryExpression;
-            if (categoryFilter != null || categoryFilter.get(0) == 0) {
+            if (categoryFilter != null && categoryFilter.get(0) != 0) {
                 videoIdsByCategory.addAll(categoryContentService.videoIds(categoryFilter));
                 categoryExpression = ExpressionFactory.inDbExp(DbVideo.ID_PK_COLUMN, videoIdsByCategory);
             } else categoryExpression = DbVideo.TITLE.isNotNull();
 
             List<Long> videoIdsBySpeaker = new ArrayList<>();
             final Expression speakerExpression;
-            if (categoryFilter != null || categoryFilter.get(0) == 0) {
+            if (speakerFilter != null && speakerFilter.get(0) != 0) {
                 videoIdsBySpeaker.addAll(speakerContentService.videoIds(categoryFilter));
                 speakerExpression = ExpressionFactory.inDbExp(DbVideo.ID_PK_COLUMN, videoIdsBySpeaker);
             } else speakerExpression = DbVideo.TITLE.isNotNull();
