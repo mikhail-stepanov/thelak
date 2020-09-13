@@ -17,15 +17,14 @@ public class CategoryContentService extends BaseMicroservice implements ICategor
     @Override
     public List<Long> videoIds(List<Long> categoryIds) throws MicroServiceException {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(buildUrl(CATEGORY_VIDEO))
-                .queryParam("categoryIds", categoryIds);
-
+                .queryParam("categoryIds", categoryIds.toArray());
         return retry(() -> restTemplate.getForEntity(builder.toUriString(), List.class, categoryIds).getBody());
     }
 
     @Override
     public List<Long> articleIds(List<Long> categoryIds) throws MicroServiceException {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(buildUrl(CATEGORY_ARTICLE))
-                .queryParam("categoryIds", categoryIds);
+                .queryParam("categoryIds", categoryIds.toArray());
 
         return retry(() -> restTemplate.getForEntity(builder.toUriString(), List.class, categoryIds).getBody());
     }
@@ -33,7 +32,7 @@ public class CategoryContentService extends BaseMicroservice implements ICategor
     @Override
     public List<Long> eventIds(List<Long> categoryIds) throws MicroServiceException {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(buildUrl(CATEGORY_EVENT))
-                .queryParam("categoryIds", categoryIds);
+                .queryParam("categoryIds", categoryIds.toArray());
 
         return retry(() -> restTemplate.getForEntity(builder.toUriString(), List.class, categoryIds).getBody());
     }
