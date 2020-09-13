@@ -3,7 +3,6 @@ package com.thelak.article.endpoints;
 import com.thelak.core.endpoints.AbstractMicroservice;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbArticle;
-import com.thelak.database.entity.DbVideo;
 import com.thelak.route.article.interfaces.IArticleService;
 import com.thelak.route.article.models.ArticleCreateModel;
 import com.thelak.route.article.models.ArticleModel;

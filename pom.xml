@@ -63,6 +63,7 @@
         <module>ms-speaker</module>
         <module>ms-video</module>
         <module>ms-smtp</module>
+        <module>ms-event</module>
     </modules>
 
     <dependencies>

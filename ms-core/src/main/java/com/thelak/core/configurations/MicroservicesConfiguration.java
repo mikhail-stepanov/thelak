@@ -9,6 +9,8 @@ import com.thelak.route.category.interfaces.ICategoryContentService;
 import com.thelak.route.category.interfaces.ICategoryService;
 import com.thelak.route.category.services.CategoryContentService;
 import com.thelak.route.category.services.CategoryService;
+import com.thelak.route.event.interfaces.IEventService;
+import com.thelak.route.event.services.EventService;
 import com.thelak.route.speaker.interfaces.ISpeakerContentService;
 import com.thelak.route.speaker.interfaces.ISpeakerService;
 import com.thelak.route.speaker.services.SpeakerContentService;
@@ -113,6 +115,11 @@ public class MicroservicesConfiguration {
     @Bean
     ICategoryContentService categoryContentService() {
         return new CategoryContentService(restTemplate());
+    }
+
+    @Bean
+    IEventService eventService() {
+        return new EventService(restTemplate());
     }
 
     @Bean
