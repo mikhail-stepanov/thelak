@@ -3,6 +3,7 @@ package com.thelak.event.endpoints;
 import com.thelak.core.endpoints.AbstractMicroservice;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbEvent;
+import com.thelak.database.entity.DbVideo;
 import com.thelak.route.event.interfaces.IEventService;
 import com.thelak.route.event.models.EventCreateModel;
 import com.thelak.route.event.models.EventModel;
@@ -13,6 +14,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
@@ -22,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +48,6 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get event by id")
     @RequestMapping(value = EVENT_GET, method = {RequestMethod.GET})
     public EventModel get(@RequestParam Long id) throws MicroServiceException {
@@ -60,7 +62,6 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get list of events by ids")
     @RequestMapping(value = EVENT_GET_IDS, method = {RequestMethod.GET})
     public List<EventModel> getByIds(@RequestParam List<Long> ids) throws MicroServiceException {
@@ -83,7 +84,6 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get list of events")
     @ApiImplicitParams({
             @ApiImplicitParam(
@@ -91,19 +91,42 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
                     paramType = "query"),
             @ApiImplicitParam(
                     name = "size",
-                    paramType = "query")})
+                    paramType = "query"),
+            @ApiImplicitParam(
+                    name = "startDate",
+                    paramType = "query"),
+            @ApiImplicitParam(
+                    name = "endDate",
+                    paramType = "query")
+    })
     @RequestMapping(value = EVENT_LIST, method = {RequestMethod.GET})
     public List<EventModel> list(@RequestParam(required = false) Integer page,
-                                 @RequestParam(required = false) Integer size) throws MicroServiceException {
+                                 @RequestParam(required = false) Integer size,
+                                 @RequestParam(required = false) LocalDate startDate,
+                                 @RequestParam(required = false) LocalDate endDate) throws MicroServiceException {
         try {
+
+            final Expression startDateExpression;
+            if (startDate != null)
+                startDateExpression = DbEvent.DATE.gte(startDate);
+            else startDateExpression = DbVideo.TITLE.isNotNull();
+
+            final Expression endDateExpression;
+            if (endDate != null)
+                endDateExpression = DbEvent.DATE.lte(endDate);
+            else endDateExpression = DbVideo.TITLE.isNotNull();
 
             List<DbEvent> dbEvents;
             if (page == null || size == null)
                 dbEvents = ObjectSelect.query(DbEvent.class)
+                        .where(startDateExpression)
+                        .and(endDateExpression)
                         .pageSize(30)
                         .select(objectContext);
             else {
                 dbEvents = ObjectSelect.query(DbEvent.class)
+                        .where(startDateExpression)
+                        .and(endDateExpression)
                         .pageSize(size)
                         .select(objectContext);
                 dbEvents = dbEvents.subList(page * size - size, page * size);
@@ -122,7 +145,6 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Find event by title/description")
     @ApiImplicitParams({
             @ApiImplicitParam(
@@ -168,7 +190,6 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Create event")
     @RequestMapping(value = EVENT_CREATE, method = {RequestMethod.POST})
     public EventModel create(@RequestBody EventCreateModel request) throws MicroServiceException {
@@ -191,7 +212,6 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Update event by id")
     @RequestMapping(value = EVENT_UPDATE, method = {RequestMethod.PUT})
     public EventModel update(@RequestBody EventModel request) throws MicroServiceException {
@@ -215,7 +235,6 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Delete event by id")
     @RequestMapping(value = EVENT_DELETE, method = {RequestMethod.DELETE})
     public Boolean delete(@RequestParam Long id) throws MicroServiceException {

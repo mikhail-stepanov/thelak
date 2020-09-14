@@ -7,6 +7,9 @@ import com.thelak.route.smtp.models.SendEmailResponse;
 public interface IEmailService {
 
     String EMAIL_SIMPLE = "/v1/email";
+    String EMAIL_HTML = "/v1/email/html";
 
-    SendEmailResponse sendSimpleMessage(SendEmailRequest request) throws MicroServiceException;
+    Boolean sendMessage(SendEmailRequest request) throws MicroServiceException;
+
+    Boolean sendHtmlMessage(String to, String subject, String htmlBody);
 }

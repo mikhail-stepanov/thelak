@@ -15,8 +15,13 @@ public class EmailService extends BaseMicroservice implements IEmailService {
     }
 
     @Override
-    public SendEmailResponse sendSimpleMessage(SendEmailRequest request) throws MicroServiceException {
-        return retry(() -> restTemplate.postForEntity(buildUrl(EMAIL_SIMPLE), request, SendEmailResponse.class).getBody());
+    public Boolean sendMessage(SendEmailRequest request) throws MicroServiceException {
+        return retry(() -> restTemplate.postForEntity(buildUrl(EMAIL_SIMPLE), request, Boolean.class).getBody());
 
+    }
+
+    @Override
+    public Boolean sendHtmlMessage(String to, String subject, String htmlBody) {
+        return null;
     }
 }

@@ -82,6 +82,7 @@ public class VideoHelper {
                 .viewsCount(countView(dbVideo))
                 .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
                 .coverUrl(dbVideo.getCoverUrl())
+                .createdDate(dbVideo.getCreatedDate())
                 .build();
     }
 }
