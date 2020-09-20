@@ -1,5 +1,7 @@
 package com.thelak.route.article.services;
 
+import com.thelak.route.article.enums.ArticleSortEnum;
+import com.thelak.route.article.enums.ArticleSortTypeEnum;
 import com.thelak.route.article.interfaces.IArticleService;
 import com.thelak.route.article.models.ArticleCreateModel;
 import com.thelak.route.article.models.ArticleModel;
@@ -26,7 +28,7 @@ public class ArticleService extends BaseMicroservice implements IArticleService 
     }
 
     @Override
-    public List<ArticleModel> list(Integer page, Integer size) throws MicroServiceException {
+    public List<ArticleModel> list(Integer page, Integer size, ArticleSortEnum sort, ArticleSortTypeEnum sortType) throws MicroServiceException {
         return retry(() -> restTemplate.getForEntity(buildUrl(ARTICLE_LIST), List.class,
                 page, size).getBody());
     }

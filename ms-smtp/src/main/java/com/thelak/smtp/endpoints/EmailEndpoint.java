@@ -2,6 +2,7 @@ package com.thelak.smtp.endpoints;
 
 import com.thelak.core.endpoints.AbstractMicroservice;
 import com.thelak.database.DatabaseService;
+import com.thelak.database.entity.DbSmtpTemplate;
 import com.thelak.database.entity.DbUser;
 import com.thelak.route.smtp.interfaces.IEmailService;
 import com.thelak.route.smtp.models.SendEmailRequest;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import javax.annotation.PostConstruct;
 import javax.mail.internet.MimeMessage;
@@ -31,6 +34,9 @@ public class EmailEndpoint extends AbstractMicroservice implements IEmailService
 
     @Autowired
     public SimpleMailMessage template;
+
+    @Autowired
+    private SpringTemplateEngine thymeleafTemplateEngine;
 
     @Autowired
     DatabaseService databaseService;
@@ -48,12 +54,11 @@ public class EmailEndpoint extends AbstractMicroservice implements IEmailService
     @RequestMapping(value = EMAIL_SIMPLE, method = {RequestMethod.POST})
     public Boolean sendMessage(@RequestBody SendEmailRequest request) {
         try {
-            DbUser user = SelectById.query(DbUser.class, request.getUserId()).selectFirst(objectContext);
 
             SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(user.getEmail());
+            message.setTo(request.getEmail());
             message.setSubject("Thelak. Подтверждение регистрации.");
-            message.setText("Подтвердите регистрация на аккаунт " + user.getEmail());
+            message.setText("Подтвердите регистрация на аккаунт " + request.getEmail());
             emailSender.send(message);
 
             return true;
@@ -64,9 +69,15 @@ public class EmailEndpoint extends AbstractMicroservice implements IEmailService
     }
 
     @Override
-    @RequestMapping(value = EMAIL_HTML, method = {RequestMethod.POST})
-    public Boolean sendHtmlMessage(String to, String subject, String htmlBody) {
+    @RequestMapping(value = EMAIL_HTML, method = {RequestMethod.GET})
+    public Boolean sendHtmlMessage(String to, String subject, String link, Long templateId) {
         try {
+            DbSmtpTemplate smtpTemplate = SelectById.query(DbSmtpTemplate.class, templateId).selectFirst(objectContext);
+
+            Context thymeleafContext = new Context();
+            thymeleafContext.setVariable("link", link);
+            String htmlBody = thymeleafTemplateEngine.process("thymeleaf.html", thymeleafContext);
+
             MimeMessage message = emailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setTo(to);

@@ -3,6 +3,8 @@ package com.thelak.article.endpoints;
 import com.thelak.core.endpoints.AbstractMicroservice;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbArticle;
+import com.thelak.route.article.enums.ArticleSortEnum;
+import com.thelak.route.article.enums.ArticleSortTypeEnum;
 import com.thelak.route.article.interfaces.IArticleService;
 import com.thelak.route.article.models.ArticleCreateModel;
 import com.thelak.route.article.models.ArticleModel;
@@ -24,6 +26,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import static com.thelak.article.services.ArticleHelper.buildArticleModel;
@@ -91,10 +95,19 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
                     paramType = "query"),
             @ApiImplicitParam(
                     name = "size",
+                    paramType = "query"),
+            @ApiImplicitParam(
+                    name = "sort",
+                    dataType = "com.thelak.route.article.enums.ArticleSortEnum",
+                    paramType = "query"),
+            @ApiImplicitParam(
+                    name = "sortType",
+                    dataType = "com.thelak.route.article.enums.ArticleSortTypeEnum",
                     paramType = "query")})
     @RequestMapping(value = ARTICLE_LIST, method = {RequestMethod.GET})
     public List<ArticleModel> list(@RequestParam(required = false) Integer page,
-                                   @RequestParam(required = false) Integer size) throws MicroServiceException {
+                                   @RequestParam(required = false) Integer size,
+                                   @RequestParam(required = false) ArticleSortEnum sort, @RequestParam(required = false) ArticleSortTypeEnum sortType) throws MicroServiceException {
         try {
 
             List<DbArticle> dbArticles;
@@ -115,6 +128,18 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
                 articleModels.add(buildArticleModel(dbArticle));
             });
 
+            if (sort != null && !articleModels.isEmpty()) {
+                if (sort == ArticleSortEnum.NEW) {
+                    articleModels.sort(Comparators.NEW);
+                    if (sortType == ArticleSortTypeEnum.DESC)
+                        Collections.reverse(articleModels);
+                }
+                if (sort == ArticleSortEnum.RATING) {
+                    articleModels.sort(Comparators.RATING);
+                    if (sortType == ArticleSortTypeEnum.DESC)
+                        Collections.reverse(articleModels);
+                }
+            }
             return articleModels;
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
@@ -234,5 +259,11 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
         }
+    }
+
+    public static class Comparators {
+        public static final Comparator<ArticleModel> RATING = Comparator.comparing(ArticleModel::getRating);
+        public static final Comparator<ArticleModel> NEW = Comparator.comparing(ArticleModel::getCreatedDate);
+
     }
 }

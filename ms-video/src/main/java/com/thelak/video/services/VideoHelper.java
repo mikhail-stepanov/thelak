@@ -29,13 +29,13 @@ public class VideoHelper {
         sourceModels.add(VideoSourceModel.builder()
                 .src(dbVideo.getContentUrl720())
                 .type("video/mp4")
-                .label("HD")
+                .label("720p")
                 .res(720).build());
         sourceModels.add(VideoSourceModel.builder()
                 .src(dbVideo.getContentUrl720())
                 .type("video/mp4")
-                .label("Full HD")
-                .res(720).build());
+                .label("1080p")
+                .res(1080).build());
         return sourceModels;
     }
 
@@ -82,6 +82,7 @@ public class VideoHelper {
                 .viewsCount(countView(dbVideo))
                 .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
                 .coverUrl(dbVideo.getCoverUrl())
+                .posterUrl(dbVideo.getPosterUrl())
                 .createdDate(dbVideo.getCreatedDate())
                 .build();
     }

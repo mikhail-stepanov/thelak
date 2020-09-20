@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SendEmailRequest {
 
-    int userId;
+    String email;
 
 }

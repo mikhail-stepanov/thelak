@@ -23,6 +23,7 @@
 		<db-attribute name="modified_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="partner_logo_url" type="VARCHAR" length="2048"/>
 		<db-attribute name="playground" type="VARCHAR" length="255"/>
+		<db-attribute name="poster_url" type="VARCHAR" length="2048"/>
 		<db-attribute name="speaker" type="VARCHAR" length="64"/>
 		<db-attribute name="speaker_information" type="VARCHAR" length="2048"/>
 		<db-attribute name="title" type="VARCHAR" isMandatory="true" length="255"/>
@@ -86,6 +87,7 @@
 		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
 		<obj-attribute name="partnerLogoUrl" type="java.lang.String" db-attribute-path="partner_logo_url"/>
 		<obj-attribute name="playground" type="java.lang.String" db-attribute-path="playground"/>
+		<obj-attribute name="posterUrl" type="java.lang.String" db-attribute-path="poster_url"/>
 		<obj-attribute name="speaker" type="java.lang.String" db-attribute-path="speaker"/>
 		<obj-attribute name="speakerInformation" type="java.lang.String" db-attribute-path="speaker_information"/>
 		<obj-attribute name="title" type="java.lang.String" db-attribute-path="title"/>

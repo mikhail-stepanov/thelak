@@ -9,10 +9,7 @@ import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbUser;
 import com.thelak.database.entity.DbUserSession;
 import com.thelak.route.auth.interfaces.IAuthenticationService;
-import com.thelak.route.auth.models.AuthLoginRequest;
-import com.thelak.route.auth.models.AuthSignupRequest;
-import com.thelak.route.auth.models.UserModel;
-import com.thelak.route.auth.models.VueHelpModel;
+import com.thelak.route.auth.models.*;
 import com.thelak.route.exceptions.*;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.annotations.Api;
@@ -33,6 +30,7 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 @RestController
 @Api(value = "Authorization API", produces = "application/json")
@@ -189,6 +187,52 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
 
         } catch (ExpiredJwtException e) {
             throw new MsNotAuthorizedException();
+        }
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Update user info")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(required = true,
+                    defaultValue = "Bearer ",
+                    name = "Authorization",
+                    paramType = "header")}
+    )
+    @RequestMapping(value = AUTH_USER_UPDATE, method = {RequestMethod.POST})
+    public VueHelpModel updateUser(@RequestBody UpdateUserModel user) throws MicroServiceException {
+        try {
+            UserInfo userInfo = (UserInfo) SecurityContextHolder
+                    .getContext()
+                    .getAuthentication()
+                    .getPrincipal();
+
+            DbUser dbUser = SelectById.query(DbUser.class, userInfo.getUserId()).selectFirst(objectContext);
+            dbUser.setName(Optional.ofNullable(user.getName()).orElse(dbUser.getName()));
+            dbUser.setBirthday(Optional.ofNullable(user.getBirthday()).orElse(dbUser.getBirthday()));
+            dbUser.setCity(Optional.ofNullable(user.getCity()).orElse(dbUser.getCity()));
+            dbUser.setEmail(Optional.ofNullable(user.getEmail()).orElse(dbUser.getEmail()));
+            dbUser.setCountry(Optional.ofNullable(user.getCountry()).orElse(dbUser.getCountry()));
+            dbUser.setPhone(Optional.ofNullable(user.getPhone()).orElse(dbUser.getPhone()));
+            dbUser.setModifiedDate(LocalDateTime.now());
+
+            objectContext.commitChanges();
+
+            return VueHelpModel.builder()
+                    .status("success")
+                    .data(UserModel.builder()
+                            .id((Long) dbUser.getObjectId().getIdSnapshot().get("id"))
+                            .name(dbUser.getName())
+                            .email(dbUser.getEmail())
+                            .phone(dbUser.getPhone())
+                            .city(dbUser.getCity())
+                            .country(dbUser.getCountry())
+                            .birthday(dbUser.getBirthday())
+                            .build())
+                    .build();
+
+        } catch (Exception e) {
+            throw new MsInternalErrorException(e.getMessage());
         }
     }
 

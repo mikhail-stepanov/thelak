@@ -17,6 +17,7 @@ CREATE TABLE "public"."db_video"
     "content_url_720"     varchar(2048)            NULL,
     "partner_logo_url"    varchar(2048)            NULL,
     "cover_url"           varchar(2048)            NULL,
+    "poster_url"           varchar(2048)            NULL,
     "created_date"        timestamp with time zone NULL,
     "deleted_date"        timestamp with time zone NULL,
     "modified_date"       timestamp with time zone NULL,
@@ -41,6 +42,18 @@ CREATE TABLE "public"."db_video_history"
     "id"            bigint                   NOT NULL,
     "id_user"       bigint                   NOT NULL,
     "id_video"      bigint                   NOT NULL,
+    "modified_date" timestamp with time zone NULL,
+    "created_date"  timestamp with time zone NULL,
+    "deleted_date"  timestamp with time zone NULL,
+    PRIMARY KEY ("id")
+);
+
+CREATE TABLE "public"."db_video_rating"
+(
+    "id"            bigint                   NOT NULL,
+    "id_user"       bigint                   NOT NULL,
+    "id_video"      bigint                   NOT NULL,
+    "score"         integer                  NOT NULL,
     "modified_date" timestamp with time zone NULL,
     "created_date"  timestamp with time zone NULL,
     "deleted_date"  timestamp with time zone NULL,
@@ -77,12 +90,15 @@ ALTER TABLE "public"."db_video_favorites"
     ADD FOREIGN KEY ("id_video") REFERENCES "public"."db_video" ("id");
 ALTER TABLE "public"."db_video_views"
     ADD FOREIGN KEY ("id_video") REFERENCES "public"."db_video" ("id");
+ALTER TABLE "public"."db_video_rating"
+    ADD FOREIGN KEY ("id_video") REFERENCES "public"."db_video" ("id");
 
 CREATE SEQUENCE "public"."pk_db_video" INCREMENT 1 START 1;
 CREATE SEQUENCE "public"."pk_db_video_favorites" INCREMENT 1 START 1;
 CREATE SEQUENCE "public"."pk_db_video_history" INCREMENT 1 START 1;
 CREATE SEQUENCE "public"."pk_db_video_timecode" INCREMENT 1 START 1;
 CREATE SEQUENCE "public"."pk_db_video_views" INCREMENT 1 START 1;
+CREATE SEQUENCE "public"."pk_db_video_rating" INCREMENT 1 START 1;
 
 CREATE INDEX db_video_id_indx ON db_video(id);
 CREATE INDEX db_video_title_indx ON db_video(title);

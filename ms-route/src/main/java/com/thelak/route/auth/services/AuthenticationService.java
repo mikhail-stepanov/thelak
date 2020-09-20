@@ -3,6 +3,7 @@ package com.thelak.route.auth.services;
 import com.thelak.route.auth.interfaces.IAuthenticationService;
 import com.thelak.route.auth.models.AuthLoginRequest;
 import com.thelak.route.auth.models.AuthSignupRequest;
+import com.thelak.route.auth.models.UpdateUserModel;
 import com.thelak.route.auth.models.VueHelpModel;
 import com.thelak.route.common.services.BaseMicroservice;
 import com.thelak.route.exceptions.MicroServiceException;
@@ -32,5 +33,10 @@ public class AuthenticationService extends BaseMicroservice implements IAuthenti
     @Override
     public String refresh() throws MicroServiceException {
         return retry(() -> restTemplate.getForEntity(buildUrl(AUTH_REFRESH), String.class).getBody());
+    }
+
+    @Override
+    public VueHelpModel updateUser(UpdateUserModel user) throws MicroServiceException {
+        return retry(() -> restTemplate.postForEntity(buildUrl(AUTH_REFRESH), user, VueHelpModel.class).getBody());
     }
 }

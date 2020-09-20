@@ -1,7 +1,9 @@
 package com.thelak.core.configurations;
 
 import com.thelak.core.filters.HttpServletRequestFilter;
+import com.thelak.route.article.interfaces.IArticleFunctionsService;
 import com.thelak.route.article.interfaces.IArticleService;
+import com.thelak.route.article.services.ArticleFunctionsService;
 import com.thelak.route.article.services.ArticleService;
 import com.thelak.route.auth.interfaces.IAuthenticationService;
 import com.thelak.route.auth.services.AuthenticationService;
@@ -105,6 +107,11 @@ public class MicroservicesConfiguration {
     @Bean
     IArticleService articleService() {
         return new ArticleService(restTemplate());
+    }
+
+    @Bean
+    IArticleFunctionsService articleFunctionsService() {
+        return new ArticleFunctionsService(restTemplate());
     }
 
     @Bean

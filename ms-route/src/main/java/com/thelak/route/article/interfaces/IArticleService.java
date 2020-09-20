@@ -1,5 +1,7 @@
 package com.thelak.route.article.interfaces;
 
+import com.thelak.route.article.enums.ArticleSortEnum;
+import com.thelak.route.article.enums.ArticleSortTypeEnum;
 import com.thelak.route.article.models.ArticleCreateModel;
 import com.thelak.route.article.models.ArticleModel;
 import com.thelak.route.exceptions.MicroServiceException;
@@ -20,7 +22,7 @@ public interface IArticleService {
 
     List<ArticleModel> getByIds(List<Long> ids) throws MicroServiceException;
 
-    List<ArticleModel> list(Integer page, Integer size) throws MicroServiceException;
+    List<ArticleModel> list(Integer page, Integer size, ArticleSortEnum sort, ArticleSortTypeEnum sortType) throws MicroServiceException;
 
     List<ArticleModel> search(String search, Integer page, Integer size) throws MicroServiceException;
 

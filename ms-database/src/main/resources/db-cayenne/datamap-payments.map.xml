@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap https://cayenne.apache.org/schema/9/modelMap.xsd"
+	 project-version="9">
+	<property name="defaultPackage" value="com.thelak.database.entity"/>
+	<property name="defaultSchema" value="public"/>
+	<property name="quoteSqlIdentifiers" value="true"/>
+	<db-entity name="db_certificate" schema="public">
+		<db-attribute name="cover" type="INTEGER"/>
+		<db-attribute name="created_date" type="TIMESTAMP"/>
+		<db-attribute name="deleted_date" type="TIMESTAMP"/>
+		<db-attribute name="description" type="VARCHAR" length="1048"/>
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="length" type="VARCHAR" length="1048"/>
+		<db-attribute name="modified_date" type="TIMESTAMP"/>
+		<db-attribute name="months" type="INTEGER"/>
+		<db-attribute name="name" type="VARCHAR" length="1048"/>
+		<db-attribute name="price" type="INTEGER"/>
+		<db-attribute name="price_str" type="VARCHAR" length="1048"/>
+		<db-attribute name="price_str_2" type="VARCHAR" length="1048"/>
+	</db-entity>
+	<db-entity name="db_option_certificate" schema="public">
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="id_certificate" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="id_option" type="BIGINT" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="db_option_subscription" schema="public">
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="id_option" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="id_subscription" type="BIGINT" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="db_options" schema="public">
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="text" type="VARCHAR" isMandatory="true" length="1048"/>
+	</db-entity>
+	<db-entity name="db_subscription" schema="public">
+		<db-attribute name="cover" type="INTEGER"/>
+		<db-attribute name="created_date" type="TIMESTAMP" length="29"/>
+		<db-attribute name="days" type="INTEGER" length="4096"/>
+		<db-attribute name="deleted_date" type="TIMESTAMP" length="29"/>
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="modified_date" type="TIMESTAMP" length="29"/>
+		<db-attribute name="months" type="INTEGER"/>
+		<db-attribute name="next" type="VARCHAR" length="1048"/>
+		<db-attribute name="pre" type="VARCHAR" length="1048"/>
+		<db-attribute name="price" type="INTEGER" isMandatory="true"/>
+		<db-attribute name="type" type="VARCHAR" length="1048"/>
+	</db-entity>
+	<obj-entity name="DbCertificate" className="com.thelak.database.entity.DbCertificate" dbEntityName="db_certificate">
+		<obj-attribute name="cover" type="int" db-attribute-path="cover"/>
+		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
+		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
+		<obj-attribute name="description" type="java.lang.String" db-attribute-path="description"/>
+		<obj-attribute name="length" type="java.lang.String" db-attribute-path="length"/>
+		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
+		<obj-attribute name="months" type="int" db-attribute-path="months"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
+		<obj-attribute name="price" type="int" db-attribute-path="price"/>
+		<obj-attribute name="priceStr" type="java.lang.String" db-attribute-path="price_str"/>
+		<obj-attribute name="priceStr2" type="java.lang.String" db-attribute-path="price_str_2"/>
+	</obj-entity>
+	<obj-entity name="DbOptionCertificate" className="com.thelak.database.entity.DbOptionCertificate" dbEntityName="db_option_certificate">
+	</obj-entity>
+	<obj-entity name="DbOptionSubscription" className="com.thelak.database.entity.DbOptionSubscription" dbEntityName="db_option_subscription">
+	</obj-entity>
+	<obj-entity name="DbOptions" className="com.thelak.database.entity.DbOptions" dbEntityName="db_options">
+		<obj-attribute name="text" type="java.lang.String" db-attribute-path="text"/>
+	</obj-entity>
+	<obj-entity name="DbSubscription" className="com.thelak.database.entity.DbSubscription" dbEntityName="db_subscription">
+		<obj-attribute name="cover" type="int" db-attribute-path="cover"/>
+		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
+		<obj-attribute name="days" type="int" db-attribute-path="days"/>
+		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
+		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
+		<obj-attribute name="months" type="int" db-attribute-path="months"/>
+		<obj-attribute name="next" type="java.lang.String" db-attribute-path="next"/>
+		<obj-attribute name="pre" type="java.lang.String" db-attribute-path="pre"/>
+		<obj-attribute name="price" type="int" db-attribute-path="price"/>
+		<obj-attribute name="type" type="java.lang.String" db-attribute-path="type"/>
+	</obj-entity>
+	<db-relationship name="certificateToOption" source="db_certificate" target="db_option_certificate" toMany="true">
+		<db-attribute-pair source="id" target="id_certificate"/>
+	</db-relationship>
+	<db-relationship name="opsubToCertificate" source="db_option_certificate" target="db_certificate" toMany="false">
+		<db-attribute-pair source="id_certificate" target="id"/>
+	</db-relationship>
+	<db-relationship name="opsubToOptions" source="db_option_certificate" target="db_options" toMany="false">
+		<db-attribute-pair source="id_option" target="id"/>
+	</db-relationship>
+	<db-relationship name="opsubToOptions" source="db_option_subscription" target="db_options" toMany="false">
+		<db-attribute-pair source="id_option" target="id"/>
+	</db-relationship>
+	<db-relationship name="opsubToSubscription" source="db_option_subscription" target="db_subscription" toMany="false">
+		<db-attribute-pair source="id_subscription" target="id"/>
+	</db-relationship>
+	<db-relationship name="optionsToOpsub" source="db_options" target="db_option_subscription" toMany="true">
+		<db-attribute-pair source="id" target="id_option"/>
+	</db-relationship>
+	<db-relationship name="subscriptionToOpsub" source="db_subscription" target="db_option_subscription" toMany="true">
+		<db-attribute-pair source="id" target="id_subscription"/>
+	</db-relationship>
+	<obj-relationship name="certificateToOption" source="DbCertificate" target="DbOptionCertificate" deleteRule="Deny" db-relationship-path="certificateToOption"/>
+	<obj-relationship name="opsubToCertificate" source="DbOptionCertificate" target="DbCertificate" deleteRule="Nullify" db-relationship-path="opsubToCertificate"/>
+	<obj-relationship name="opsubToOptions" source="DbOptionCertificate" target="DbOptions" deleteRule="Nullify" db-relationship-path="opsubToOptions"/>
+	<obj-relationship name="opsubToOptions" source="DbOptionSubscription" target="DbOptions" deleteRule="Nullify" db-relationship-path="opsubToOptions"/>
+	<obj-relationship name="opsubToSubscription" source="DbOptionSubscription" target="DbSubscription" deleteRule="Nullify" db-relationship-path="opsubToSubscription"/>
+	<obj-relationship name="optionsToOpsub" source="DbOptions" target="DbOptionSubscription" deleteRule="Deny" db-relationship-path="optionsToOpsub"/>
+	<obj-relationship name="subscriptionToOpsub" source="DbSubscription" target="DbOptionSubscription" deleteRule="Deny" db-relationship-path="subscriptionToOpsub"/>
+</data-map>

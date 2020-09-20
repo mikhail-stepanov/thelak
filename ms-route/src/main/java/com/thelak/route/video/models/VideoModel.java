@@ -46,6 +46,8 @@ public class VideoModel {
 
     String coverUrl;
 
+    String posterUrl;
+
     LocalDateTime createdDate;
 
     LocalDateTime modifiedDate;

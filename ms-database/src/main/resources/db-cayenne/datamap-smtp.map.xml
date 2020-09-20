@@ -6,22 +6,18 @@
 	<property name="defaultPackage" value="com.thelak.database.entity"/>
 	<property name="defaultSchema" value="public"/>
 	<property name="quoteSqlIdentifiers" value="true"/>
-	<db-entity name="db_event" schema="public">
+	<db-entity name="db_smtp_template" schema="public">
 		<db-attribute name="content" type="VARCHAR" length="65000"/>
-		<db-attribute name="cover_url" type="VARCHAR" length="2048"/>
 		<db-attribute name="created_date" type="TIMESTAMP" length="29"/>
-		<db-attribute name="date" type="DATE"/>
 		<db-attribute name="deleted_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="description" type="VARCHAR" length="4096"/>
 		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="modified_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="title" type="VARCHAR" length="1048"/>
 	</db-entity>
-	<obj-entity name="DbEvent" className="com.thelak.database.entity.DbEvent" dbEntityName="db_event">
+	<obj-entity name="DbSmtpTemplate" className="com.thelak.database.entity.DbSmtpTemplate" dbEntityName="db_smtp_template">
 		<obj-attribute name="content" type="java.lang.String" db-attribute-path="content"/>
-		<obj-attribute name="coverUrl" type="java.lang.String" db-attribute-path="cover_url"/>
 		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
-		<obj-attribute name="date" type="java.time.LocalDate" db-attribute-path="date"/>
 		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
 		<obj-attribute name="description" type="java.lang.String" db-attribute-path="description"/>
 		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
