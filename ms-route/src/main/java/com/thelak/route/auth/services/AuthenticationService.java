@@ -37,6 +37,6 @@ public class AuthenticationService extends BaseMicroservice implements IAuthenti
 
     @Override
     public VueHelpModel updateUser(UpdateUserModel user) throws MicroServiceException {
-        return retry(() -> restTemplate.postForEntity(buildUrl(AUTH_REFRESH), user, VueHelpModel.class).getBody());
+        return retry(() -> restTemplate.postForEntity(buildUrl(AUTH_USER_UPDATE), user, VueHelpModel.class).getBody());
     }
 }
