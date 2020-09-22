@@ -40,7 +40,6 @@ public class CertificateEndpoint extends AbstractMicroservice implements ICertif
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get certificate by id")
     @RequestMapping(value = CERTIFICATE_GET, method = {RequestMethod.GET})
     public CertificateModel get(@RequestParam Long id) throws MicroServiceException {
@@ -55,7 +54,6 @@ public class CertificateEndpoint extends AbstractMicroservice implements ICertif
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get list of certificate")
     @RequestMapping(value = CERTIFICATE_LIST, method = {RequestMethod.GET})
     public List<CertificateModel> list() throws MicroServiceException {

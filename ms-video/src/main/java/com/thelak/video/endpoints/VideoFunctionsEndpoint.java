@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static com.thelak.video.services.VideoHelper.buildVideoModel;
@@ -56,7 +57,6 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Add video to favorite")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -90,7 +90,6 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get list of favorites videos")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -135,7 +134,6 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Check video is favorite")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -156,7 +154,6 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Delete video from favorite")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -187,7 +184,6 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Add video to view history")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -205,19 +201,25 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
 
         DbVideo video = SelectById.query(DbVideo.class, videoId).selectFirst(objectContext);
 
-        DbVideoHistory history = objectContext.newObject(DbVideoHistory.class);
-
-        history.setCreatedDate(LocalDateTime.now());
-        history.setIdUser(userInfo.getUserId());
-        history.setHistoryToVideo(video);
-
-        objectContext.commitChanges();
-
-        return true;
+        if (checkInHistiry(video, userInfo.getUserId())) {
+            DbVideoHistory rating = ObjectSelect.query(DbVideoHistory.class)
+                    .where(DbVideoHistory.ID_USER.eq(userInfo.getUserId()))
+                    .and(DbVideoHistory.HISTORY_TO_VIDEO.eq(video))
+                    .selectFirst(objectContext);
+            rating.setCreatedDate(LocalDateTime.now());
+            objectContext.commitChanges();
+            return true;
+        } else {
+            DbVideoHistory history = objectContext.newObject(DbVideoHistory.class);
+            history.setCreatedDate(LocalDateTime.now());
+            history.setIdUser(userInfo.getUserId());
+            history.setHistoryToVideo(video);
+            objectContext.commitChanges();
+            return true;
+        }
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get list of viewed videos")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -254,7 +256,7 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
                 }
                 videos.add(buildVideoModel(dbVideo, categoryModel, speakerModel));
             });
-
+            videos.sort(VideoEndpoint.Comparators.NEW);
             return videos;
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
@@ -262,7 +264,6 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Add timecode of video view")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -309,7 +310,6 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get timecode of video view")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -336,7 +336,6 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Rate Video")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -371,7 +370,6 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Delete rating from video")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -401,7 +399,6 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Check video is favorite")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -449,6 +446,20 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
         }
     }
 
+    private boolean checkInHistiry(DbVideo video, Long userId) {
+        try {
+            DbVideoHistory history = ObjectSelect.query(DbVideoHistory.class)
+                    .where(DbVideoHistory.ID_USER.eq(userId))
+                    .and(DbVideoHistory.HISTORY_TO_VIDEO.eq(video))
+                    .selectFirst(objectContext);
+
+            return history != null;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return false;
+        }
+    }
+
     private boolean checkIsTimecode(DbVideo video, Long userId) {
         try {
             DbVideoTimecode timecode = ObjectSelect.query(DbVideoTimecode.class)
@@ -463,5 +474,7 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
         }
     }
 
-
+    public static class Comparators {
+        public static final Comparator<VideoModel> NEW = Comparator.comparing(VideoModel::getCreatedDate);
+    }
 }

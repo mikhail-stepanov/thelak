@@ -40,7 +40,6 @@ public class SubscriptionEndpoint extends AbstractMicroservice implements ISubsc
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get subscription by id")
     @RequestMapping(value = SUBSCRIPTION_GET, method = {RequestMethod.GET})
     public SubscriptionModel get(@RequestParam Long id) throws MicroServiceException {
@@ -55,7 +54,6 @@ public class SubscriptionEndpoint extends AbstractMicroservice implements ISubsc
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get list of subscriptions")
     @RequestMapping(value = SUBSCRIPTION_LIST, method = {RequestMethod.GET})
     public List<SubscriptionModel> list() throws MicroServiceException {

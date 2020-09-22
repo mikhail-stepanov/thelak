@@ -73,7 +73,6 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get video by id")
     @RequestMapping(value = VIDEO_GET, method = {RequestMethod.GET})
     public VideoModel get(@RequestParam Long id) throws MicroServiceException {
@@ -110,7 +109,6 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get list of video by ids")
     @RequestMapping(value = VIDEO_GET_IDS, method = {RequestMethod.GET})
     public List<VideoModel> getByIds(@RequestParam List<Long> ids) throws MicroServiceException {
@@ -145,7 +143,6 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get list of videos")
     @ApiImplicitParams({
             @ApiImplicitParam(
@@ -224,32 +221,15 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
 
 
             List<DbVideo> dbVideos;
-            if (page == null || size == null)
-                dbVideos = ObjectSelect.query(DbVideo.class)
-                        .where(speakerExpression)
-                        .and(categoryExpression)
-                        .and(countryFilterExpression)
-                        .and(yearFilterExpression)
-                        .and(playgroundFilterExpression)
-                        .and(languageFilterExpression)
-                        .pageSize(30)
-                        .select(objectContext);
-            else {
-                dbVideos = ObjectSelect.query(DbVideo.class)
-                        .where(speakerExpression)
-                        .and(categoryExpression)
-                        .and(countryFilterExpression)
-                        .and(yearFilterExpression)
-                        .and(playgroundFilterExpression)
-                        .and(languageFilterExpression)
-                        .pageSize(size)
-                        .select(objectContext);
+            dbVideos = ObjectSelect.query(DbVideo.class)
+                    .where(speakerExpression)
+                    .and(categoryExpression)
+                    .and(countryFilterExpression)
+                    .and(yearFilterExpression)
+                    .and(playgroundFilterExpression)
+                    .and(languageFilterExpression)
+                    .select(objectContext);
 
-                if (dbVideos.size() > size)
-                    dbVideos = dbVideos.subList(page * size - size, page * size);
-                else dbVideos = dbVideos.subList(page * dbVideos.size() - dbVideos.size(), page * dbVideos.size());
-
-            }
 
             List<VideoModel> videos = new ArrayList<>();
 
@@ -292,7 +272,11 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                 }
             }
 
-            return videos;
+            if (page == null || size == null) {
+                if (videos.size() > size)
+                    return videos.subList(page * size - size, page * size);
+                else return videos.subList(page * videos.size() - videos.size(), page * videos.size());
+            } else return videos;
         } catch (Exception e) {
             e.printStackTrace();
             throw new MsInternalErrorException(e.getMessage());
@@ -300,7 +284,6 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Find videos by title/description/speaker")
     @ApiImplicitParams({
             @ApiImplicitParam(
@@ -358,7 +341,6 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Create video")
     @RequestMapping(value = VIDEO_CREATE, method = {RequestMethod.POST})
     public VideoModel create(@RequestBody VideoCreateRequest request) throws MicroServiceException {
@@ -402,7 +384,6 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Update video by id")
     @RequestMapping(value = VIDEO_UPDATE, method = {RequestMethod.PUT})
     public VideoModel update(@RequestBody VideoModel request) throws MicroServiceException {
@@ -444,7 +425,6 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Delete video by id")
     @RequestMapping(value = VIDEO_DELETE, method = {RequestMethod.DELETE})
     public Boolean delete(@RequestParam Long id) throws MicroServiceException {
@@ -463,7 +443,6 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get video filters")
     @RequestMapping(value = VIDEO_FILTER_GET, method = {RequestMethod.GET})
     public VideoFilterModel getFilters() throws MicroServiceException {
