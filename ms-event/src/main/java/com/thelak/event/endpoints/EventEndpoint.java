@@ -48,6 +48,7 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Get event by id")
     @RequestMapping(value = EVENT_GET, method = {RequestMethod.GET})
     public EventModel get(@RequestParam Long id) throws MicroServiceException {
@@ -62,6 +63,7 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Get list of events by ids")
     @RequestMapping(value = EVENT_GET_IDS, method = {RequestMethod.GET})
     public List<EventModel> getByIds(@RequestParam List<Long> ids) throws MicroServiceException {
@@ -84,6 +86,7 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Get list of events")
     @ApiImplicitParams({
             @ApiImplicitParam(
@@ -145,6 +148,7 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Find event by title/description")
     @ApiImplicitParams({
             @ApiImplicitParam(
@@ -190,6 +194,7 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Create event")
     @RequestMapping(value = EVENT_CREATE, method = {RequestMethod.POST})
     public EventModel create(@RequestBody EventCreateModel request) throws MicroServiceException {
@@ -212,6 +217,7 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Update event by id")
     @RequestMapping(value = EVENT_UPDATE, method = {RequestMethod.PUT})
     public EventModel update(@RequestBody EventModel request) throws MicroServiceException {
@@ -235,6 +241,7 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Delete event by id")
     @RequestMapping(value = EVENT_DELETE, method = {RequestMethod.DELETE})
     public Boolean delete(@RequestParam Long id) throws MicroServiceException {

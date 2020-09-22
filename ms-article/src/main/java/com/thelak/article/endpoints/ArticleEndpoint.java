@@ -49,6 +49,7 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Get article by id")
     @RequestMapping(value = ARTICLE_GET, method = {RequestMethod.GET})
     public ArticleModel get(@RequestParam Long id) throws MicroServiceException {
@@ -63,6 +64,7 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Get list of articles by ids")
     @RequestMapping(value = ARTICLE_GET_IDS, method = {RequestMethod.GET})
     public List<ArticleModel> getByIds(@RequestParam List<Long> ids) throws MicroServiceException {
@@ -85,6 +87,7 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Get list of articles")
     @ApiImplicitParams({
             @ApiImplicitParam(
@@ -144,6 +147,7 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Find article by title/author/description")
     @ApiImplicitParams({
             @ApiImplicitParam(
@@ -191,6 +195,7 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Create article")
     @RequestMapping(value = ARTICLE_CREATE, method = {RequestMethod.POST})
     public ArticleModel create(@RequestBody ArticleCreateModel request) throws MicroServiceException {
@@ -214,6 +219,7 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Update article by id")
     @RequestMapping(value = ARTICLE_UPDATE, method = {RequestMethod.PUT})
     public ArticleModel update(@RequestBody ArticleModel request) throws MicroServiceException {
@@ -238,6 +244,7 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Delete article by id")
     @RequestMapping(value = ARTICLE_DELETE, method = {RequestMethod.DELETE})
     public Boolean delete(@RequestParam Long id) throws MicroServiceException {

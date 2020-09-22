@@ -26,14 +26,14 @@ import java.time.LocalDateTime;
 
 @RestController
 @Api(value = "Article functions API", produces = "application/json")
-public class ArticleFunstionsEndpoint extends AbstractMicroservice implements IArticleFunctionsService {
+public class ArticleFunctionsEndpoint extends AbstractMicroservice implements IArticleFunctionsService {
 
     @Autowired
     private DatabaseService databaseService;
 
     ObjectContext objectContext;
 
-    protected static final Logger log = LoggerFactory.getLogger(ArticleFunstionsEndpoint.class);
+    protected static final Logger log = LoggerFactory.getLogger(ArticleFunctionsEndpoint.class);
 
     @PostConstruct
     private void initialize() {
@@ -41,6 +41,7 @@ public class ArticleFunstionsEndpoint extends AbstractMicroservice implements IA
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Rate Article")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -75,6 +76,7 @@ public class ArticleFunstionsEndpoint extends AbstractMicroservice implements IA
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Delete rating from article")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -104,6 +106,7 @@ public class ArticleFunstionsEndpoint extends AbstractMicroservice implements IA
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Check article is favorite")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,

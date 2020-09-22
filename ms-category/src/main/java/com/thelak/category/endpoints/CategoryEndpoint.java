@@ -45,6 +45,7 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Get category by id")
     @RequestMapping(value = CATEGORY_GET, method = {RequestMethod.GET})
     public CategoryModel get(@RequestParam Long id) throws MicroServiceException {
@@ -59,6 +60,7 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Get category by videoId")
     @RequestMapping(value = CATEGORY_GET_VIDEO, method = {RequestMethod.GET})
     public CategoryModel getByVideo(@RequestParam Long videoId) throws MicroServiceException {
@@ -74,6 +76,7 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Get category by articleId")
     @RequestMapping(value = CATEGORY_GET_ARTICLE, method = {RequestMethod.GET})
     public CategoryModel getByArticle(@RequestParam Long articleId) throws MicroServiceException {
@@ -89,6 +92,7 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Get category by eventId")
     @RequestMapping(value = CATEGORY_GET_EVENT, method = {RequestMethod.GET})
     public CategoryModel getByEvent(@RequestParam Long eventId) throws MicroServiceException {
@@ -104,6 +108,7 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Get list of categories")
     @RequestMapping(value = CATEGORY_LIST, method = {RequestMethod.GET})
     public List<CategoryModel> list() throws MicroServiceException {
@@ -126,6 +131,7 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Find category by title")
     @RequestMapping(value = CATEGORY_SEARCH, method = {RequestMethod.GET})
     public List<CategoryModel> search(@RequestParam String search) throws MicroServiceException {
@@ -150,6 +156,7 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Create category")
     @RequestMapping(value = CATEGORY_CREATE, method = {RequestMethod.POST})
     public CategoryModel create(@RequestBody CategoryCreateModel request) throws MicroServiceException {
@@ -169,6 +176,7 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Update category by id")
     @RequestMapping(value = CATEGORY_UPDATE, method = {RequestMethod.PUT})
     public CategoryModel update(@RequestBody CategoryModel request) throws MicroServiceException {
@@ -190,6 +198,7 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
     }
 
     @Override
+    @CrossOrigin
     @ApiOperation(value = "Delete category by id")
     @RequestMapping(value = CATEGORY_DELETE, method = {RequestMethod.DELETE})
     public Boolean delete(@RequestParam Long id) throws MicroServiceException {
