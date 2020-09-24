@@ -38,7 +38,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -223,16 +222,103 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
             else languageFilterExpression = DbVideo.TITLE.isNotNull();
 
 
-            List<DbVideo> dbVideos;
-            dbVideos = ObjectSelect.query(DbVideo.class)
-                    .where(speakerExpression)
-                    .and(categoryExpression)
-                    .and(countryFilterExpression)
-                    .and(yearFilterExpression)
-                    .and(playgroundFilterExpression)
-                    .and(languageFilterExpression)
-                    .select(objectContext);
+            List<DbVideo> dbVideos = null;
+            if (sort != null) {
+                if (sort == VideoSortEnum.NEW && sortType == VideoSortTypeEnum.ASC)
+                    dbVideos = ObjectSelect.query(DbVideo.class)
+                            .where(speakerExpression)
+                            .and(categoryExpression)
+                            .and(countryFilterExpression)
+                            .and(yearFilterExpression)
+                            .and(playgroundFilterExpression)
+                            .and(languageFilterExpression)
+                            .orderBy(DbVideo.CREATED_DATE.asc())
+                            .select(objectContext);
+                if (sort == VideoSortEnum.NEW && sortType == VideoSortTypeEnum.DESC)
+                    dbVideos = ObjectSelect.query(DbVideo.class)
+                            .where(speakerExpression)
+                            .and(categoryExpression)
+                            .and(countryFilterExpression)
+                            .and(yearFilterExpression)
+                            .and(playgroundFilterExpression)
+                            .and(languageFilterExpression)
+                            .orderBy(DbVideo.CREATED_DATE.desc())
+                            .select(objectContext);
+                if (sort == VideoSortEnum.DURATION && sortType == VideoSortTypeEnum.ASC)
+                    dbVideos = ObjectSelect.query(DbVideo.class)
+                            .where(speakerExpression)
+                            .and(categoryExpression)
+                            .and(countryFilterExpression)
+                            .and(yearFilterExpression)
+                            .and(playgroundFilterExpression)
+                            .and(languageFilterExpression)
+                            .orderBy(DbVideo.DURATION.asc())
+                            .select(objectContext);
+                if (sort == VideoSortEnum.DURATION && sortType == VideoSortTypeEnum.DESC)
+                    dbVideos = ObjectSelect.query(DbVideo.class)
+                            .where(speakerExpression)
+                            .and(categoryExpression)
+                            .and(countryFilterExpression)
+                            .and(yearFilterExpression)
+                            .and(playgroundFilterExpression)
+                            .and(languageFilterExpression)
+                            .orderBy(DbVideo.DURATION.desc())
+                            .select(objectContext);
+                if (sort == VideoSortEnum.POPULAR && sortType == VideoSortTypeEnum.ASC)
+                    dbVideos = ObjectSelect.query(DbVideo.class)
+                            .where(speakerExpression)
+                            .and(categoryExpression)
+                            .and(countryFilterExpression)
+                            .and(yearFilterExpression)
+                            .and(playgroundFilterExpression)
+                            .and(languageFilterExpression)
+                            .orderBy(DbVideo.VIDEO_TO_VIEW.asc())
+                            .select(objectContext);
+                if (sort == VideoSortEnum.POPULAR && sortType == VideoSortTypeEnum.DESC)
+                    dbVideos = ObjectSelect.query(DbVideo.class)
+                            .where(speakerExpression)
+                            .and(categoryExpression)
+                            .and(countryFilterExpression)
+                            .and(yearFilterExpression)
+                            .and(playgroundFilterExpression)
+                            .and(languageFilterExpression)
+                            .orderBy(DbVideo.VIDEO_TO_VIEW.desc())
+                            .select(objectContext);
+                if (sort == VideoSortEnum.RATING && sortType == VideoSortTypeEnum.ASC)
+                    dbVideos = ObjectSelect.query(DbVideo.class)
+                            .where(speakerExpression)
+                            .and(categoryExpression)
+                            .and(countryFilterExpression)
+                            .and(yearFilterExpression)
+                            .and(playgroundFilterExpression)
+                            .and(languageFilterExpression)
+                            .orderBy(DbVideo.VIDEO_TO_RATING.alias("score").avg().asc())
+                            .select(objectContext);
+                if (sort == VideoSortEnum.RATING && sortType == VideoSortTypeEnum.DESC)
+                    dbVideos = ObjectSelect.query(DbVideo.class)
+                            .where(speakerExpression)
+                            .and(categoryExpression)
+                            .and(countryFilterExpression)
+                            .and(yearFilterExpression)
+                            .and(playgroundFilterExpression)
+                            .and(languageFilterExpression)
+                            .orderBy(DbVideo.VIDEO_TO_RATING.alias("score").avg().desc())
+                            .select(objectContext);
+            } else
+                dbVideos = ObjectSelect.query(DbVideo.class)
+                        .where(speakerExpression)
+                        .and(categoryExpression)
+                        .and(countryFilterExpression)
+                        .and(yearFilterExpression)
+                        .and(playgroundFilterExpression)
+                        .and(languageFilterExpression)
+                        .select(objectContext);
 
+            if (page == null || size == null) {
+                if (dbVideos.size() > size)
+                    dbVideos = dbVideos.subList(page * size - size, page * size);
+                else dbVideos = dbVideos.subList(page * dbVideos.size() - dbVideos.size(), page * dbVideos.size());
+            }
 
             List<VideoModel> videos = new ArrayList<>();
 
@@ -252,34 +338,8 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                 videos.add(buildVideoModel(dbVideo, categoryModel, speakerModel));
             });
 
-            if (sort != null && !videos.isEmpty()) {
-                if (sort == VideoSortEnum.NEW) {
-                    videos.sort(Comparators.NEW);
-                    if (sortType == VideoSortTypeEnum.DESC)
-                        Collections.reverse(videos);
-                }
-                if (sort == VideoSortEnum.POPULAR) {
-                    videos.sort(Comparators.POPULAR);
-                    if (sortType == VideoSortTypeEnum.DESC)
-                        Collections.reverse(videos);
-                }
-                if (sort == VideoSortEnum.RATING) {
-                    videos.sort(Comparators.RATING);
-                    if (sortType == VideoSortTypeEnum.DESC)
-                        Collections.reverse(videos);
-                }
-                if (sort == VideoSortEnum.DURATION) {
-                    videos.sort(Comparators.DURATION);
-                    if (sortType == VideoSortTypeEnum.DESC)
-                        Collections.reverse(videos);
-                }
-            }
+            return videos;
 
-            if (page == null || size == null) {
-                if (videos.size() > size)
-                    return videos.subList(page * size - size, page * size);
-                else return videos.subList(page * videos.size() - videos.size(), page * videos.size());
-            } else return videos;
         } catch (Exception e) {
             e.printStackTrace();
             throw new MsInternalErrorException(e.getMessage());
