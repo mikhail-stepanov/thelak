@@ -104,3 +104,7 @@ CREATE INDEX db_video_id_indx ON db_video(id);
 CREATE INDEX db_video_title_indx ON db_video(title);
 CREATE INDEX db_video_description_indx ON db_video(description);
 CREATE INDEX db_video_speaker_indx ON db_video(speaker);
+CREATE INDEX db_video_duration_indx ON db_video(duration);
+CREATE INDEX db_video_created_date_indx ON db_video(created_date);
+
+CREATE INDEX db_video_ration_score_indx ON db_video_rating(score);

@@ -314,7 +314,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                         .and(languageFilterExpression)
                         .select(objectContext);
 
-            if (page == null || size == null) {
+            if (page != null && size != null) {
                 if (dbVideos.size() > size)
                     dbVideos = dbVideos.subList(page * size - size, page * size);
                 else dbVideos = dbVideos.subList(page * dbVideos.size() - dbVideos.size(), page * dbVideos.size());
