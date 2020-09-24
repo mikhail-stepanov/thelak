@@ -4,6 +4,7 @@ import com.thelak.core.endpoints.AbstractMicroservice;
 import com.thelak.core.models.UserInfo;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbVideo;
+import com.thelak.database.entity.DbVideoRating;
 import com.thelak.database.entity.DbVideoViews;
 import com.thelak.route.category.interfaces.ICategoryContentService;
 import com.thelak.route.category.interfaces.ICategoryService;
@@ -292,7 +293,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                             .and(yearFilterExpression)
                             .and(playgroundFilterExpression)
                             .and(languageFilterExpression)
-                            .orderBy(DbVideo.VIDEO_TO_RATING.alias("score").avg().asc())
+                            .orderBy(DbVideoRating.SCORE.avg().asc())
                             .select(objectContext);
                 if (sort == VideoSortEnum.RATING && sortType == VideoSortTypeEnum.DESC)
                     dbVideos = ObjectSelect.query(DbVideo.class)
@@ -302,7 +303,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                             .and(yearFilterExpression)
                             .and(playgroundFilterExpression)
                             .and(languageFilterExpression)
-                            .orderBy(DbVideo.VIDEO_TO_RATING.alias("score").avg().desc())
+                            .orderBy(DbVideoRating.SCORE.avg().desc())
                             .select(objectContext);
             } else
                 dbVideos = ObjectSelect.query(DbVideo.class)
