@@ -14,11 +14,13 @@
 		<db-attribute name="deleted_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="email" type="VARCHAR" isMandatory="true" length="255"/>
 		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="is_subscribe" type="BOOLEAN"/>
 		<db-attribute name="modified_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="name" type="VARCHAR" isMandatory="true" length="255"/>
 		<db-attribute name="password" type="VARCHAR" isMandatory="true" length="64"/>
 		<db-attribute name="phone" type="VARCHAR" isMandatory="true" length="64"/>
 		<db-attribute name="salt" type="VARCHAR" isMandatory="true" length="64"/>
+		<db-attribute name="subscription_date" type="TIMESTAMP"/>
 	</db-entity>
 	<db-entity name="db_user_session" schema="public">
 		<db-attribute name="created_date" type="TIMESTAMP" length="29"/>
@@ -35,11 +37,13 @@
 		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
 		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
 		<obj-attribute name="email" type="java.lang.String" db-attribute-path="email"/>
+		<obj-attribute name="isSubscribe" type="boolean" db-attribute-path="is_subscribe"/>
 		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
 		<obj-attribute name="password" type="java.lang.String" db-attribute-path="password"/>
 		<obj-attribute name="phone" type="java.lang.String" db-attribute-path="phone"/>
 		<obj-attribute name="salt" type="java.lang.String" db-attribute-path="salt"/>
+		<obj-attribute name="subscriptionDate" type="java.time.LocalDateTime" db-attribute-path="subscription_date"/>
 	</obj-entity>
 	<obj-entity name="DbUserSession" className="com.thelak.database.entity.DbUserSession" dbEntityName="db_user_session">
 		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>

@@ -1,13 +1,20 @@
 package com.thelak.payments.endpoints;
 
 import com.thelak.core.endpoints.AbstractMicroservice;
+import com.thelak.core.models.UserInfo;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbCertificate;
+import com.thelak.database.entity.DbIssuedCertificate;
+import com.thelak.route.auth.interfaces.IAuthenticationService;
 import com.thelak.route.exceptions.MicroServiceException;
+import com.thelak.route.exceptions.MsBadRequestException;
 import com.thelak.route.exceptions.MsInternalErrorException;
 import com.thelak.route.payments.interfaces.ICertificateService;
 import com.thelak.route.payments.models.CertificateModel;
+import com.thelak.route.payments.models.IssuedCertificateModel;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.ObjectSelect;
@@ -15,11 +22,14 @@ import org.apache.cayenne.query.SelectById;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static com.thelak.payments.services.PaymentsHelper.buildCertificateModel;
 
@@ -29,6 +39,9 @@ public class CertificateEndpoint extends AbstractMicroservice implements ICertif
 
     @Autowired
     private DatabaseService databaseService;
+
+    @Autowired
+    private IAuthenticationService authenticationService;
 
     ObjectContext objectContext;
 
@@ -70,6 +83,67 @@ public class CertificateEndpoint extends AbstractMicroservice implements ICertif
             });
 
             return certificateModels;
+
+        } catch (Exception e) {
+            throw new MsInternalErrorException(e.getMessage());
+        }
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Generate certificate")
+    @RequestMapping(value = CERTIFICATE_GENERATE, method = {RequestMethod.POST})
+    public IssuedCertificateModel generate(Long certificateId) throws MicroServiceException {
+        try {
+            DbCertificate dbCertificate = SelectById.query(DbCertificate.class, certificateId)
+                    .selectFirst(objectContext);
+
+            DbIssuedCertificate dbIssuedCertificate = objectContext.newObject(DbIssuedCertificate.class);
+            dbIssuedCertificate.setActive(true);
+            dbIssuedCertificate.setActiveDate(LocalDateTime.now().plusMonths(1L));
+            dbIssuedCertificate.setCreatedDate(LocalDateTime.now());
+            dbIssuedCertificate.setUuid(UUID.randomUUID().toString());
+            objectContext.commitChanges();
+
+            return IssuedCertificateModel.builder()
+                    .id((Long) dbIssuedCertificate.getObjectId().getIdSnapshot().get("id"))
+                    .active(dbIssuedCertificate.isActive())
+                    .activeDate(dbIssuedCertificate.getActiveDate())
+                    .uuid(dbIssuedCertificate.getUuid())
+                    .certificateModel(buildCertificateModel(dbCertificate))
+                    .build();
+
+        } catch (Exception e) {
+            throw new MsInternalErrorException(e.getMessage());
+        }
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Activate certificate")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(required = true,
+                    defaultValue = "Bearer ",
+                    name = "Authorization",
+                    paramType = "header")}
+    )
+    @RequestMapping(value = CERTIFICATE_ACTIVATE, method = {RequestMethod.GET})
+    public Boolean activate(String uuid) throws MicroServiceException {
+        try {
+            DbIssuedCertificate dbIssuedCertificate = ObjectSelect.query(DbIssuedCertificate.class)
+                    .where(DbIssuedCertificate.UUID.eq(uuid)).selectFirst(objectContext);
+
+            if (dbIssuedCertificate.isActive()) {
+                UserInfo userInfo = (UserInfo) SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getPrincipal();
+
+                authenticationService.setSubscription(userInfo.getUserId(),
+                        LocalDateTime.now().plusMonths(dbIssuedCertificate.getIssuedToCertificate().getMonths()));
+
+                return true;
+            } else throw new MsBadRequestException("Certificate has expired");
 
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());

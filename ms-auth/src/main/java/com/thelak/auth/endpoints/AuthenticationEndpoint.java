@@ -86,6 +86,8 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
                             .city(user.getCity())
                             .country(user.getCountry())
                             .birthday(user.getBirthday())
+                            .isSubscribe(user.isIsSubscribe())
+                            .subscriptionDate(user.getSubscriptionDate())
                             .build())
                     .status("success").build();
 
@@ -124,6 +126,8 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
                             .city(user.getCity())
                             .country(user.getCountry())
                             .birthday(user.getBirthday())
+                            .isSubscribe(user.isIsSubscribe())
+                            .subscriptionDate(user.getSubscriptionDate())
                             .build())
                     .status("success").build();
 
@@ -147,6 +151,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
                 UserInfo userInfo = UserInfo.builder()
                         .userId((Long) user.getObjectId().getIdSnapshot().get("id"))
                         .userEmail(user.getEmail())
+                        .isSubscribe(user.isIsSubscribe())
                         .isAdmin(false)
                         .build();
 
@@ -228,6 +233,41 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
                             .city(dbUser.getCity())
                             .country(dbUser.getCountry())
                             .birthday(dbUser.getBirthday())
+                            .isSubscribe(dbUser.isIsSubscribe())
+                            .subscriptionDate(dbUser.getSubscriptionDate())
+                            .build())
+                    .build();
+
+        } catch (Exception e) {
+            throw new MsInternalErrorException(e.getMessage());
+        }
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Set user subscription")
+    @RequestMapping(value = AUTH_USER_SUBSCRIPTION, method = {RequestMethod.GET})
+    public VueHelpModel setSubscription(Long userId, LocalDateTime subscriptionDate) throws MicroServiceException {
+
+        try {
+            DbUser dbUser = SelectById.query(DbUser.class, userId).selectFirst(objectContext);
+            dbUser.setSubscriptionDate(subscriptionDate);
+            dbUser.setIsSubscribe(true);
+
+            objectContext.commitChanges();
+
+            return VueHelpModel.builder()
+                    .status("success")
+                    .data(UserModel.builder()
+                            .id((Long) dbUser.getObjectId().getIdSnapshot().get("id"))
+                            .name(dbUser.getName())
+                            .email(dbUser.getEmail())
+                            .phone(dbUser.getPhone())
+                            .city(dbUser.getCity())
+                            .country(dbUser.getCountry())
+                            .birthday(dbUser.getBirthday())
+                            .isSubscribe(dbUser.isIsSubscribe())
+                            .subscriptionDate(dbUser.getSubscriptionDate())
                             .build())
                     .build();
 

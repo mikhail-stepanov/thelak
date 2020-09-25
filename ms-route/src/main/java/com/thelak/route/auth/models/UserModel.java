@@ -28,6 +28,10 @@ public class UserModel {
 
     LocalDate birthday;
 
+    Boolean isSubscribe;
+
+    LocalDateTime subscriptionDate;
+
     LocalDateTime createdDate;
 
     LocalDateTime modifiedDate;

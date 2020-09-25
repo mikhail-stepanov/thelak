@@ -9,6 +9,8 @@ import com.thelak.route.common.services.BaseMicroservice;
 import com.thelak.route.exceptions.MicroServiceException;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
+
 public class AuthenticationService extends BaseMicroservice implements IAuthenticationService {
 
     public AuthenticationService(RestTemplate restTemplate) {
@@ -38,5 +40,10 @@ public class AuthenticationService extends BaseMicroservice implements IAuthenti
     @Override
     public VueHelpModel updateUser(UpdateUserModel user) throws MicroServiceException {
         return retry(() -> restTemplate.postForEntity(buildUrl(AUTH_USER_UPDATE), user, VueHelpModel.class).getBody());
+    }
+
+    @Override
+    public VueHelpModel setSubscription(Long userId, LocalDateTime subscriptionDate) throws MicroServiceException {
+        return retry(() -> restTemplate.getForEntity(buildUrl(AUTH_USER_SUBSCRIPTION), VueHelpModel.class, userId, subscriptionDate).getBody());
     }
 }

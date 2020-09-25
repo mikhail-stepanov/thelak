@@ -9,6 +9,8 @@ CREATE TABLE "public"."db_user"
     "country"       varchar(64)              NULL,
     "password"      varchar(64)              NOT NULL,
     "salt"          varchar(64)              NOT NULL,
+    "is_subscribe"  boolean                  NULL,
+    "subscription_date"  timestamp with time zone NULL,
     "created_date"  timestamp with time zone NULL,
     "deleted_date"  timestamp with time zone NULL,
     "modified_date" timestamp with time zone NULL,

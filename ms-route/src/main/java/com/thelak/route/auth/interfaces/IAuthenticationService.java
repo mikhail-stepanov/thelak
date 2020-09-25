@@ -4,6 +4,7 @@ import com.thelak.route.auth.models.*;
 import com.thelak.route.exceptions.MicroServiceException;
 
 import java.text.ParseException;
+import java.time.LocalDateTime;
 
 public interface IAuthenticationService {
 
@@ -12,6 +13,7 @@ public interface IAuthenticationService {
     String AUTH_LOGIN = "/v1/auth/login";
     String AUTH_REFRESH = "/v1/auth/refresh";
     String AUTH_USER_UPDATE = "/v1/auth/update";
+    String AUTH_USER_SUBSCRIPTION = "/v1/auth/subscription";
 
 
     VueHelpModel info() throws MicroServiceException;
@@ -23,4 +25,7 @@ public interface IAuthenticationService {
     String refresh() throws MicroServiceException;
 
     VueHelpModel updateUser(UpdateUserModel user) throws MicroServiceException;
+
+    VueHelpModel setSubscription(Long userId, LocalDateTime subscriptionDate) throws MicroServiceException;
+
 }

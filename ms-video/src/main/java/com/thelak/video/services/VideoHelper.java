@@ -1,5 +1,6 @@
 package com.thelak.video.services;
 
+import com.thelak.core.models.UserInfo;
 import com.thelak.database.entity.DbVideo;
 import com.thelak.database.entity.DbVideoRating;
 import com.thelak.database.entity.DbVideoViews;
@@ -14,29 +15,31 @@ import java.util.List;
 
 public class VideoHelper {
 
-    public static List<VideoSourceModel> createSources(DbVideo dbVideo) {
-        List<VideoSourceModel> sourceModels = new ArrayList<>();
-        sourceModels.add(VideoSourceModel.builder()
-                .src(dbVideo.getContentUrl360())
-                .type("video/mp4")
-                .label("360p")
-                .res(360).build());
-        sourceModels.add(VideoSourceModel.builder()
-                .src(dbVideo.getContentUrl480())
-                .type("video/mp4")
-                .label("480p")
-                .res(480).build());
-        sourceModels.add(VideoSourceModel.builder()
-                .src(dbVideo.getContentUrl720())
-                .type("video/mp4")
-                .label("720p")
-                .res(720).build());
-        sourceModels.add(VideoSourceModel.builder()
-                .src(dbVideo.getContentUrl720())
-                .type("video/mp4")
-                .label("1080p")
-                .res(1080).build());
-        return sourceModels;
+    public static List<VideoSourceModel> createSources(DbVideo dbVideo, UserInfo userInfo) {
+        if (userInfo == null || userInfo.isSubscribe()) {
+            List<VideoSourceModel> sourceModels = new ArrayList<>();
+            sourceModels.add(VideoSourceModel.builder()
+                    .src(dbVideo.getContentUrl360())
+                    .type("video/mp4")
+                    .label("360p")
+                    .res(360).build());
+            sourceModels.add(VideoSourceModel.builder()
+                    .src(dbVideo.getContentUrl480())
+                    .type("video/mp4")
+                    .label("480p")
+                    .res(480).build());
+            sourceModels.add(VideoSourceModel.builder()
+                    .src(dbVideo.getContentUrl720())
+                    .type("video/mp4")
+                    .label("720p")
+                    .res(720).build());
+            sourceModels.add(VideoSourceModel.builder()
+                    .src(dbVideo.getContentUrl720())
+                    .type("video/mp4")
+                    .label("1080p")
+                    .res(1080).build());
+            return sourceModels;
+        } else return null;
     }
 
     public static Integer avgRating(DbVideo dbVideo) {
@@ -65,7 +68,7 @@ public class VideoHelper {
         }
     }
 
-    public static VideoModel buildVideoModel(DbVideo dbVideo, CategoryModel categoryModel, SpeakerModel speakerModel) {
+    public static VideoModel buildVideoModel(DbVideo dbVideo, CategoryModel categoryModel, SpeakerModel speakerModel, UserInfo userInfo) {
         return VideoModel.builder()
                 .id((Long) dbVideo.getObjectId().getIdSnapshot().get("id"))
                 .title(dbVideo.getTitle())
@@ -77,7 +80,7 @@ public class VideoHelper {
                 .duration(dbVideo.getDuration())
                 .speaker(speakerModel)
                 .playground(dbVideo.getPlayground())
-                .sources(createSources(dbVideo))
+                .sources(createSources(dbVideo, userInfo))
                 .rating(avgRating(dbVideo))
                 .viewsCount(countView(dbVideo))
                 .partnerLogoUrl(dbVideo.getPartnerLogoUrl())

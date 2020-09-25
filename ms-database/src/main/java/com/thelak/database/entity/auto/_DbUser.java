@@ -27,11 +27,13 @@ public abstract class _DbUser extends CayenneDataObject {
     public static final Property<LocalDateTime> CREATED_DATE = Property.create("createdDate", LocalDateTime.class);
     public static final Property<LocalDateTime> DELETED_DATE = Property.create("deletedDate", LocalDateTime.class);
     public static final Property<String> EMAIL = Property.create("email", String.class);
+    public static final Property<Boolean> IS_SUBSCRIBE = Property.create("isSubscribe", Boolean.class);
     public static final Property<LocalDateTime> MODIFIED_DATE = Property.create("modifiedDate", LocalDateTime.class);
     public static final Property<String> NAME = Property.create("name", String.class);
     public static final Property<String> PASSWORD = Property.create("password", String.class);
     public static final Property<String> PHONE = Property.create("phone", String.class);
     public static final Property<String> SALT = Property.create("salt", String.class);
+    public static final Property<LocalDateTime> SUBSCRIPTION_DATE = Property.create("subscriptionDate", LocalDateTime.class);
     public static final Property<List<DbUserSession>> USER_TO_SESSION = Property.create("userToSession", List.class);
 
     public void setBirthday(LocalDate birthday) {
@@ -76,6 +78,14 @@ public abstract class _DbUser extends CayenneDataObject {
         return (String)readProperty("email");
     }
 
+    public void setIsSubscribe(boolean isSubscribe) {
+        writeProperty("isSubscribe", isSubscribe);
+    }
+	public boolean isIsSubscribe() {
+        Boolean value = (Boolean)readProperty("isSubscribe");
+        return (value != null) ? value.booleanValue() : false;
+    }
+
     public void setModifiedDate(LocalDateTime modifiedDate) {
         writeProperty("modifiedDate", modifiedDate);
     }
@@ -109,6 +119,13 @@ public abstract class _DbUser extends CayenneDataObject {
     }
     public String getSalt() {
         return (String)readProperty("salt");
+    }
+
+    public void setSubscriptionDate(LocalDateTime subscriptionDate) {
+        writeProperty("subscriptionDate", subscriptionDate);
+    }
+    public LocalDateTime getSubscriptionDate() {
+        return (LocalDateTime)readProperty("subscriptionDate");
     }
 
     public void addToUserToSession(DbUserSession obj) {

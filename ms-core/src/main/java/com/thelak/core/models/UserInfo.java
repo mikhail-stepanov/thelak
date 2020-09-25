@@ -19,4 +19,7 @@ public class UserInfo {
     private String userEmail;
 
     private boolean isAdmin;
+
+    private boolean isSubscribe;
+
 }

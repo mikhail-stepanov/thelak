@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.exp.Property;
 
+import com.thelak.database.entity.DbIssuedCertificate;
 import com.thelak.database.entity.DbOptionCertificate;
 
 /**
@@ -31,6 +32,7 @@ public abstract class _DbCertificate extends CayenneDataObject {
     public static final Property<Integer> PRICE = Property.create("price", Integer.class);
     public static final Property<String> PRICE_STR = Property.create("priceStr", String.class);
     public static final Property<String> PRICE_STR2 = Property.create("priceStr2", String.class);
+    public static final Property<List<DbIssuedCertificate>> CERTIFICATE_TO_ISSUED = Property.create("certificateToIssued", List.class);
     public static final Property<List<DbOptionCertificate>> CERTIFICATE_TO_OPTION = Property.create("certificateToOption", List.class);
 
     public void setCover(int cover) {
@@ -112,6 +114,18 @@ public abstract class _DbCertificate extends CayenneDataObject {
     public String getPriceStr2() {
         return (String)readProperty("priceStr2");
     }
+
+    public void addToCertificateToIssued(DbIssuedCertificate obj) {
+        addToManyTarget("certificateToIssued", obj, true);
+    }
+    public void removeFromCertificateToIssued(DbIssuedCertificate obj) {
+        removeToManyTarget("certificateToIssued", obj, true);
+    }
+    @SuppressWarnings("unchecked")
+    public List<DbIssuedCertificate> getCertificateToIssued() {
+        return (List<DbIssuedCertificate>)readProperty("certificateToIssued");
+    }
+
 
     public void addToCertificateToOption(DbOptionCertificate obj) {
         addToManyTarget("certificateToOption", obj, true);

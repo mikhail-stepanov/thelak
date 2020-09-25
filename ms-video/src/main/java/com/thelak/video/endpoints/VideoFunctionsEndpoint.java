@@ -126,7 +126,7 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
                 } catch (MicroServiceException e) {
                     log.error(e.staticMessage());
                 }
-                videos.add(buildVideoModel(dbVideo, categoryModel, speakerModel));
+                videos.add(buildVideoModel(dbVideo, categoryModel, speakerModel, userInfo));
             });
 
             return videos;
@@ -260,7 +260,7 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
                 } catch (MicroServiceException e) {
                     log.error(e.staticMessage());
                 }
-                videos.add(buildVideoModel(dbVideo, categoryModel, speakerModel));
+                videos.add(buildVideoModel(dbVideo, categoryModel, speakerModel, userInfo));
             });
             videos.sort(VideoEndpoint.Comparators.NEW);
             return videos;
