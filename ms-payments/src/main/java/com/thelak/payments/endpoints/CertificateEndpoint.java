@@ -6,6 +6,7 @@ import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbCertificate;
 import com.thelak.database.entity.DbIssuedCertificate;
 import com.thelak.route.auth.interfaces.IAuthenticationService;
+import com.thelak.route.auth.models.VueHelpModel;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.exceptions.MsBadRequestException;
 import com.thelak.route.exceptions.MsInternalErrorException;
@@ -139,13 +140,14 @@ public class CertificateEndpoint extends AbstractMicroservice implements ICertif
                         .getAuthentication()
                         .getPrincipal();
 
-                authenticationService.setSubscription(userInfo.getUserId(),
+                VueHelpModel helpModel = authenticationService.setSubscription(userInfo.getUserId(),
                         LocalDateTime.now().plusMonths(dbIssuedCertificate.getIssuedToCertificate().getMonths()));
 
                 return true;
             } else throw new MsBadRequestException("Certificate has expired");
 
         } catch (Exception e) {
+            e.printStackTrace();
             throw new MsInternalErrorException(e.getMessage());
         }
     }
