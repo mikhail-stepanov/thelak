@@ -27,7 +27,7 @@ public abstract class _DbCertificate extends CayenneDataObject {
     public static final Property<String> DESCRIPTION = Property.create("description", String.class);
     public static final Property<String> LENGTH = Property.create("length", String.class);
     public static final Property<LocalDateTime> MODIFIED_DATE = Property.create("modifiedDate", LocalDateTime.class);
-    public static final Property<Integer> MONTHS = Property.create("months", Integer.class);
+    public static final Property<Long> MONTHS = Property.create("months", Long.class);
     public static final Property<String> NAME = Property.create("name", String.class);
     public static final Property<Integer> PRICE = Property.create("price", Integer.class);
     public static final Property<String> PRICE_STR = Property.create("priceStr", String.class);
@@ -78,12 +78,12 @@ public abstract class _DbCertificate extends CayenneDataObject {
         return (LocalDateTime)readProperty("modifiedDate");
     }
 
-    public void setMonths(int months) {
+    public void setMonths(long months) {
         writeProperty("months", months);
     }
-    public int getMonths() {
+    public long getMonths() {
         Object value = readProperty("months");
-        return (value != null) ? (Integer) value : 0;
+        return (value != null) ? (Long) value : 0;
     }
 
     public void setName(String name) {

@@ -247,11 +247,11 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
     @CrossOrigin
     @ApiOperation(value = "Set user subscription")
     @RequestMapping(value = AUTH_USER_SUBSCRIPTION, method = {RequestMethod.GET})
-    public VueHelpModel setSubscription(Long userId, LocalDateTime subscriptionDate) throws MicroServiceException {
+    public VueHelpModel setSubscription(Long userId, String subscriptionDate) throws MicroServiceException {
 
         try {
             DbUser dbUser = SelectById.query(DbUser.class, userId).selectFirst(objectContext);
-            dbUser.setSubscriptionDate(subscriptionDate);
+            dbUser.setSubscriptionDate(LocalDateTime.parse(subscriptionDate));
             dbUser.setIsSubscribe(true);
 
             objectContext.commitChanges();

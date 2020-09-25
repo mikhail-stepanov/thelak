@@ -17,7 +17,7 @@ CREATE TABLE "public"."db_subscription"
 CREATE TABLE "public"."db_certificate"
 (
     "id"            bigint                   NOT NULL,
-    "months"        integer                  NULL,
+    "months"        bigint                   NULL,
     "name"          varchar(1048)            NULL,
     "price"         integer                  NULL,
     "price_str"     varchar(1048)            NULL,

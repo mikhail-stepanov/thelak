@@ -104,6 +104,7 @@ public class CertificateEndpoint extends AbstractMicroservice implements ICertif
             dbIssuedCertificate.setActiveDate(LocalDateTime.now().plusMonths(1L));
             dbIssuedCertificate.setCreatedDate(LocalDateTime.now());
             dbIssuedCertificate.setUuid(UUID.randomUUID().toString());
+            dbIssuedCertificate.setIssuedToCertificate(dbCertificate);
             objectContext.commitChanges();
 
             return IssuedCertificateModel.builder()
@@ -141,7 +142,7 @@ public class CertificateEndpoint extends AbstractMicroservice implements ICertif
                         .getPrincipal();
 
                 VueHelpModel helpModel = authenticationService.setSubscription(userInfo.getUserId(),
-                        LocalDateTime.now().plusMonths(dbIssuedCertificate.getIssuedToCertificate().getMonths()));
+                        LocalDateTime.now().plusMonths(dbIssuedCertificate.getIssuedToCertificate().getMonths()).toString());
 
                 return true;
             } else throw new MsBadRequestException("Certificate has expired");

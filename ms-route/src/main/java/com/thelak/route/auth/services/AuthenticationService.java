@@ -43,7 +43,7 @@ public class AuthenticationService extends BaseMicroservice implements IAuthenti
     }
 
     @Override
-    public VueHelpModel setSubscription(Long userId, LocalDateTime subscriptionDate) throws MicroServiceException {
+    public VueHelpModel setSubscription(Long userId, String subscriptionDate) throws MicroServiceException {
         return retry(() -> restTemplate.getForEntity(buildUrl(AUTH_USER_SUBSCRIPTION), VueHelpModel.class, userId, subscriptionDate).getBody());
     }
 }

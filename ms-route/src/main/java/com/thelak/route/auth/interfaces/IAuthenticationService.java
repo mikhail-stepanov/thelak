@@ -26,6 +26,6 @@ public interface IAuthenticationService {
 
     VueHelpModel updateUser(UpdateUserModel user) throws MicroServiceException;
 
-    VueHelpModel setSubscription(Long userId, LocalDateTime subscriptionDate) throws MicroServiceException;
+    VueHelpModel setSubscription(Long userId, String subscriptionDate) throws MicroServiceException;
 
 }

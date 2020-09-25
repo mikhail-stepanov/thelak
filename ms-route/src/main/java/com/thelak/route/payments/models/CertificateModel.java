@@ -16,7 +16,7 @@ public class CertificateModel {
 
     Long id;
 
-    Integer months;
+    Long months;
 
     String name;
 
