@@ -7,9 +7,8 @@ import com.thelak.route.auth.models.UpdateUserModel;
 import com.thelak.route.auth.models.VueHelpModel;
 import com.thelak.route.common.services.BaseMicroservice;
 import com.thelak.route.exceptions.MicroServiceException;
+import com.thelak.route.payments.models.SetSubscriptionModel;
 import org.springframework.web.client.RestTemplate;
-
-import java.time.LocalDateTime;
 
 public class AuthenticationService extends BaseMicroservice implements IAuthenticationService {
 
@@ -43,7 +42,7 @@ public class AuthenticationService extends BaseMicroservice implements IAuthenti
     }
 
     @Override
-    public VueHelpModel setSubscription(Long userId, String subscriptionDate) throws MicroServiceException {
-        return retry(() -> restTemplate.getForEntity(buildUrl(AUTH_USER_SUBSCRIPTION), VueHelpModel.class, userId, subscriptionDate).getBody());
+    public VueHelpModel setSubscription(SetSubscriptionModel setSubscriptionModel) throws MicroServiceException {
+        return retry(() -> restTemplate.postForEntity(buildUrl(AUTH_USER_SUBSCRIPTION), setSubscriptionModel, VueHelpModel.class).getBody());
     }
 }

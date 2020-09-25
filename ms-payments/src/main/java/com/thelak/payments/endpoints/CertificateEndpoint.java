@@ -6,13 +6,13 @@ import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbCertificate;
 import com.thelak.database.entity.DbIssuedCertificate;
 import com.thelak.route.auth.interfaces.IAuthenticationService;
-import com.thelak.route.auth.models.VueHelpModel;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.exceptions.MsBadRequestException;
 import com.thelak.route.exceptions.MsInternalErrorException;
 import com.thelak.route.payments.interfaces.ICertificateService;
 import com.thelak.route.payments.models.CertificateModel;
 import com.thelak.route.payments.models.IssuedCertificateModel;
+import com.thelak.route.payments.models.SetSubscriptionModel;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -141,8 +141,9 @@ public class CertificateEndpoint extends AbstractMicroservice implements ICertif
                         .getAuthentication()
                         .getPrincipal();
 
-                VueHelpModel helpModel = authenticationService.setSubscription(userInfo.getUserId(),
-                        LocalDateTime.now().plusMonths(dbIssuedCertificate.getIssuedToCertificate().getMonths()).toString());
+                authenticationService.setSubscription(SetSubscriptionModel.builder()
+                        .userId(userInfo.getUserId())
+                        .subscriptionDate(LocalDateTime.now().plusMonths(dbIssuedCertificate.getIssuedToCertificate().getMonths())).build());
 
                 return true;
             } else throw new MsBadRequestException("Certificate has expired");

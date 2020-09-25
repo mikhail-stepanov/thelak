@@ -1,10 +1,13 @@
 package com.thelak.route.auth.interfaces;
 
-import com.thelak.route.auth.models.*;
+import com.thelak.route.auth.models.AuthLoginRequest;
+import com.thelak.route.auth.models.AuthSignupRequest;
+import com.thelak.route.auth.models.UpdateUserModel;
+import com.thelak.route.auth.models.VueHelpModel;
 import com.thelak.route.exceptions.MicroServiceException;
+import com.thelak.route.payments.models.SetSubscriptionModel;
 
 import java.text.ParseException;
-import java.time.LocalDateTime;
 
 public interface IAuthenticationService {
 
@@ -26,6 +29,6 @@ public interface IAuthenticationService {
 
     VueHelpModel updateUser(UpdateUserModel user) throws MicroServiceException;
 
-    VueHelpModel setSubscription(Long userId, String subscriptionDate) throws MicroServiceException;
+    VueHelpModel setSubscription(SetSubscriptionModel setSubscrip) throws MicroServiceException;
 
 }

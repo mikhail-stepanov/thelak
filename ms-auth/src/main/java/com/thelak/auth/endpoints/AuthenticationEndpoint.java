@@ -11,6 +11,7 @@ import com.thelak.database.entity.DbUserSession;
 import com.thelak.route.auth.interfaces.IAuthenticationService;
 import com.thelak.route.auth.models.*;
 import com.thelak.route.exceptions.*;
+import com.thelak.route.payments.models.SetSubscriptionModel;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -246,12 +247,12 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
     @Override
     @CrossOrigin
     @ApiOperation(value = "Set user subscription")
-    @RequestMapping(value = AUTH_USER_SUBSCRIPTION, method = {RequestMethod.GET})
-    public VueHelpModel setSubscription(Long userId, String subscriptionDate) throws MicroServiceException {
+    @RequestMapping(value = AUTH_USER_SUBSCRIPTION, method = {RequestMethod.POST})
+    public VueHelpModel setSubscription(@RequestBody SetSubscriptionModel setSubscriptionModel) throws MicroServiceException {
 
         try {
-            DbUser dbUser = SelectById.query(DbUser.class, userId).selectFirst(objectContext);
-            dbUser.setSubscriptionDate(LocalDateTime.parse(subscriptionDate));
+            DbUser dbUser = SelectById.query(DbUser.class, setSubscriptionModel.getUserId()).selectFirst(objectContext);
+            dbUser.setSubscriptionDate(setSubscriptionModel.getSubscriptionDate());
             dbUser.setIsSubscribe(true);
 
             objectContext.commitChanges();
