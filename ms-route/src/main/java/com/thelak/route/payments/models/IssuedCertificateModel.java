@@ -17,6 +17,8 @@ public class IssuedCertificateModel {
 
     String uuid;
 
+    String fio;
+
     Boolean active;
 
     LocalDateTime activeDate;

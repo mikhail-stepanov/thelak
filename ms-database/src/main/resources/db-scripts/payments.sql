@@ -54,22 +54,6 @@ CREATE TABLE "public"."db_option_subscription"
     PRIMARY KEY ("id")
 );
 
-CREATE TABLE "public"."db_cards"
-(
-
-    "id"            bigint                   NOT NULL,
-    "id_user"       bigint                   NULL,
-    "month"         integer                  NULL,
-    "number"        integer                  NULL,
-    "owner"         varchar(1048)            NULL,
-    "year"          integer                  NULL,
-    "cvv"           integer                  NULL,
-    "created_date"  timestamp with time zone NULL,
-    "deleted_date"  timestamp with time zone NULL,
-    "modified_date" timestamp with time zone NULL,
-    PRIMARY KEY ("id")
-);
-
 CREATE TABLE "public"."db_issued_certificate"
 (
     "id"             bigint                   NOT NULL,
@@ -90,16 +74,79 @@ CREATE TABLE "public"."db_payment_type"
     PRIMARY KEY ("id")
 );
 
-CREATE TABLE "public"."db_payments"
+CREATE TABLE "public"."db_payment_config"
 (
+    "id"    bigint        NOT NULL,
+    "name"  varchar(1048) NULL,
+    "value" varchar(2056) NULL,
+    PRIMARY KEY ("id")
+);
 
+CREATE TABLE "public"."db_payment_token"
+(
+    "id"            bigint                   NOT NULL,
+    "id_user"       bigint                   NOT NULL,
+    "token"         varchar(2056)            NOT NULL,
+    "created_date"  timestamp with time zone NULL,
+    "deleted_date"  timestamp with time zone NULL,
+    "modified_date" timestamp with time zone NULL,
+    PRIMARY KEY ("id")
+);
+
+CREATE TABLE "public"."db_payment_type"
+(
+    "id"   bigint       NOT NULL,
+    "text" varchar(256) NULL,
+    PRIMARY KEY ("id")
+);
+
+CREATE TABLE "public"."db_payments_cryptogramm"
+(
     "id"              bigint                   NOT NULL,
-    "id_card"         bigint                   NULL,
-    "id_payment_type" bigint                   NULL,
-    "id_user"         varchar(1048)            NULL,
-    "sum"             integer                  NULL,
+    "id_payment_type" bigint                   NOT NULL,
+    "name"            varchar(1049)            NOT NULL,
+    "description"     varchar(2048)            NOT NULL,
+    "amount"          integer                  NOT NULL,
+    "currency"        varchar(32)              NOT NULL,
+    "card_cryptogram" varchar(2048)            NOT NULL,
+    "status"          boolean                  NULL,
+    "created_date"    timestamp with time zone NOT NULL,
+    "deleted_date"    timestamp with time zone NULL,
     "modified_date"   timestamp with time zone NULL,
-    "created_date"    timestamp with time zone NULL,
+    PRIMARY KEY ("id")
+);
+
+CREATE TABLE "public"."db_payments_reccurrent"
+(
+    "id"                   bigint                   NOT NULL,
+    "id_payment_type"      bigint                   NOT NULL,
+    "amount"               integer                  NOT NULL,
+    "currency"             varchar(32)              NOT NULL,
+    "description"          varchar(2048)            NOT NULL,
+    "email"                varchar(2048)            NOT NULL,
+    "interval"             varchar(256)             NOT NULL,
+    "period"               integer                  NOT NULL,
+    "require_confirmation" boolean                  NOT NULL,
+    "startDate"            timestamp with time zone NOT NULL,
+    "token"                bigint                   NOT NULL,
+    "status"               boolean                  NULL,
+    "created_date"         timestamp with time zone NOT NULL,
+    "deleted_date"         timestamp with time zone NULL,
+    "modified_date"        timestamp with time zone NULL,
+    PRIMARY KEY ("id")
+);
+
+CREATE TABLE "public"."db_payments_reccuring"
+(
+    "id"              bigint                   NOT NULL,
+    "id_payment_type" bigint                   NOT NULL,
+    "amount"          integer                  NOT NULL,
+    "description"     varchar(2048)            NOT NULL,
+    "currency"        varchar(32)              NOT NULL,
+    "token"           bigint                   NOT NULL,
+    "status"          boolean                  NULL,
+    "modified_date"   timestamp with time zone NULL,
+    "created_date"    timestamp with time zone NOT NULL,
     "deleted_date"    timestamp with time zone NULL,
     PRIMARY KEY ("id")
 );
@@ -114,9 +161,11 @@ ALTER TABLE "public"."db_option_subscription"
     ADD FOREIGN KEY ("id_subscription") REFERENCES "public"."db_subscription" ("id");
 ALTER TABLE "public"."db_issued_certificate"
     ADD FOREIGN KEY ("id_certificate") REFERENCES "public"."db_certificate" ("id");
-ALTER TABLE "public"."db_payments"
-    ADD FOREIGN KEY ("id_card") REFERENCES "public"."db_cards" ("id");
-ALTER TABLE "public"."db_payments"
+ALTER TABLE "public"."db_payments_cryptogramm"
+    ADD FOREIGN KEY ("id_payment_type") REFERENCES "public"."db_payment_type" ("id");
+ALTER TABLE "public"."db_payments_reccurrent"
+    ADD FOREIGN KEY ("id_payment_type") REFERENCES "public"."db_payment_type" ("id");
+ALTER TABLE "public"."db_payments_reccuring"
     ADD FOREIGN KEY ("id_payment_type") REFERENCES "public"."db_payment_type" ("id");
 
 CREATE SEQUENCE "public"."pk_db_certificate" INCREMENT 1 START 1;
@@ -124,7 +173,10 @@ CREATE SEQUENCE "public"."pk_db_option_certificate" INCREMENT 1 START 1;
 CREATE SEQUENCE "public"."pk_db_option_subscription" INCREMENT 1 START 1;
 CREATE SEQUENCE "public"."pk_db_options" INCREMENT 1 START 1;
 CREATE SEQUENCE "public"."pk_db_subscription" INCREMENT 1 START 1;
-CREATE SEQUENCE "public"."pk_db_cards" INCREMENT 1 START 1;
 CREATE SEQUENCE "public"."pk_db_issued_certificate" INCREMENT 1 START 1;
+CREATE SEQUENCE "public"."pk_db_payment_config" INCREMENT 1 START 1;
+CREATE SEQUENCE "public"."pk_db_payment_token" INCREMENT 1 START 1;
 CREATE SEQUENCE "public"."pk_db_payment_type" INCREMENT 1 START 1;
-CREATE SEQUENCE "public"."pk_db_payments" INCREMENT 1 START 1;
+CREATE SEQUENCE "public"."pk_db_payments_cryptogramm" INCREMENT 1 START 1;
+CREATE SEQUENCE "public"."pk_db_payments_reccuring" INCREMENT 1 START 1;
+CREATE SEQUENCE "public"."pk_db_payments_reccurrent" INCREMENT 1 START 1;

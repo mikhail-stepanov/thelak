@@ -1,8 +1,5 @@
 package com.thelak.route.payments.models;
 
-import com.thelak.route.category.models.CategoryModel;
-import com.thelak.route.speaker.models.SpeakerModel;
-import com.thelak.route.video.models.VideoSourceModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SubscriptionModel {
-    
+
     Long id;
 
     Integer months;

@@ -112,6 +112,7 @@ public class CertificateEndpoint extends AbstractMicroservice implements ICertif
                     .active(dbIssuedCertificate.isActive())
                     .activeDate(dbIssuedCertificate.getActiveDate())
                     .uuid(dbIssuedCertificate.getUuid())
+                    .fio(dbIssuedCertificate.getFio())
                     .certificateModel(buildCertificateModel(dbCertificate))
                     .build();
 

@@ -14,8 +14,10 @@ import com.thelak.route.category.services.CategoryService;
 import com.thelak.route.event.interfaces.IEventService;
 import com.thelak.route.event.services.EventService;
 import com.thelak.route.payments.interfaces.ICertificateService;
+import com.thelak.route.payments.interfaces.IPaymentService;
 import com.thelak.route.payments.interfaces.ISubscriptionService;
 import com.thelak.route.payments.services.CertificateService;
+import com.thelak.route.payments.services.PaymentService;
 import com.thelak.route.payments.services.SubscriptionService;
 import com.thelak.route.speaker.interfaces.ISpeakerContentService;
 import com.thelak.route.speaker.interfaces.ISpeakerService;
@@ -141,6 +143,11 @@ public class MicroservicesConfiguration {
     @Bean
     ISubscriptionService subscriptionService() {
         return new SubscriptionService(restTemplate());
+    }
+
+    @Bean
+    IPaymentService paymentService() {
+        return new PaymentService(restTemplate());
     }
 
     @Bean

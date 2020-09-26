@@ -23,6 +23,7 @@ public abstract class _DbIssuedCertificate extends CayenneDataObject {
     public static final Property<LocalDateTime> ACTIVE_DATE = Property.create("activeDate", LocalDateTime.class);
     public static final Property<LocalDateTime> CREATED_DATE = Property.create("createdDate", LocalDateTime.class);
     public static final Property<LocalDateTime> DELETED_DATE = Property.create("deletedDate", LocalDateTime.class);
+    public static final Property<String> FIO = Property.create("fio", String.class);
     public static final Property<LocalDateTime> MODIFIED_DATE = Property.create("modifiedDate", LocalDateTime.class);
     public static final Property<String> UUID = Property.create("uuid", String.class);
     public static final Property<DbCertificate> ISSUED_TO_CERTIFICATE = Property.create("issuedToCertificate", DbCertificate.class);
@@ -54,6 +55,13 @@ public abstract class _DbIssuedCertificate extends CayenneDataObject {
     }
     public LocalDateTime getDeletedDate() {
         return (LocalDateTime)readProperty("deletedDate");
+    }
+
+    public void setFio(String fio) {
+        writeProperty("fio", fio);
+    }
+    public String getFio() {
+        return (String)readProperty("fio");
     }
 
     public void setModifiedDate(LocalDateTime modifiedDate) {
