@@ -16,7 +16,7 @@ import java.util.List;
 public class VideoHelper {
 
     public static List<VideoSourceModel> createSources(DbVideo dbVideo, UserInfo userInfo) {
-        if (userInfo != null || userInfo.isSubscribe()) {
+        if (userInfo != null && userInfo.isSubscribe()) {
             List<VideoSourceModel> sourceModels = new ArrayList<>();
             sourceModels.add(VideoSourceModel.builder()
                     .src(dbVideo.getContentUrl360())
