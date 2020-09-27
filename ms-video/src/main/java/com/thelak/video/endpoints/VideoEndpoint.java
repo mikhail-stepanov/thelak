@@ -73,7 +73,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     @Override
-    @CrossOrigin
+//    @CrossOrigin
     @ApiOperation(value = "Get video by id")
     @RequestMapping(value = VIDEO_GET, method = {RequestMethod.GET})
     public VideoModel get(@RequestParam Long id) throws MicroServiceException {
@@ -111,7 +111,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     @Override
-    @CrossOrigin
+//    @CrossOrigin
     @ApiOperation(value = "Get list of video by ids")
     @RequestMapping(value = VIDEO_GET_IDS, method = {RequestMethod.GET})
     public List<VideoModel> getByIds(@RequestParam List<Long> ids) throws MicroServiceException {
@@ -156,7 +156,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     @Override
-    @CrossOrigin
+//    @CrossOrigin
     @ApiOperation(value = "Get list of videos")
     @ApiImplicitParams({
             @ApiImplicitParam(
@@ -355,7 +355,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     @Override
-    @CrossOrigin
+//    @CrossOrigin
     @ApiOperation(value = "Find videos by title/description/speaker")
     @ApiImplicitParams({
             @ApiImplicitParam(
@@ -422,7 +422,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     @Override
-    @CrossOrigin
+//    @CrossOrigin
     @ApiOperation(value = "Create video")
     @RequestMapping(value = VIDEO_CREATE, method = {RequestMethod.POST})
     public VideoModel create(@RequestBody VideoCreateRequest request) throws MicroServiceException {
@@ -474,7 +474,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     @Override
-    @CrossOrigin
+//    @CrossOrigin
     @ApiOperation(value = "Update video by id")
     @RequestMapping(value = VIDEO_UPDATE, method = {RequestMethod.PUT})
     public VideoModel update(@RequestBody VideoModel request) throws MicroServiceException {
@@ -524,7 +524,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     @Override
-    @CrossOrigin
+//    @CrossOrigin
     @ApiOperation(value = "Delete video by id")
     @RequestMapping(value = VIDEO_DELETE, method = {RequestMethod.DELETE})
     public Boolean delete(@RequestParam Long id) throws MicroServiceException {
@@ -543,7 +543,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     @Override
-    @CrossOrigin
+//    @CrossOrigin
     @ApiOperation(value = "Get video filters")
     @RequestMapping(value = VIDEO_FILTER_GET, method = {RequestMethod.GET})
     public VideoFilterModel getFilters() throws MicroServiceException {

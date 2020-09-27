@@ -45,6 +45,11 @@ public class VideoFunctionService extends BaseMicroservice implements IVideoFunc
     }
 
     @Override
+    public Boolean deleteHistory(Long videoId) throws MicroServiceException {
+        return retry(() -> restTemplate.getForEntity(buildUrl(VIDEO_HISTORY_DELETE), Boolean.class).getBody());
+    }
+
+    @Override
     public Boolean addTimeCode(Long videoId, String timecode) throws MicroServiceException {
         return retry(() -> restTemplate.postForEntity(buildUrl(VIDEO_TIMECODE_ADD), videoId, Boolean.class, timecode).getBody());
     }

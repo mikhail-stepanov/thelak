@@ -14,6 +14,7 @@ public interface IVideoFunctionsService {
 
     String VIDEO_HISTORY_ADD = "/v1/video/history/add";
     String VIDEO_HISTORY_LIST = "/v1/video/history/list";
+    String VIDEO_HISTORY_DELETE = "/v1/video/history/delete";
 
     String VIDEO_TIMECODE_ADD = "/v1/video/timecode/add";
     String VIDEO_TIMECODE_GET = "/v1/video/timecode/get";
@@ -33,6 +34,8 @@ public interface IVideoFunctionsService {
     Boolean addHistory(Long videoId) throws MicroServiceException;
 
     List<VideoModel> listHistory() throws MicroServiceException;
+
+    Boolean deleteHistory(Long videoId) throws MicroServiceException;
 
     Boolean addTimeCode(Long videoId, String timecode) throws MicroServiceException;
 

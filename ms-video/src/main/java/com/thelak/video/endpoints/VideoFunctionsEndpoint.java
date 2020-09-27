@@ -24,7 +24,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
@@ -57,7 +60,7 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     }
 
     @Override
-    @CrossOrigin
+//    @CrossOrigin
     @ApiOperation(value = "Add video to favorite")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -91,7 +94,7 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     }
 
     @Override
-    @CrossOrigin
+//    @CrossOrigin
     @ApiOperation(value = "Get list of favorites videos")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -136,7 +139,7 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     }
 
     @Override
-    @CrossOrigin
+//    @CrossOrigin
     @ApiOperation(value = "Check video is favorite")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -157,7 +160,7 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     }
 
     @Override
-    @CrossOrigin
+//    @CrossOrigin
     @ApiOperation(value = "Delete video from favorite")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -188,7 +191,7 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     }
 
     @Override
-    @CrossOrigin
+//    @CrossOrigin
     @ApiOperation(value = "Add video to view history")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -225,7 +228,7 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     }
 
     @Override
-    @CrossOrigin
+//    @CrossOrigin
     @ApiOperation(value = "Get list of viewed videos")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -270,7 +273,37 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     }
 
     @Override
-    @CrossOrigin
+//    @CrossOrigin
+    @ApiOperation(value = "Delete video from history")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(required = true,
+                    defaultValue = "Bearer ",
+                    name = "Authorization",
+                    paramType = "header")}
+    )
+    @RequestMapping(value = VIDEO_HISTORY_DELETE, method = {RequestMethod.DELETE})
+    public Boolean deleteHistory(@RequestParam Long videoId) throws MicroServiceException {
+        UserInfo userInfo = (UserInfo) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        DbVideo video = SelectById.query(DbVideo.class, videoId).selectFirst(objectContext);
+
+        DbVideoHistory favorites = ObjectSelect.query(DbVideoHistory.class)
+                .where(DbVideoHistory.ID_USER.eq(userInfo.getUserId()))
+                .and(DbVideoHistory.HISTORY_TO_VIDEO.eq(video))
+                .selectFirst(objectContext);
+
+        objectContext.deleteObject(favorites);
+
+        objectContext.commitChanges();
+
+        return true;
+    }
+
+    @Override
+//    @CrossOrigin
     @ApiOperation(value = "Add timecode of video view")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -317,7 +350,7 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     }
 
     @Override
-    @CrossOrigin
+//    @CrossOrigin
     @ApiOperation(value = "Get timecode of video view")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -344,7 +377,7 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     }
 
     @Override
-    @CrossOrigin
+//    @CrossOrigin
     @ApiOperation(value = "Rate Video")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -379,7 +412,7 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     }
 
     @Override
-    @CrossOrigin
+//    @CrossOrigin
     @ApiOperation(value = "Delete rating from video")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -409,7 +442,7 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     }
 
     @Override
-    @CrossOrigin
+//    @CrossOrigin
     @ApiOperation(value = "Check video is favorite")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
