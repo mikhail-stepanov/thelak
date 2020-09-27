@@ -41,7 +41,7 @@ public class ArticleFunctionsEndpoint extends AbstractMicroservice implements IA
     }
 
     @Override
-    @CrossOrigin
+//    @CrossOrigin
     @ApiOperation(value = "Rate Article")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -76,7 +76,7 @@ public class ArticleFunctionsEndpoint extends AbstractMicroservice implements IA
     }
 
     @Override
-    @CrossOrigin
+//    @CrossOrigin
     @ApiOperation(value = "Delete rating from article")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -106,7 +106,7 @@ public class ArticleFunctionsEndpoint extends AbstractMicroservice implements IA
     }
 
     @Override
-    @CrossOrigin
+//    @CrossOrigin
     @ApiOperation(value = "Check article is favorite")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,

@@ -6,6 +6,7 @@ import com.thelak.route.payments.interfaces.IPaymentService;
 import com.thelak.route.payments.models.BuyCertificateRequest;
 import com.thelak.route.payments.models.BuySubscriptionRequest;
 import com.thelak.route.payments.models.CardUpdateRequest;
+import com.thelak.route.payments.models.PaymentsConfigModel;
 import org.springframework.web.client.RestTemplate;
 
 public class PaymentService extends BaseMicroservice implements IPaymentService {
@@ -27,5 +28,10 @@ public class PaymentService extends BaseMicroservice implements IPaymentService 
     @Override
     public Boolean updateCardInfo(CardUpdateRequest cardUpdateRequest) throws MicroServiceException {
         return retry(() -> restTemplate.postForEntity(buildUrl(PAYMENTS_UPDATE_CARD), cardUpdateRequest, Boolean.class).getBody());
+    }
+
+    @Override
+    public PaymentsConfigModel getConfig() throws MicroServiceException {
+        return null;
     }
 }

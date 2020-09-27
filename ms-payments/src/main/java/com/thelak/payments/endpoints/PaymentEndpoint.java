@@ -2,16 +2,19 @@ package com.thelak.payments.endpoints;
 
 import com.thelak.core.endpoints.AbstractMicroservice;
 import com.thelak.database.DatabaseService;
+import com.thelak.database.entity.DbPaymentConfig;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.payments.interfaces.IPaymentService;
 import com.thelak.route.payments.models.BuyCertificateRequest;
 import com.thelak.route.payments.models.BuySubscriptionRequest;
 import com.thelak.route.payments.models.CardUpdateRequest;
+import com.thelak.route.payments.models.PaymentsConfigModel;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.query.ObjectSelect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,5 +81,19 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     @RequestMapping(value = PAYMENTS_UPDATE_CARD, method = {RequestMethod.POST})
     public Boolean updateCardInfo(CardUpdateRequest cardUpdateRequest) throws MicroServiceException {
         return null;
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Get cloudpayments public_id")
+    @RequestMapping(value = PAYMENTS_CONFIG, method = {RequestMethod.GET})
+    public PaymentsConfigModel getConfig() throws MicroServiceException {
+        DbPaymentConfig dbPaymentConfig = ObjectSelect.query(DbPaymentConfig.class)
+                .where(DbPaymentConfig.NAME.eq("PUBLIC_ID")).selectFirst(objectContext);
+
+        return PaymentsConfigModel.builder()
+                .name(dbPaymentConfig.getName())
+                .value(dbPaymentConfig.getValue())
+                .build();
     }
 }
