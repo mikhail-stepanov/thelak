@@ -11,6 +11,7 @@ CREATE TABLE "public"."db_video"
     "speaker"             varchar(64)              NULL,
     "speaker_information" varchar(2048)            NULL,
     "playground"          varchar(255)             NULL,
+    "rating"              integer                  NULL,
     "content_url_1080"    varchar(2048)            NULL,
     "content_url_360"     varchar(2048)            NULL,
     "content_url_480"     varchar(2048)            NULL,

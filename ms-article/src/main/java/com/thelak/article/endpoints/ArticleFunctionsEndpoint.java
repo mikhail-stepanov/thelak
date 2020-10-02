@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 
+import static com.thelak.article.services.ArticleHelper.avgRating;
+
 @RestController
 @Api(value = "Article functions API", produces = "application/json")
 public class ArticleFunctionsEndpoint extends AbstractMicroservice implements IArticleFunctionsService {
@@ -69,6 +71,10 @@ public class ArticleFunctionsEndpoint extends AbstractMicroservice implements IA
 
             objectContext.commitChanges();
 
+            article.setRating(avgRating(article));
+
+            objectContext.commitChanges();
+
             return true;
 
         } else
@@ -99,6 +105,10 @@ public class ArticleFunctionsEndpoint extends AbstractMicroservice implements IA
                 .selectFirst(objectContext);
 
         objectContext.deleteObject(rating);
+
+        objectContext.commitChanges();
+
+        article.setRating(avgRating(article));
 
         objectContext.commitChanges();
 

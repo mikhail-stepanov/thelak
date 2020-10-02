@@ -40,6 +40,7 @@ public abstract class _DbVideo extends CayenneDataObject {
     public static final Property<String> PARTNER_LOGO_URL = Property.create("partnerLogoUrl", String.class);
     public static final Property<String> PLAYGROUND = Property.create("playground", String.class);
     public static final Property<String> POSTER_URL = Property.create("posterUrl", String.class);
+    public static final Property<Integer> RATING = Property.create("rating", Integer.class);
     public static final Property<String> SPEAKER = Property.create("speaker", String.class);
     public static final Property<String> SPEAKER_INFORMATION = Property.create("speakerInformation", String.class);
     public static final Property<String> TITLE = Property.create("title", String.class);
@@ -161,6 +162,14 @@ public abstract class _DbVideo extends CayenneDataObject {
     }
     public String getPosterUrl() {
         return (String)readProperty("posterUrl");
+    }
+
+    public void setRating(int rating) {
+        writeProperty("rating", rating);
+    }
+    public int getRating() {
+        Object value = readProperty("rating");
+        return (value != null) ? (Integer) value : 0;
     }
 
     public void setSpeaker(String speaker) {

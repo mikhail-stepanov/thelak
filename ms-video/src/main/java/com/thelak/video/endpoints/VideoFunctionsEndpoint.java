@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import static com.thelak.video.services.VideoHelper.avgRating;
 import static com.thelak.video.services.VideoHelper.buildVideoModel;
 
 @RestController
@@ -405,6 +406,10 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
 
             objectContext.commitChanges();
 
+            video.setRating(avgRating(video));
+
+            objectContext.commitChanges();
+
             return true;
 
         } else
@@ -435,6 +440,10 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
                 .selectFirst(objectContext);
 
         objectContext.deleteObject(rating);
+
+        objectContext.commitChanges();
+
+        video.setRating(avgRating(video));
 
         objectContext.commitChanges();
 

@@ -1,8 +1,10 @@
 package com.thelak.article.endpoints;
 
 import com.thelak.core.endpoints.AbstractMicroservice;
+import com.thelak.core.models.UserInfo;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbArticle;
+import com.thelak.database.entity.DbArticleView;
 import com.thelak.route.article.enums.ArticleSortEnum;
 import com.thelak.route.article.enums.ArticleSortTypeEnum;
 import com.thelak.route.article.interfaces.IArticleService;
@@ -21,6 +23,7 @@ import org.apache.cayenne.query.SelectById;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
@@ -54,7 +57,26 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
     @RequestMapping(value = ARTICLE_GET, method = {RequestMethod.GET})
     public ArticleModel get(@RequestParam Long id) throws MicroServiceException {
         try {
+            long userId;
+            UserInfo userInfo = null;
+            try {
+                userInfo = (UserInfo) SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getPrincipal();
+                userId = userInfo.getUserId();
+            } catch (Exception e) {
+                userId = -1;
+            }
+
             DbArticle dbArticle = SelectById.query(DbArticle.class, id).selectFirst(objectContext);
+
+            DbArticleView dbArticleView = objectContext.newObject(DbArticleView.class);
+            dbArticleView.setCreatedDate(LocalDateTime.now());
+            dbArticleView.setIdUser(userId);
+            dbArticleView.setViewToArticle(dbArticle);
+
+            objectContext.commitChanges();
 
             return buildArticleModel(dbArticle);
 
@@ -119,7 +141,12 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
                 dbArticles = ObjectSelect.query(DbArticle.class)
                         .pageSize(size)
                         .select(objectContext);
-                dbArticles = dbArticles.subList(page * size - size, page * size);
+                if (dbArticles.size() >= size * page)
+                    dbArticles = dbArticles.subList(page * size - size, page * size);
+                else if (dbArticles.size() >= size * (page - 1))
+                    dbArticles = dbArticles.subList(page * size - size, dbArticles.size() - 1);
+                else
+                    dbArticles = new ArrayList<>();
             }
 
             List<ArticleModel> articleModels = new ArrayList<>();
@@ -179,7 +206,12 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
                         .or(DbArticle.AUTHOR.containsIgnoreCase(search.toLowerCase()))
                         .pageSize(size)
                         .select(objectContext);
-                dbArticles = dbArticles.subList(page * size - size, page * size);
+                if (dbArticles.size() >= size * page)
+                    dbArticles = dbArticles.subList(page * size - size, page * size);
+                else if (dbArticles.size() >= size * (page - 1))
+                    dbArticles = dbArticles.subList(page * size - size, dbArticles.size() - 1);
+                else
+                    dbArticles = new ArrayList<>();
             }
 
             List<ArticleModel> articleModels = new ArrayList<>();

@@ -166,7 +166,12 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
                         .where(countryFilterExpression)
                         .pageSize(size)
                         .select(objectContext);
-                dbSpeakers = dbSpeakers.subList(page * size - size, page * size);
+                if (dbSpeakers.size() >= size * page)
+                    dbSpeakers = dbSpeakers.subList(page * size - size, page * size);
+                else if (dbSpeakers.size() >= size * (page - 1))
+                    dbSpeakers = dbSpeakers.subList(page * size - size, dbSpeakers.size() - 1);
+                else
+                    dbSpeakers = new ArrayList<>();
             }
 
             List<SpeakerModel> speakers = new ArrayList<>();
@@ -212,7 +217,12 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
                         .or(DbSpeaker.NAME.containsIgnoreCase(search.toLowerCase()))
                         .pageSize(size)
                         .select(objectContext);
-                dbSpeakers = dbSpeakers.subList(page * size - size, page * size);
+                if (dbSpeakers.size() >= size * page)
+                    dbSpeakers = dbSpeakers.subList(page * size - size, page * size);
+                else if (dbSpeakers.size() >= size * (page - 1))
+                    dbSpeakers = dbSpeakers.subList(page * size - size, dbSpeakers.size() - 1);
+                else
+                    dbSpeakers = new ArrayList<>();
             }
 
             List<SpeakerModel> speakers = new ArrayList<>();

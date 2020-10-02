@@ -81,7 +81,7 @@ public class VideoHelper {
                 .speaker(speakerModel)
                 .playground(dbVideo.getPlayground())
                 .sources(createSources(dbVideo, userInfo))
-                .rating(avgRating(dbVideo))
+                .rating(dbVideo.getRating())
                 .viewsCount(countView(dbVideo))
                 .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
                 .coverUrl(dbVideo.getCoverUrl())

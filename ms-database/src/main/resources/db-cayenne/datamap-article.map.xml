@@ -15,6 +15,7 @@
 		<db-attribute name="description" type="VARCHAR" length="4096"/>
 		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="modified_date" type="TIMESTAMP" length="29"/>
+		<db-attribute name="rating" type="INTEGER"/>
 		<db-attribute name="source_url" type="VARCHAR" isMandatory="true" length="2048"/>
 		<db-attribute name="title" type="VARCHAR" length="1048"/>
 	</db-entity>
@@ -27,6 +28,14 @@
 		<db-attribute name="midified_date" type="TIMESTAMP"/>
 		<db-attribute name="score" type="INTEGER" isMandatory="true"/>
 	</db-entity>
+	<db-entity name="db_article_view" schema="public">
+		<db-attribute name="created_date" type="TIMESTAMP"/>
+		<db-attribute name="deleted_date" type="TIMESTAMP"/>
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="id_article" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="id_user" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="midified_date" type="TIMESTAMP"/>
+	</db-entity>
 	<obj-entity name="DbArticle" className="com.thelak.database.entity.DbArticle" dbEntityName="db_article">
 		<obj-attribute name="author" type="java.lang.String" db-attribute-path="author"/>
 		<obj-attribute name="content" type="java.lang.String" db-attribute-path="content"/>
@@ -35,6 +44,7 @@
 		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
 		<obj-attribute name="description" type="java.lang.String" db-attribute-path="description"/>
 		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
+		<obj-attribute name="rating" type="int" db-attribute-path="rating"/>
 		<obj-attribute name="sourceUrl" type="java.lang.String" db-attribute-path="source_url"/>
 		<obj-attribute name="title" type="java.lang.String" db-attribute-path="title"/>
 	</obj-entity>
@@ -45,12 +55,26 @@
 		<obj-attribute name="midifiedDate" type="java.time.LocalDateTime" db-attribute-path="midified_date"/>
 		<obj-attribute name="score" type="int" db-attribute-path="score"/>
 	</obj-entity>
+	<obj-entity name="DbArticleView" className="com.thelak.database.entity.DbArticleView" dbEntityName="db_article_view">
+		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
+		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
+		<obj-attribute name="idUser" type="long" db-attribute-path="id_user"/>
+		<obj-attribute name="midifiedDate" type="java.time.LocalDateTime" db-attribute-path="midified_date"/>
+	</obj-entity>
 	<db-relationship name="articleToRating" source="db_article" target="db_article_rating" toMany="true">
+		<db-attribute-pair source="id" target="id_article"/>
+	</db-relationship>
+	<db-relationship name="articleToView" source="db_article" target="db_article_view" toMany="true">
 		<db-attribute-pair source="id" target="id_article"/>
 	</db-relationship>
 	<db-relationship name="ratingToArticle" source="db_article_rating" target="db_article" toMany="false">
 		<db-attribute-pair source="id_article" target="id"/>
 	</db-relationship>
+	<db-relationship name="viewToArticle" source="db_article_view" target="db_article" toMany="false">
+		<db-attribute-pair source="id_article" target="id"/>
+	</db-relationship>
 	<obj-relationship name="articleToRating" source="DbArticle" target="DbArticleRating" deleteRule="Deny" db-relationship-path="articleToRating"/>
+	<obj-relationship name="articleToView" source="DbArticle" target="DbArticleView" deleteRule="Deny" db-relationship-path="articleToView"/>
 	<obj-relationship name="ratingToArticle" source="DbArticleRating" target="DbArticle" deleteRule="Nullify" db-relationship-path="ratingToArticle"/>
+	<obj-relationship name="viewToArticle" source="DbArticleView" target="DbArticle" deleteRule="Nullify" db-relationship-path="viewToArticle"/>
 </data-map>

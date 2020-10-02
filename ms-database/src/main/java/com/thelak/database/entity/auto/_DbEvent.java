@@ -1,6 +1,5 @@
 package com.thelak.database.entity.auto;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.apache.cayenne.CayenneDataObject;
@@ -21,10 +20,11 @@ public abstract class _DbEvent extends CayenneDataObject {
     public static final Property<String> CONTENT = Property.create("content", String.class);
     public static final Property<String> COVER_URL = Property.create("coverUrl", String.class);
     public static final Property<LocalDateTime> CREATED_DATE = Property.create("createdDate", LocalDateTime.class);
-    public static final Property<LocalDate> DATE = Property.create("date", LocalDate.class);
     public static final Property<LocalDateTime> DELETED_DATE = Property.create("deletedDate", LocalDateTime.class);
     public static final Property<String> DESCRIPTION = Property.create("description", String.class);
+    public static final Property<LocalDateTime> END_DATE = Property.create("endDate", LocalDateTime.class);
     public static final Property<LocalDateTime> MODIFIED_DATE = Property.create("modifiedDate", LocalDateTime.class);
+    public static final Property<LocalDateTime> START_DATE = Property.create("startDate", LocalDateTime.class);
     public static final Property<String> TITLE = Property.create("title", String.class);
 
     public void setContent(String content) {
@@ -48,13 +48,6 @@ public abstract class _DbEvent extends CayenneDataObject {
         return (LocalDateTime)readProperty("createdDate");
     }
 
-    public void setDate(LocalDate date) {
-        writeProperty("date", date);
-    }
-    public LocalDate getDate() {
-        return (LocalDate)readProperty("date");
-    }
-
     public void setDeletedDate(LocalDateTime deletedDate) {
         writeProperty("deletedDate", deletedDate);
     }
@@ -69,11 +62,25 @@ public abstract class _DbEvent extends CayenneDataObject {
         return (String)readProperty("description");
     }
 
+    public void setEndDate(LocalDateTime endDate) {
+        writeProperty("endDate", endDate);
+    }
+    public LocalDateTime getEndDate() {
+        return (LocalDateTime)readProperty("endDate");
+    }
+
     public void setModifiedDate(LocalDateTime modifiedDate) {
         writeProperty("modifiedDate", modifiedDate);
     }
     public LocalDateTime getModifiedDate() {
         return (LocalDateTime)readProperty("modifiedDate");
+    }
+
+    public void setStartDate(LocalDateTime startDate) {
+        writeProperty("startDate", startDate);
+    }
+    public LocalDateTime getStartDate() {
+        return (LocalDateTime)readProperty("startDate");
     }
 
     public void setTitle(String title) {

@@ -31,6 +31,8 @@ public class ArticleModel {
 
     Integer rating;
 
+    Long viewsCount;
+
     List<CategoryModel> categories;
 
     LocalDateTime createdDate;

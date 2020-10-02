@@ -28,7 +28,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SQLSelect;
 import org.apache.cayenne.query.SelectById;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -293,7 +292,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                             .and(yearFilterExpression)
                             .and(playgroundFilterExpression)
                             .and(languageFilterExpression)
-                            .orderBy(DbVideo.VIDEO_TO_VIEW.asc())
+                            .orderBy(DbVideo.VIDEO_TO_VIEW.count().asc())
                             .select(objectContext);
                 if (sort == VideoSortEnum.POPULAR && sortType == VideoSortTypeEnum.DESC)
                     dbVideos = ObjectSelect.query(DbVideo.class)
@@ -303,13 +302,27 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                             .and(yearFilterExpression)
                             .and(playgroundFilterExpression)
                             .and(languageFilterExpression)
-                            .orderBy(DbVideo.VIDEO_TO_VIEW.desc())
+                            .orderBy(DbVideo.VIDEO_TO_VIEW.count().desc())
                             .select(objectContext);
                 if (sort == VideoSortEnum.RATING && sortType == VideoSortTypeEnum.ASC)
-                    dbVideos = SQLSelect.query(DbVideo.class, "select * from db_video order by (select avg(db_video_rating.score) from db_video_rating where db_video_rating.id_video = db_video.id);")
+                    dbVideos = ObjectSelect.query(DbVideo.class)
+                            .where(speakerExpression)
+                            .and(categoryExpression)
+                            .and(countryFilterExpression)
+                            .and(yearFilterExpression)
+                            .and(playgroundFilterExpression)
+                            .and(languageFilterExpression)
+                            .orderBy(DbVideo.RATING.asc())
                             .select(objectContext);
                 if (sort == VideoSortEnum.RATING && sortType == VideoSortTypeEnum.DESC)
-                    dbVideos = SQLSelect.query(DbVideo.class, "select * from db_video order by (select avg(db_video_rating.score) from db_video_rating where db_video_rating.id_video = db_video.id);")
+                    dbVideos = ObjectSelect.query(DbVideo.class)
+                            .where(speakerExpression)
+                            .and(categoryExpression)
+                            .and(countryFilterExpression)
+                            .and(yearFilterExpression)
+                            .and(playgroundFilterExpression)
+                            .and(languageFilterExpression)
+                            .orderBy(DbVideo.RATING.asc())
                             .select(objectContext);
             } else
                 dbVideos = ObjectSelect.query(DbVideo.class)
@@ -322,9 +335,12 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                         .select(objectContext);
 
             if (page != null && size != null) {
-                if (dbVideos.size() > size)
+                if (dbVideos.size() >= size * page)
                     dbVideos = dbVideos.subList(page * size - size, page * size);
-                else dbVideos = dbVideos.subList(page * dbVideos.size() - dbVideos.size(), page * dbVideos.size());
+                else if (dbVideos.size() >= size * (page - 1))
+                    dbVideos = dbVideos.subList(page * size - size, dbVideos.size() - 1);
+                else
+                    dbVideos = new ArrayList<>();
             }
 
             List<VideoModel> videos = new ArrayList<>();
@@ -393,7 +409,12 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                         .or(DbVideo.SPEAKER.containsIgnoreCase(search.toLowerCase()))
                         .pageSize(size)
                         .select(objectContext);
-                dbVideos = dbVideos.subList(page * size - size, page * size);
+                if (dbVideos.size() >= size * page)
+                    dbVideos = dbVideos.subList(page * size - size, page * size);
+                else if (dbVideos.size() >= size * (page - 1))
+                    dbVideos = dbVideos.subList(page * size - size, dbVideos.size() - 1);
+                else
+                    dbVideos = new ArrayList<>();
             }
 
             List<VideoModel> videos = new ArrayList<>();

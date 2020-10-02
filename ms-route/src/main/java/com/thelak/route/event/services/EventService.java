@@ -7,7 +7,7 @@ import com.thelak.route.event.models.EventModel;
 import com.thelak.route.exceptions.MicroServiceException;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class EventService extends BaseMicroservice implements IEventService {
@@ -27,7 +27,7 @@ public class EventService extends BaseMicroservice implements IEventService {
     }
 
     @Override
-    public List<EventModel> list(Integer page, Integer size, LocalDate startDate, LocalDate endDate) throws MicroServiceException {
+    public List<EventModel> list(Integer page, Integer size, LocalDateTime startDate, LocalDateTime endDate) throws MicroServiceException {
         return retry(() -> restTemplate.getForEntity(buildUrl(EVENT_LIST), List.class,
                 page, size).getBody());
     }

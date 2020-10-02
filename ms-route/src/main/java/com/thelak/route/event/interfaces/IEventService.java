@@ -5,6 +5,7 @@ import com.thelak.route.event.models.EventModel;
 import com.thelak.route.exceptions.MicroServiceException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface IEventService {
@@ -21,7 +22,7 @@ public interface IEventService {
 
     List<EventModel> getByIds(List<Long> ids) throws MicroServiceException;
 
-    List<EventModel> list(Integer page, Integer size, LocalDate startDate, LocalDate endDate) throws MicroServiceException;
+    List<EventModel> list(Integer page, Integer size, LocalDateTime startDate, LocalDateTime endDate) throws MicroServiceException;
 
     List<EventModel> search(String search, Integer page, Integer size) throws MicroServiceException;
 

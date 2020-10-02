@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -105,18 +104,18 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
     @RequestMapping(value = EVENT_LIST, method = {RequestMethod.GET})
     public List<EventModel> list(@RequestParam(required = false) Integer page,
                                  @RequestParam(required = false) Integer size,
-                                 @RequestParam(required = false) LocalDate startDate,
-                                 @RequestParam(required = false) LocalDate endDate) throws MicroServiceException {
+                                 @RequestParam(required = false) LocalDateTime startDate,
+                                 @RequestParam(required = false) LocalDateTime endDate) throws MicroServiceException {
         try {
 
             final Expression startDateExpression;
             if (startDate != null)
-                startDateExpression = DbEvent.DATE.gte(startDate);
+                startDateExpression = DbEvent.START_DATE.gte(startDate);
             else startDateExpression = DbVideo.TITLE.isNotNull();
 
             final Expression endDateExpression;
             if (endDate != null)
-                endDateExpression = DbEvent.DATE.lte(endDate);
+                endDateExpression = DbEvent.END_DATE.lte(endDate);
             else endDateExpression = DbVideo.TITLE.isNotNull();
 
             List<DbEvent> dbEvents;
@@ -132,7 +131,12 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
                         .and(endDateExpression)
                         .pageSize(size)
                         .select(objectContext);
-                dbEvents = dbEvents.subList(page * size - size, page * size);
+                if (dbEvents.size() >= size * page)
+                    dbEvents = dbEvents.subList(page * size - size, page * size);
+                else if (dbEvents.size() >= size * (page - 1))
+                    dbEvents = dbEvents.subList(page * size - size, dbEvents.size() - 1);
+                else
+                    dbEvents = new ArrayList<>();
             }
 
             List<EventModel> eventModels = new ArrayList<>();
@@ -142,9 +146,11 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
             });
 
             return eventModels;
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             throw new MsInternalErrorException(e.getMessage());
         }
+
     }
 
     @Override
@@ -178,7 +184,12 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
                         .or(DbEvent.TITLE.containsIgnoreCase(search.toLowerCase()))
                         .pageSize(size)
                         .select(objectContext);
-                dbEvents = dbEvents.subList(page * size - size, page * size);
+                if (dbEvents.size() >= size * page)
+                    dbEvents = dbEvents.subList(page * size - size, page * size);
+                else if (dbEvents.size() >= size * (page - 1))
+                    dbEvents = dbEvents.subList(page * size - size, dbEvents.size() - 1);
+                else
+                    dbEvents = new ArrayList<>();
             }
 
             List<EventModel> eventModels = new ArrayList<>();
@@ -204,7 +215,8 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
             dbEvent.setTitle(request.getTitle());
             dbEvent.setDescription(request.getDescription());
             dbEvent.setContent(request.getContent());
-            dbEvent.setDate(request.getDate());
+            dbEvent.setStartDate(request.getStartDate());
+            dbEvent.setEndDate(request.getEndDate());
             dbEvent.setCreatedDate(LocalDateTime.now());
 
             objectContext.commitChanges();
@@ -228,7 +240,8 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
             dbEvent.setTitle(request.getTitle());
             dbEvent.setDescription(request.getDescription());
             dbEvent.setContent(request.getContent());
-            dbEvent.setDate(request.getDate());
+            dbEvent.setStartDate(request.getStartDate());
+            dbEvent.setEndDate(request.getEndDate());
             dbEvent.setModifiedDate(LocalDateTime.now());
 
             objectContext.commitChanges();
