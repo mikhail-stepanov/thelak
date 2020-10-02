@@ -42,6 +42,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import static com.thelak.video.services.VideoHelper.buildVideoModel;
+import static com.thelak.video.services.VideoHelper.countView;
 
 @RestController
 @Api(value = "Video API", produces = "application/json")
@@ -95,6 +96,10 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
             dbVideoViews.setCreatedDate(LocalDateTime.now());
             dbVideoViews.setIdUser(userId);
             dbVideoViews.setViewToVideo(dbVideo);
+
+            objectContext.commitChanges();
+
+            dbVideo.setView(countView(dbVideo));
 
             objectContext.commitChanges();
 
@@ -292,7 +297,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                             .and(yearFilterExpression)
                             .and(playgroundFilterExpression)
                             .and(languageFilterExpression)
-                            .orderBy(DbVideo.VIDEO_TO_VIEW.count().asc())
+                            .orderBy(DbVideo.VIEW.asc())
                             .select(objectContext);
                 if (sort == VideoSortEnum.POPULAR && sortType == VideoSortTypeEnum.DESC)
                     dbVideos = ObjectSelect.query(DbVideo.class)
@@ -302,7 +307,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                             .and(yearFilterExpression)
                             .and(playgroundFilterExpression)
                             .and(languageFilterExpression)
-                            .orderBy(DbVideo.VIDEO_TO_VIEW.count().desc())
+                            .orderBy(DbVideo.VIEW.desc())
                             .select(objectContext);
                 if (sort == VideoSortEnum.RATING && sortType == VideoSortTypeEnum.ASC)
                     dbVideos = ObjectSelect.query(DbVideo.class)

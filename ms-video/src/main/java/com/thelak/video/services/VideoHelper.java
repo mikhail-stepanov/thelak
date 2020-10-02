@@ -52,12 +52,12 @@ public class VideoHelper {
         return sum / ratings.size();
     }
 
-    public static Long countView(DbVideo dbVideo) {
+    public static Integer countView(DbVideo dbVideo) {
         try {
             List<DbVideoViews> views = dbVideo.getVideoToView();
-            return (long) views.size();
+            return views.size();
         } catch (Exception e) {
-            return 0L;
+            return 0;
         }
     }
 
@@ -82,7 +82,7 @@ public class VideoHelper {
                 .playground(dbVideo.getPlayground())
                 .sources(createSources(dbVideo, userInfo))
                 .rating(dbVideo.getRating())
-                .viewsCount(countView(dbVideo))
+                .viewsCount((long) dbVideo.getView())
                 .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
                 .coverUrl(dbVideo.getCoverUrl())
                 .posterUrl(dbVideo.getPosterUrl())

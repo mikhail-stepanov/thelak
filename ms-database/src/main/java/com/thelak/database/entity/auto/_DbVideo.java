@@ -44,6 +44,7 @@ public abstract class _DbVideo extends CayenneDataObject {
     public static final Property<String> SPEAKER = Property.create("speaker", String.class);
     public static final Property<String> SPEAKER_INFORMATION = Property.create("speakerInformation", String.class);
     public static final Property<String> TITLE = Property.create("title", String.class);
+    public static final Property<Integer> VIEW = Property.create("view", Integer.class);
     public static final Property<Integer> YEAR = Property.create("year", Integer.class);
     public static final Property<List<DbVideoFavorites>> VIDEO_TO_FAVORITE = Property.create("videoToFavorite", List.class);
     public static final Property<List<DbVideoHistory>> VIDEO_TO_HISTORY = Property.create("videoToHistory", List.class);
@@ -191,6 +192,14 @@ public abstract class _DbVideo extends CayenneDataObject {
     }
     public String getTitle() {
         return (String)readProperty("title");
+    }
+
+    public void setView(int view) {
+        writeProperty("view", view);
+    }
+    public int getView() {
+        Object value = readProperty("view");
+        return (value != null) ? (Integer) value : 0;
     }
 
     public void setYear(int year) {
