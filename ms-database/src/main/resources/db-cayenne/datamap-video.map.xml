@@ -19,6 +19,7 @@
 		<db-attribute name="description" type="VARCHAR" length="2048"/>
 		<db-attribute name="duration" type="INTEGER"/>
 		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="is_subscription" type="BOOLEAN"/>
 		<db-attribute name="language" type="VARCHAR" length="64"/>
 		<db-attribute name="modified_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="partner_logo_url" type="VARCHAR" length="2048"/>
@@ -85,6 +86,7 @@
 		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
 		<obj-attribute name="description" type="java.lang.String" db-attribute-path="description"/>
 		<obj-attribute name="duration" type="int" db-attribute-path="duration"/>
+		<obj-attribute name="isSubscription" type="boolean" db-attribute-path="is_subscription"/>
 		<obj-attribute name="language" type="java.lang.String" db-attribute-path="language"/>
 		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
 		<obj-attribute name="partnerLogoUrl" type="java.lang.String" db-attribute-path="partner_logo_url"/>

@@ -86,6 +86,7 @@ public class VideoHelper {
                 .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
                 .coverUrl(dbVideo.getCoverUrl())
                 .posterUrl(dbVideo.getPosterUrl())
+                .subscription(dbVideo.isIsSubscription())
                 .createdDate(dbVideo.getCreatedDate())
                 .build();
     }

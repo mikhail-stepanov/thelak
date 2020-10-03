@@ -35,6 +35,7 @@ public abstract class _DbVideo extends CayenneDataObject {
     public static final Property<LocalDateTime> DELETED_DATE = Property.create("deletedDate", LocalDateTime.class);
     public static final Property<String> DESCRIPTION = Property.create("description", String.class);
     public static final Property<Integer> DURATION = Property.create("duration", Integer.class);
+    public static final Property<Boolean> IS_SUBSCRIPTION = Property.create("isSubscription", Boolean.class);
     public static final Property<String> LANGUAGE = Property.create("language", String.class);
     public static final Property<LocalDateTime> MODIFIED_DATE = Property.create("modifiedDate", LocalDateTime.class);
     public static final Property<String> PARTNER_LOGO_URL = Property.create("partnerLogoUrl", String.class);
@@ -128,6 +129,14 @@ public abstract class _DbVideo extends CayenneDataObject {
     public int getDuration() {
         Object value = readProperty("duration");
         return (value != null) ? (Integer) value : 0;
+    }
+
+    public void setIsSubscription(boolean isSubscription) {
+        writeProperty("isSubscription", isSubscription);
+    }
+	public boolean isIsSubscription() {
+        Boolean value = (Boolean)readProperty("isSubscription");
+        return (value != null) ? value.booleanValue() : false;
     }
 
     public void setLanguage(String language) {

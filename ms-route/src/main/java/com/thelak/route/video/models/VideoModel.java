@@ -48,6 +48,8 @@ public class VideoModel {
 
     String posterUrl;
 
+    Boolean subscription;
+
     LocalDateTime createdDate;
 
     LocalDateTime modifiedDate;
