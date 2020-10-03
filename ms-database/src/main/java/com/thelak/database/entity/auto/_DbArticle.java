@@ -31,6 +31,7 @@ public abstract class _DbArticle extends CayenneDataObject {
     public static final Property<Integer> RATING = Property.create("rating", Integer.class);
     public static final Property<String> SOURCE_URL = Property.create("sourceUrl", String.class);
     public static final Property<String> TITLE = Property.create("title", String.class);
+    public static final Property<Integer> VIEW = Property.create("view", Integer.class);
     public static final Property<List<DbArticleRating>> ARTICLE_TO_RATING = Property.create("articleToRating", List.class);
     public static final Property<List<DbArticleView>> ARTICLE_TO_VIEW = Property.create("articleToView", List.class);
 
@@ -103,6 +104,14 @@ public abstract class _DbArticle extends CayenneDataObject {
     }
     public String getTitle() {
         return (String)readProperty("title");
+    }
+
+    public void setView(int view) {
+        writeProperty("view", view);
+    }
+    public int getView() {
+        Object value = readProperty("view");
+        return (value != null) ? (Integer) value : 0;
     }
 
     public void addToArticleToRating(DbArticleRating obj) {

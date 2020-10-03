@@ -31,7 +31,7 @@ public class ArticleModel {
 
     Integer rating;
 
-    Long viewsCount;
+    Integer viewsCount;
 
     List<CategoryModel> categories;
 

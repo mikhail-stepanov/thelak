@@ -18,6 +18,7 @@
 		<db-attribute name="rating" type="INTEGER"/>
 		<db-attribute name="source_url" type="VARCHAR" isMandatory="true" length="2048"/>
 		<db-attribute name="title" type="VARCHAR" length="1048"/>
+		<db-attribute name="view" type="INTEGER"/>
 	</db-entity>
 	<db-entity name="db_article_rating" schema="public">
 		<db-attribute name="created_date" type="TIMESTAMP"/>
@@ -47,6 +48,7 @@
 		<obj-attribute name="rating" type="int" db-attribute-path="rating"/>
 		<obj-attribute name="sourceUrl" type="java.lang.String" db-attribute-path="source_url"/>
 		<obj-attribute name="title" type="java.lang.String" db-attribute-path="title"/>
+		<obj-attribute name="view" type="int" db-attribute-path="view"/>
 	</obj-entity>
 	<obj-entity name="DbArticleRating" className="com.thelak.database.entity.DbArticleRating" dbEntityName="db_article_rating">
 		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>

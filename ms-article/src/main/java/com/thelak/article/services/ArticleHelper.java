@@ -9,12 +9,12 @@ import java.util.List;
 
 public class ArticleHelper {
 
-    public static Long countView(DbArticle dbArticle) {
+    public static Integer countView(DbArticle dbArticle) {
         try {
             List<DbArticleView> views = dbArticle.getArticleToView();
-            return (long) views.size();
+            return views.size();
         } catch (Exception e) {
-            return 0L;
+            return 0;
         }
     }
 
@@ -34,7 +34,7 @@ public class ArticleHelper {
                 .title(dbArticle.getTitle())
                 .author(dbArticle.getAuthor())
                 .rating(dbArticle.getRating())
-                .viewsCount(countView(dbArticle))
+                .viewsCount(dbArticle.getView())
                 .description(dbArticle.getDescription())
                 .content(dbArticle.getContent())
                 .sourceUrl(dbArticle.getSourceUrl())

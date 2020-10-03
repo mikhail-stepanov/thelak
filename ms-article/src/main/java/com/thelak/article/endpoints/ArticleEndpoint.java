@@ -34,6 +34,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import static com.thelak.article.services.ArticleHelper.buildArticleModel;
+import static com.thelak.article.services.ArticleHelper.countView;
 
 @RestController
 @Api(value = "Article API", produces = "application/json")
@@ -75,6 +76,10 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
             dbArticleView.setCreatedDate(LocalDateTime.now());
             dbArticleView.setIdUser(userId);
             dbArticleView.setViewToArticle(dbArticle);
+
+            objectContext.commitChanges();
+
+            dbArticle.setView(countView(dbArticle));
 
             objectContext.commitChanges();
 
@@ -163,6 +168,11 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
                 }
                 if (sort == ArticleSortEnum.RATING) {
                     articleModels.sort(Comparators.RATING);
+                    if (sortType == ArticleSortTypeEnum.DESC)
+                        Collections.reverse(articleModels);
+                }
+                if (sort == ArticleSortEnum.POPULAR) {
+                    articleModels.sort(Comparators.POPULAR);
                     if (sortType == ArticleSortTypeEnum.DESC)
                         Collections.reverse(articleModels);
                 }
@@ -294,6 +304,7 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
     }
 
     public static class Comparators {
+        public static final Comparator<ArticleModel> POPULAR = Comparator.comparing(ArticleModel::getViewsCount);
         public static final Comparator<ArticleModel> RATING = Comparator.comparing(ArticleModel::getRating);
         public static final Comparator<ArticleModel> NEW = Comparator.comparing(ArticleModel::getCreatedDate);
 
