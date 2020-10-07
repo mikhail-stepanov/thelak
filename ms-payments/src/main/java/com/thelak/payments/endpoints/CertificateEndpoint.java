@@ -75,7 +75,9 @@ public class CertificateEndpoint extends AbstractMicroservice implements ICertif
     public List<CertificateModel> list() throws MicroServiceException {
 
         try {
-            List<DbCertificate> dbCertificates = ObjectSelect.query(DbCertificate.class).select(objectContext);
+            List<DbCertificate> dbCertificates = ObjectSelect.query(DbCertificate.class)
+                    .orderBy(DbCertificate.MONTHS.asc())
+                    .select(objectContext);
 
             List<CertificateModel> certificateModels = new ArrayList<>();
 

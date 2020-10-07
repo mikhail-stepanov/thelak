@@ -61,7 +61,9 @@ public class SubscriptionEndpoint extends AbstractMicroservice implements ISubsc
     public List<SubscriptionModel> list() throws MicroServiceException {
 
         try {
-            List<DbSubscription> dbSubscriptions = ObjectSelect.query(DbSubscription.class).select(objectContext);
+            List<DbSubscription> dbSubscriptions = ObjectSelect.query(DbSubscription.class)
+                    .orderBy(DbSubscription.MONTHS.asc())
+                    .select(objectContext);
 
             List<SubscriptionModel> subscriptionModels = new ArrayList<>();
 

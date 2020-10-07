@@ -16,7 +16,7 @@
 		<db-attribute name="cover_url" type="VARCHAR" length="2048"/>
 		<db-attribute name="created_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="deleted_date" type="TIMESTAMP" length="29"/>
-		<db-attribute name="description" type="VARCHAR" length="2048"/>
+		<db-attribute name="description" type="VARCHAR" length="4096"/>
 		<db-attribute name="duration" type="INTEGER"/>
 		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="is_subscription" type="BOOLEAN"/>

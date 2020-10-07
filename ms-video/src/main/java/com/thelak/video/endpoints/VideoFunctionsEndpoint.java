@@ -210,12 +210,12 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
 
         DbVideo video = SelectById.query(DbVideo.class, videoId).selectFirst(objectContext);
 
-        if (checkInHistiry(video, userInfo.getUserId())) {
-            DbVideoHistory rating = ObjectSelect.query(DbVideoHistory.class)
+        if (checkInHistory(video, userInfo.getUserId())) {
+            DbVideoHistory history = ObjectSelect.query(DbVideoHistory.class)
                     .where(DbVideoHistory.ID_USER.eq(userInfo.getUserId()))
                     .and(DbVideoHistory.HISTORY_TO_VIDEO.eq(video))
                     .selectFirst(objectContext);
-            rating.setCreatedDate(LocalDateTime.now());
+            history.setCreatedDate(LocalDateTime.now());
             objectContext.commitChanges();
             return true;
         } else {
@@ -499,7 +499,7 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
         }
     }
 
-    private boolean checkInHistiry(DbVideo video, Long userId) {
+    private boolean checkInHistory(DbVideo video, Long userId) {
         try {
             DbVideoHistory history = ObjectSelect.query(DbVideoHistory.class)
                     .where(DbVideoHistory.ID_USER.eq(userId))
