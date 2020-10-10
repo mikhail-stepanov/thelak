@@ -349,20 +349,24 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     )
     @RequestMapping(value = VIDEO_TIMECODE_GET, method = {RequestMethod.GET})
     public String getTimeCode(@RequestParam Long videoId) throws MicroServiceException {
+        try {
+            UserInfo userInfo = (UserInfo) SecurityContextHolder
+                    .getContext()
+                    .getAuthentication()
+                    .getPrincipal();
 
-        UserInfo userInfo = (UserInfo) SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getPrincipal();
+            DbVideo video = SelectById.query(DbVideo.class, videoId).selectFirst(objectContext);
 
-        DbVideo video = SelectById.query(DbVideo.class, videoId).selectFirst(objectContext);
+            DbVideoTimecode timecode = ObjectSelect.query(DbVideoTimecode.class)
+                    .where(DbVideoTimecode.ID_USER.eq(userInfo.getUserId()))
+                    .and(DbVideoTimecode.TIMECODE_TO_VIDEO.eq(video))
+                    .selectFirst(objectContext);
 
-        DbVideoTimecode timecode = ObjectSelect.query(DbVideoTimecode.class)
-                .where(DbVideoTimecode.ID_USER.eq(userInfo.getUserId()))
-                .and(DbVideoTimecode.TIMECODE_TO_VIDEO.eq(video))
-                .selectFirst(objectContext);
+            return timecode.getTimecode();
+        } catch (Exception e) {
+            return "0";
+        }
 
-        return timecode.getTimecode();
     }
 
     @Override
