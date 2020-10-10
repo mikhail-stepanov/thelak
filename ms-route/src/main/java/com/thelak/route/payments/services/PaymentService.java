@@ -11,6 +11,8 @@ import com.thelak.route.payments.models.cloudpayments.cryptogramm.CryptogrammPay
 import com.thelak.route.payments.models.cloudpayments.reccurent.ReccurentPayResponse;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
+
 public class PaymentService extends BaseMicroservice implements IPaymentService {
 
     public PaymentService(RestTemplate restTemplate) {
@@ -23,7 +25,7 @@ public class PaymentService extends BaseMicroservice implements IPaymentService 
     }
 
     @Override
-    public CryptogrammPayResponse buySubscriptionRequest(BuySubscriptionRequest buySubscriptionRequest) throws MicroServiceException {
+    public CryptogrammPayResponse buySubscriptionRequest(BuySubscriptionRequest buySubscriptionRequest, HttpServletRequest request) throws MicroServiceException {
         return retry(() -> restTemplate.postForEntity(buildUrl(PAYMENTS_SUB_REQ), buySubscriptionRequest, CryptogrammPayResponse.class).getBody());
     }
 

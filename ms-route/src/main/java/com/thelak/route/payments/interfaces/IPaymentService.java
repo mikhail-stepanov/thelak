@@ -9,6 +9,8 @@ import com.thelak.route.payments.models.cloudpayments.cryptogramm.CryptogrammPay
 import com.thelak.route.payments.models.cloudpayments.reccurent.ReccurentPayResponse;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
+
 public interface IPaymentService {
 
     String PAYMENTS_CERT_REQ = "/v1/payments/cert/req";
@@ -19,7 +21,7 @@ public interface IPaymentService {
 
     Boolean buyCertificateRequest(BuyCertificateRequest buyCertificateRequest) throws MicroServiceException;
 
-    CryptogrammPayResponse buySubscriptionRequest(BuySubscriptionRequest buySubscriptionRequest) throws MicroServiceException;
+    CryptogrammPayResponse buySubscriptionRequest(BuySubscriptionRequest buySubscriptionRequest,  HttpServletRequest request) throws MicroServiceException;
 
     ReccurentPayResponse buySubscriptionConfirm(String MD, String PaRes) throws MicroServiceException;
 

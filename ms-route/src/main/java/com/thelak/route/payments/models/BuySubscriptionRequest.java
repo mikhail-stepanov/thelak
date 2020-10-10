@@ -15,8 +15,6 @@ public class BuySubscriptionRequest {
 
     String cardCryptogramPacket;
 
-    String IpAddress;
-
     String cardName;
-    
+
 }

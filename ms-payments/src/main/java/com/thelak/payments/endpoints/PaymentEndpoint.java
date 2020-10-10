@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 
 @RestController
@@ -159,7 +160,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                     paramType = "header")}
     )
     @RequestMapping(value = PAYMENTS_SUB_REQ, method = {RequestMethod.POST})
-    public CryptogrammPayResponse buySubscriptionRequest(BuySubscriptionRequest buySubscriptionRequest) throws MicroServiceException {
+    public CryptogrammPayResponse buySubscriptionRequest(BuySubscriptionRequest buySubscriptionRequest, HttpServletRequest request) throws MicroServiceException {
         try {
             UserInfo userInfo = null;
             try {
@@ -181,7 +182,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                     .Currency("RUB")
                     .Description("Покупка подписки Thelak на " + dbSubscription.getMonths() + " месяцев.")
                     .Email(userInfo.getUserEmail())
-                    .IpAddress(buySubscriptionRequest.getIpAddress())
+                    .IpAddress(request.getRemoteAddr())
                     .Name(buySubscriptionRequest.getCardName())
                     .build();
 
