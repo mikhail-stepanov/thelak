@@ -42,6 +42,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @RestController
 @Api(value = "Payment API", produces = "application/json")
@@ -133,7 +134,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                     .email(userInfo.getUserEmail())
                     .interval("Month")
                     .period(subscription.getMonths())
-                    .startDate(LocalDateTime.now().plusMonths(subscription.getMonths()))
+                    .startDate(ZonedDateTime.now().plusMonths(subscription.getMonths()))
                     .requireConfirmation(false)
                     .token(dSecureResponse.getModel().getToken())
                     .build();

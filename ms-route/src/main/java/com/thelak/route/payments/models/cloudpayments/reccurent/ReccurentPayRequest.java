@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Data
 @Builder
@@ -27,7 +28,7 @@ public class ReccurentPayRequest {
 
     Boolean requireConfirmation;
 
-    LocalDateTime startDate;
+    ZonedDateTime startDate;
 
     String interval;
 
