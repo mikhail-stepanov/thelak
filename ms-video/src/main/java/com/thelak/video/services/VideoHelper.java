@@ -80,7 +80,7 @@ public class VideoHelper {
                 .duration(dbVideo.getDuration())
                 .speaker(fullData ? speakerModel : null)
                 .playground(fullData ? dbVideo.getPlayground() : null)
-                .sources(fullData ? createSources(dbVideo, userInfo) : null)
+                .sources(createSources(dbVideo, userInfo))
                 .rating(dbVideo.getRating())
                 .viewsCount((long) dbVideo.getView())
                 .partnerLogoUrl(fullData ? dbVideo.getPartnerLogoUrl() : null)
