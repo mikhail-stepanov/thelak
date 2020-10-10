@@ -5,7 +5,6 @@ import com.thelak.core.endpoints.AbstractMicroservice;
 import com.thelak.core.models.UserInfo;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbPaymentConfig;
-import com.thelak.database.entity.DbPayments;
 import com.thelak.database.entity.DbPaymentsCryptogrammSubscription;
 import com.thelak.database.entity.DbSubscription;
 import com.thelak.route.auth.interfaces.IAuthenticationService;
@@ -32,11 +31,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -93,8 +94,8 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                     name = "Authorization",
                     paramType = "header")}
     )
-    @RequestMapping(value = PAYMENTS_SUB_CONFIRM, method = {RequestMethod.POST})
-    public ReccurentPayResponse buySubscriptionConfirm(@RequestParam String MD, @RequestParam String PaRes) throws MicroServiceException {
+    @RequestMapping(value = PAYMENTS_SUB_CONFIRM, method = {RequestMethod.GET})
+    public ReccurentPayResponse buySubscriptionConfirm(@PathVariable String MD, @PathVariable String PaRes) throws MicroServiceException {
         try {
             UserInfo userInfo = null;
             try {
@@ -157,10 +158,11 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     @CrossOrigin
     @ApiOperation(value = "Redirect before confirm")
     @RequestMapping(value = PAYMENTS_REDIRECT, method = {RequestMethod.POST})
-    public ConfirmModel redirectBeforeConfirm(@RequestParam String MD, @RequestParam String PaReq) throws MicroServiceException {
-        return ConfirmModel.builder()
-                .MD(MD)
-                .PaReq(PaReq).build();
+    public ModelAndView redirectBeforeConfirm(@RequestParam String MD, @RequestParam String PaRes) throws MicroServiceException {
+        RedirectView rv = new RedirectView();
+        rv.setStatusCode(HttpStatus.MOVED_PERMANENTLY);
+        rv.setUrl("redirect:/v1/payments/sub/confirm/" + MD + "/" + PaRes);
+        return new ModelAndView(rv);
     }
 
     @Override

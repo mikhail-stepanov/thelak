@@ -9,6 +9,7 @@ import com.thelak.route.payments.models.cloudpayments.cryptogramm.CryptogrammPay
 import com.thelak.route.payments.models.cloudpayments.reccurent.ReccurentPayResponse;
 import com.thelak.route.payments.models.cloudpayments.secure.ConfirmModel;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,7 +17,7 @@ public interface IPaymentService {
 
     String PAYMENTS_CERT_REQ = "/v1/payments/cert/req";
     String PAYMENTS_SUB_REQ = "/v1/payments/sub/req";
-    String PAYMENTS_SUB_CONFIRM = "/v1/payments/sub/confirm";
+    String PAYMENTS_SUB_CONFIRM = "/v1/payments/sub/confirm/{MD}/{PaRes}";
     String PAYMENTS_REDIRECT = "/v1/payments/sub/redir";
     String PAYMENTS_UPDATE_CARD = "/v1/payments/card/update";
     String PAYMENTS_CONFIG = "/v1/payments/config";
@@ -27,7 +28,7 @@ public interface IPaymentService {
 
     ReccurentPayResponse buySubscriptionConfirm(String MD, String PaRes) throws MicroServiceException;
 
-    ConfirmModel redirectBeforeConfirm(String MD, String PaRes) throws MicroServiceException;
+    ModelAndView redirectBeforeConfirm(String MD, String PaRes) throws MicroServiceException;
 
     Boolean updateCardInfo(CardUpdateRequest cardUpdateRequest) throws MicroServiceException;
 

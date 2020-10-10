@@ -11,6 +11,7 @@ import com.thelak.route.payments.models.cloudpayments.cryptogramm.CryptogrammPay
 import com.thelak.route.payments.models.cloudpayments.reccurent.ReccurentPayResponse;
 import com.thelak.route.payments.models.cloudpayments.secure.ConfirmModel;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -36,7 +37,7 @@ public class PaymentService extends BaseMicroservice implements IPaymentService 
     }
 
     @Override
-    public ConfirmModel redirectBeforeConfirm(String MD, String PaRes) throws MicroServiceException {
+    public ModelAndView redirectBeforeConfirm(String MD, String PaRes) throws MicroServiceException {
         return null;
     }
 
