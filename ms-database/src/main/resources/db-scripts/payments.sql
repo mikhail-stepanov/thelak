@@ -151,6 +151,40 @@ CREATE TABLE "public"."db_payments_reccuring"
     PRIMARY KEY ("id")
 );
 
+
+CREATE TABLE "public"."db_payments_cryptogramm_subscription"
+(
+    "amount"          integer                  NOT NULL,
+    "card_cryptogram" varchar(2048)            NOT NULL,
+    "created_date"    timestamp with time zone NOT NULL,
+    "currency"        varchar(32)              NOT NULL,
+    "deleted_date"    timestamp with time zone NULL,
+    "description"     varchar(2048)            NOT NULL,
+    "id"              bigint                   NOT NULL,
+    "id_payment_type" bigint                   NOT NULL,
+    "id_subscription" bigint                   NULL,
+    "id_user"         bigint                   NULL,
+    "modified_date"   timestamp with time zone NULL,
+    "name"            varchar(1049)            NOT NULL,
+    "status"          boolean                  NULL,
+    "transaction_id"  bigint                   NULL,
+    PRIMARY KEY ("id")
+)
+;
+
+
+ALTER TABLE "public"."db_payments_cryptogramm_subscription"
+    ADD FOREIGN KEY ("id_payment_type") REFERENCES "public"."db_payment_type" ("id")
+;
+
+ALTER TABLE "public"."db_payments_cryptogramm_subscription"
+    ADD FOREIGN KEY ("id_subscription") REFERENCES "public"."db_subscription" ("id")
+;
+
+
+CREATE SEQUENCE "public"."pk_db_payments_cryptogramm_subscription" INCREMENT 20 START 200;
+
+
 ALTER TABLE "public"."db_option_certificate"
     ADD FOREIGN KEY ("id_certificate") REFERENCES "public"."db_certificate" ("id");
 ALTER TABLE "public"."db_option_certificate"

@@ -5,8 +5,7 @@ import java.util.List;
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.exp.Property;
 
-import com.thelak.database.entity.DbPaymentsCryptogramm;
-import com.thelak.database.entity.DbPaymentsReccuring;
+import com.thelak.database.entity.DbPaymentsCryptogrammSubscription;
 import com.thelak.database.entity.DbPaymentsReccurrent;
 
 /**
@@ -22,9 +21,8 @@ public abstract class _DbPaymentType extends CayenneDataObject {
     public static final String ID_PK_COLUMN = "id";
 
     public static final Property<String> TEXT = Property.create("text", String.class);
-    public static final Property<List<DbPaymentsCryptogramm>> TYPE_TO_CRYPTOGRAMM_PAYMENT = Property.create("typeToCryptogrammPayment", List.class);
+    public static final Property<List<DbPaymentsCryptogrammSubscription>> TYPE_TO_CRYPTOGRAMM_PAYMENT = Property.create("typeToCryptogrammPayment", List.class);
     public static final Property<List<DbPaymentsReccurrent>> TYPE_TO_RECCURENT = Property.create("typeToReccurent", List.class);
-    public static final Property<List<DbPaymentsReccuring>> TYPE_TO_RECURRING = Property.create("typeToRecurring", List.class);
 
     public void setText(String text) {
         writeProperty("text", text);
@@ -33,15 +31,15 @@ public abstract class _DbPaymentType extends CayenneDataObject {
         return (String)readProperty("text");
     }
 
-    public void addToTypeToCryptogrammPayment(DbPaymentsCryptogramm obj) {
+    public void addToTypeToCryptogrammPayment(DbPaymentsCryptogrammSubscription obj) {
         addToManyTarget("typeToCryptogrammPayment", obj, true);
     }
-    public void removeFromTypeToCryptogrammPayment(DbPaymentsCryptogramm obj) {
+    public void removeFromTypeToCryptogrammPayment(DbPaymentsCryptogrammSubscription obj) {
         removeToManyTarget("typeToCryptogrammPayment", obj, true);
     }
     @SuppressWarnings("unchecked")
-    public List<DbPaymentsCryptogramm> getTypeToCryptogrammPayment() {
-        return (List<DbPaymentsCryptogramm>)readProperty("typeToCryptogrammPayment");
+    public List<DbPaymentsCryptogrammSubscription> getTypeToCryptogrammPayment() {
+        return (List<DbPaymentsCryptogrammSubscription>)readProperty("typeToCryptogrammPayment");
     }
 
 
@@ -54,18 +52,6 @@ public abstract class _DbPaymentType extends CayenneDataObject {
     @SuppressWarnings("unchecked")
     public List<DbPaymentsReccurrent> getTypeToReccurent() {
         return (List<DbPaymentsReccurrent>)readProperty("typeToReccurent");
-    }
-
-
-    public void addToTypeToRecurring(DbPaymentsReccuring obj) {
-        addToManyTarget("typeToRecurring", obj, true);
-    }
-    public void removeFromTypeToRecurring(DbPaymentsReccuring obj) {
-        removeToManyTarget("typeToRecurring", obj, true);
-    }
-    @SuppressWarnings("unchecked")
-    public List<DbPaymentsReccuring> getTypeToRecurring() {
-        return (List<DbPaymentsReccuring>)readProperty("typeToRecurring");
     }
 
 

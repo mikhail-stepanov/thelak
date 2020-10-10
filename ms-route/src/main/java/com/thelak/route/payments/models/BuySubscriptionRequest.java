@@ -14,4 +14,9 @@ public class BuySubscriptionRequest {
     Long subscriptionId;
 
     String cardCryptogramPacket;
+
+    String IpAddress;
+
+    String cardName;
+    
 }

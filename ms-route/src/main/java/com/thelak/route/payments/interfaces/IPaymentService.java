@@ -5,17 +5,23 @@ import com.thelak.route.payments.models.BuyCertificateRequest;
 import com.thelak.route.payments.models.BuySubscriptionRequest;
 import com.thelak.route.payments.models.CardUpdateRequest;
 import com.thelak.route.payments.models.PaymentsConfigModel;
+import com.thelak.route.payments.models.cloudpayments.cryptogramm.CryptogrammPayResponse;
+import com.thelak.route.payments.models.cloudpayments.reccurent.ReccurentPayResponse;
+import org.springframework.web.bind.annotation.RequestParam;
 
 public interface IPaymentService {
 
-    String PAYMENTS_CERT = "/v1/payments/cert";
-    String PAYMENTS_SUB = "/v1/payments/sub";
+    String PAYMENTS_CERT_REQ = "/v1/payments/cert/req";
+    String PAYMENTS_SUB_REQ = "/v1/payments/sub/req";
+    String PAYMENTS_SUB_CONFIRM = "/v1/payments/sub/confirm";
     String PAYMENTS_UPDATE_CARD = "/v1/payments/card/update";
     String PAYMENTS_CONFIG = "/v1/payments/config";
 
-    Boolean buyCertificate(BuyCertificateRequest buyCertificateRequest) throws MicroServiceException;
+    Boolean buyCertificateRequest(BuyCertificateRequest buyCertificateRequest) throws MicroServiceException;
 
-    Boolean buySubscription(BuySubscriptionRequest buySubscriptionRequest) throws MicroServiceException;
+    CryptogrammPayResponse buySubscriptionRequest(BuySubscriptionRequest buySubscriptionRequest) throws MicroServiceException;
+
+    ReccurentPayResponse buySubscriptionConfirm(String MD, String PaRes) throws MicroServiceException;
 
     Boolean updateCardInfo(CardUpdateRequest cardUpdateRequest) throws MicroServiceException;
 
