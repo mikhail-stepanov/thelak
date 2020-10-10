@@ -4,7 +4,9 @@ import com.thelak.database.entity.DbArticle;
 import com.thelak.database.entity.DbArticleRating;
 import com.thelak.database.entity.DbArticleView;
 import com.thelak.route.article.models.ArticleModel;
+import com.thelak.route.category.models.CategoryModel;
 
+import java.util.Collections;
 import java.util.List;
 
 public class ArticleHelper {
@@ -28,7 +30,7 @@ public class ArticleHelper {
         return sum / ratings.size();
     }
 
-    public static ArticleModel buildArticleModel(DbArticle dbArticle) {
+    public static ArticleModel buildArticleModel(DbArticle dbArticle, CategoryModel categoryModel) {
         return ArticleModel.builder()
                 .id((Long) dbArticle.getObjectId().getIdSnapshot().get("id"))
                 .title(dbArticle.getTitle())
@@ -37,6 +39,7 @@ public class ArticleHelper {
                 .viewsCount(dbArticle.getView())
                 .description(dbArticle.getDescription())
                 .content(dbArticle.getContent())
+                .categories(Collections.singletonList(categoryModel))
                 .sourceUrl(dbArticle.getSourceUrl())
                 .coverUrl(dbArticle.getCoverUrl())
                 .createdDate(dbArticle.getCreatedDate())

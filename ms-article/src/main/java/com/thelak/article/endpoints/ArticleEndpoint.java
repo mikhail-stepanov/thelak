@@ -10,6 +10,8 @@ import com.thelak.route.article.enums.ArticleSortTypeEnum;
 import com.thelak.route.article.interfaces.IArticleService;
 import com.thelak.route.article.models.ArticleCreateModel;
 import com.thelak.route.article.models.ArticleModel;
+import com.thelak.route.category.interfaces.ICategoryService;
+import com.thelak.route.category.models.CategoryModel;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.exceptions.MsInternalErrorException;
 import io.swagger.annotations.Api;
@@ -42,6 +44,9 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
 
     @Autowired
     private DatabaseService databaseService;
+
+    @Autowired
+    private ICategoryService categoryService;
 
     ObjectContext objectContext;
 
@@ -83,7 +88,9 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
 
             objectContext.commitChanges();
 
-            return buildArticleModel(dbArticle);
+            CategoryModel categoryModel = categoryService.getByArticle(id);
+
+            return buildArticleModel(dbArticle, categoryModel);
 
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
@@ -104,7 +111,12 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
             List<ArticleModel> articleModels = new ArrayList<>();
 
             dbArticles.forEach(dbArticle -> {
-                articleModels.add(buildArticleModel(dbArticle));
+                CategoryModel categoryModel = null;
+                try {
+                    categoryModel = categoryService.getByArticle((Long) dbArticle.getObjectId().getIdSnapshot().get("id"));
+                } catch (MicroServiceException ignored) {
+                }
+                articleModels.add(buildArticleModel(dbArticle, categoryModel));
             });
 
             return articleModels;
@@ -157,7 +169,12 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
             List<ArticleModel> articleModels = new ArrayList<>();
 
             dbArticles.forEach(dbArticle -> {
-                articleModels.add(buildArticleModel(dbArticle));
+                CategoryModel categoryModel = null;
+                try {
+                    categoryModel = categoryService.getByArticle((Long) dbArticle.getObjectId().getIdSnapshot().get("id"));
+                } catch (MicroServiceException ignored) {
+                }
+                articleModels.add(buildArticleModel(dbArticle, categoryModel));
             });
 
             if (sort != null && !articleModels.isEmpty()) {
@@ -227,7 +244,12 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
             List<ArticleModel> articleModels = new ArrayList<>();
 
             dbArticles.forEach(dbArticle -> {
-                articleModels.add(buildArticleModel(dbArticle));
+                CategoryModel categoryModel = null;
+                try {
+                    categoryModel = categoryService.getByArticle((Long) dbArticle.getObjectId().getIdSnapshot().get("id"));
+                } catch (MicroServiceException ignored) {
+                }
+                articleModels.add(buildArticleModel(dbArticle, categoryModel));
             });
 
             return articleModels;
@@ -253,7 +275,7 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
 
             objectContext.commitChanges();
 
-            return buildArticleModel(dbArticle);
+            return buildArticleModel(dbArticle, null);
 
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
@@ -278,7 +300,9 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
 
             objectContext.commitChanges();
 
-            return buildArticleModel(dbArticle);
+            CategoryModel categoryModel = categoryService.getByArticle(request.getId());
+
+            return buildArticleModel(dbArticle, categoryModel);
 
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
