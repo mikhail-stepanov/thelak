@@ -73,7 +73,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     @Override
-//    @CrossOrigin
+    @CrossOrigin
     @ApiOperation(value = "Get video by id")
     @RequestMapping(value = VIDEO_GET, method = {RequestMethod.GET})
     public VideoModel get(@RequestParam Long id) throws MicroServiceException {
@@ -103,11 +103,11 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
 
             objectContext.commitChanges();
 
-            CategoryModel categoryModel = categoryService.getByVideo(id);
+            List<CategoryModel> categoryModel = categoryService.getByVideo(id);
 
             SpeakerModel speakerModel = speakerService.getByVideo(id);
 
-            return buildVideoModel(dbVideo, categoryModel, speakerModel, userInfo);
+            return buildVideoModel(dbVideo, categoryModel, speakerModel, userInfo, true);
 
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
@@ -115,7 +115,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     @Override
-//    @CrossOrigin
+    @CrossOrigin
     @ApiOperation(value = "Get list of video by ids")
     @RequestMapping(value = VIDEO_GET_IDS, method = {RequestMethod.GET})
     public List<VideoModel> getByIds(@RequestParam List<Long> ids) throws MicroServiceException {
@@ -138,7 +138,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
 
             UserInfo finalUserInfo = userInfo;
             dbVideos.forEach(dbVideo -> {
-                CategoryModel categoryModel = null;
+                List<CategoryModel> categoryModel = null;
                 try {
                     categoryModel = categoryService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
                 } catch (MicroServiceException e) {
@@ -150,7 +150,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                 } catch (MicroServiceException e) {
                     log.error(e.staticMessage());
                 }
-                videos.add(buildVideoModel(dbVideo, categoryModel, speakerModel, finalUserInfo));
+                videos.add(buildVideoModel(dbVideo, categoryModel, speakerModel, finalUserInfo, false));
             });
 
             return videos;
@@ -160,7 +160,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     @Override
-//    @CrossOrigin
+    @CrossOrigin
     @ApiOperation(value = "Get list of videos")
     @ApiImplicitParams({
             @ApiImplicitParam(
@@ -212,17 +212,15 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
             } catch (Exception ignored) {
             }
 
-            List<Long> videoIdsByCategory = new ArrayList<>();
             final Expression categoryExpression;
             if (categoryFilter != null && categoryFilter.get(0) != 0) {
-                videoIdsByCategory.addAll(categoryContentService.videoIds(categoryFilter));
+                List<Long> videoIdsByCategory = new ArrayList<>(categoryContentService.videoIds(categoryFilter));
                 categoryExpression = ExpressionFactory.inDbExp(DbVideo.ID_PK_COLUMN, videoIdsByCategory);
             } else categoryExpression = DbVideo.TITLE.isNotNull();
 
-            List<Long> videoIdsBySpeaker = new ArrayList<>();
             final Expression speakerExpression;
             if (speakerFilter != null && speakerFilter.get(0) != 0) {
-                videoIdsBySpeaker.addAll(speakerContentService.videoIds(speakerFilter));
+                List<Long> videoIdsBySpeaker = new ArrayList<>(speakerContentService.videoIds(speakerFilter));
                 speakerExpression = ExpressionFactory.inDbExp(DbVideo.ID_PK_COLUMN, videoIdsBySpeaker);
             } else speakerExpression = DbVideo.TITLE.isNotNull();
 
@@ -351,21 +349,23 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
             List<VideoModel> videos = new ArrayList<>();
 
             UserInfo finalUserInfo = userInfo;
-            dbVideos.forEach(dbVideo -> {
-                CategoryModel categoryModel = null;
-                try {
-                    categoryModel = categoryService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
-                } catch (MicroServiceException e) {
-                    log.error(e.staticMessage());
-                }
-                SpeakerModel speakerModel = null;
-                try {
-                    speakerModel = speakerService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
-                } catch (MicroServiceException e) {
-                    log.error(e.staticMessage());
-                }
-                videos.add(buildVideoModel(dbVideo, categoryModel, speakerModel, finalUserInfo));
-            });
+            if (dbVideos != null) {
+                dbVideos.forEach(dbVideo -> {
+                    List<CategoryModel> categoryModel = null;
+                    try {
+                        categoryModel = categoryService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
+                    } catch (MicroServiceException e) {
+                        log.error(e.staticMessage());
+                    }
+                    SpeakerModel speakerModel = null;
+                    try {
+                        speakerModel = speakerService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
+                    } catch (MicroServiceException e) {
+                        log.error(e.staticMessage());
+                    }
+                    videos.add(buildVideoModel(dbVideo, categoryModel, speakerModel, finalUserInfo, false));
+                });
+            }
 
             return videos;
 
@@ -376,7 +376,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     @Override
-//    @CrossOrigin
+    @CrossOrigin
     @ApiOperation(value = "Find videos by title/description/speaker")
     @ApiImplicitParams({
             @ApiImplicitParam(
@@ -426,7 +426,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
 
             UserInfo finalUserInfo = userInfo;
             dbVideos.forEach(dbVideo -> {
-                CategoryModel categoryModel = null;
+                List<CategoryModel> categoryModel = null;
                 try {
                     categoryModel = categoryService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
                 } catch (MicroServiceException e) {
@@ -438,7 +438,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                 } catch (MicroServiceException e) {
                     log.error(e.staticMessage());
                 }
-                videos.add(buildVideoModel(dbVideo, categoryModel, speakerModel, finalUserInfo));
+                videos.add(buildVideoModel(dbVideo, categoryModel, speakerModel, finalUserInfo, false));
             });
 
             return videos;
@@ -448,7 +448,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     @Override
-//    @CrossOrigin
+    @CrossOrigin
     @ApiOperation(value = "Create video")
     @RequestMapping(value = VIDEO_CREATE, method = {RequestMethod.POST})
     public VideoModel create(@RequestBody VideoCreateRequest request) throws MicroServiceException {
@@ -489,18 +489,18 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
 
             objectContext.commitChanges();
 
-            CategoryModel categoryModel = categoryService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
+            List<CategoryModel> categoryModel = categoryService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
 
             SpeakerModel speakerModel = speakerService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
 
-            return buildVideoModel(dbVideo, categoryModel, speakerModel, userInfo);
+            return buildVideoModel(dbVideo, categoryModel, speakerModel, userInfo, true);
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
         }
     }
 
     @Override
-//    @CrossOrigin
+    @CrossOrigin
     @ApiOperation(value = "Update video by id")
     @RequestMapping(value = VIDEO_UPDATE, method = {RequestMethod.PUT})
     public VideoModel update(@RequestBody VideoModel request) throws MicroServiceException {
@@ -539,18 +539,18 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
 
             objectContext.commitChanges();
 
-            CategoryModel categoryModel = categoryService.getByVideo(request.getId());
+            List<CategoryModel> categoryModels = categoryService.getByVideo(request.getId());
 
             SpeakerModel speakerModel = speakerService.getByVideo(request.getId());
 
-            return buildVideoModel(dbVideo, categoryModel, speakerModel, userInfo);
+            return buildVideoModel(dbVideo, categoryModels, speakerModel, userInfo, true);
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
         }
     }
 
     @Override
-//    @CrossOrigin
+    @CrossOrigin
     @ApiOperation(value = "Delete video by id")
     @RequestMapping(value = VIDEO_DELETE, method = {RequestMethod.DELETE})
     public Boolean delete(@RequestParam Long id) throws MicroServiceException {
@@ -569,7 +569,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     @Override
-//    @CrossOrigin
+    @CrossOrigin
     @ApiOperation(value = "Get video filters")
     @RequestMapping(value = VIDEO_FILTER_GET, method = {RequestMethod.GET})
     public VideoFilterModel getFilters() throws MicroServiceException {
@@ -588,9 +588,6 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     }
 
     public static class Comparators {
-        public static final Comparator<VideoModel> POPULAR = Comparator.comparing(VideoModel::getViewsCount);
-        public static final Comparator<VideoModel> DURATION = Comparator.comparing(VideoModel::getDuration);
-        public static final Comparator<VideoModel> RATING = Comparator.comparing(VideoModel::getRating);
         public static final Comparator<VideoModel> NEW = Comparator.comparing(VideoModel::getCreatedDate);
 
     }

@@ -16,8 +16,6 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,8 +34,6 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
     private DatabaseService databaseService;
 
     ObjectContext objectContext;
-
-    protected static final Logger log = LoggerFactory.getLogger(CategoryEndpoint.class);
 
     @PostConstruct
     private void initialize() {
@@ -63,12 +59,17 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
     @CrossOrigin
     @ApiOperation(value = "Get category by videoId")
     @RequestMapping(value = CATEGORY_GET_VIDEO, method = {RequestMethod.GET})
-    public CategoryModel getByVideo(@RequestParam Long videoId) throws MicroServiceException {
+    public List<CategoryModel> getByVideo(@RequestParam Long videoId) throws MicroServiceException {
         try {
-            DbCategoryVideos dbCategoryVideos = ObjectSelect.query(DbCategoryVideos.class)
-                    .where(DbCategoryVideos.ID_VIDEO.eq(videoId)).selectFirst(objectContext);
+            List<DbCategoryVideos> dbCategoryVideos = ObjectSelect.query(DbCategoryVideos.class)
+                    .where(DbCategoryVideos.ID_VIDEO.eq(videoId)).select(objectContext);
 
-            return buildCategoryModel(dbCategoryVideos.getVideoToCategory());
+            List<CategoryModel> categoryModels = new ArrayList<>();
+            dbCategoryVideos.forEach(dbCategoryVideo -> {
+                categoryModels.add(buildCategoryModel(dbCategoryVideo.getVideoToCategory()));
+            });
+
+            return categoryModels;
 
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
@@ -79,13 +80,17 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
     @CrossOrigin
     @ApiOperation(value = "Get category by articleId")
     @RequestMapping(value = CATEGORY_GET_ARTICLE, method = {RequestMethod.GET})
-    public CategoryModel getByArticle(@RequestParam Long articleId) throws MicroServiceException {
+    public List<CategoryModel> getByArticle(@RequestParam Long articleId) throws MicroServiceException {
         try {
-            DbCategoryArticles categoryArticles = ObjectSelect.query(DbCategoryArticles.class)
-                    .where(DbCategoryArticles.ID_ARTICLE.eq(articleId)).selectFirst(objectContext);
+            List<DbCategoryArticles> categoryArticles = ObjectSelect.query(DbCategoryArticles.class)
+                    .where(DbCategoryArticles.ID_ARTICLE.eq(articleId)).select(objectContext);
 
-            return buildCategoryModel(categoryArticles.getArticleToCategory());
+            List<CategoryModel> categoryModels = new ArrayList<>();
+            categoryArticles.forEach(dbCategoryVideo -> {
+                categoryModels.add(buildCategoryModel(dbCategoryVideo.getArticleToCategory()));
+            });
 
+            return categoryModels;
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
         }
@@ -95,13 +100,17 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
     @CrossOrigin
     @ApiOperation(value = "Get category by eventId")
     @RequestMapping(value = CATEGORY_GET_EVENT, method = {RequestMethod.GET})
-    public CategoryModel getByEvent(@RequestParam Long eventId) throws MicroServiceException {
+    public List<CategoryModel> getByEvent(@RequestParam Long eventId) throws MicroServiceException {
         try {
-            DbCategoryEvents dbCategoryEvents = ObjectSelect.query(DbCategoryEvents.class)
-                    .where(DbCategoryEvents.ID_EVENT.eq(eventId)).selectFirst(objectContext);
+            List<DbCategoryEvents> dbCategoryEvents = ObjectSelect.query(DbCategoryEvents.class)
+                    .where(DbCategoryEvents.ID_EVENT.eq(eventId)).select(objectContext);
 
-            return buildCategoryModel(dbCategoryEvents.getEventToCategory());
+            List<CategoryModel> categoryModels = new ArrayList<>();
+            dbCategoryEvents.forEach(dbCategoryVideo -> {
+                categoryModels.add(buildCategoryModel(dbCategoryVideo.getEventToCategory()));
+            });
 
+            return categoryModels;
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
         }

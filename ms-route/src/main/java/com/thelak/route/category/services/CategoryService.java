@@ -25,27 +25,27 @@ public class CategoryService extends BaseMicroservice implements ICategoryServic
     }
 
     @Override
-    public CategoryModel getByVideo(Long videoId) throws MicroServiceException {
+    public List<CategoryModel> getByVideo(Long videoId) throws MicroServiceException {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(buildUrl(CATEGORY_GET_VIDEO))
                 .queryParam("videoId", videoId);
 
-        return retry(() -> restTemplate.getForEntity(builder.toUriString(), CategoryModel.class, videoId).getBody());
+        return retry(() -> restTemplate.getForEntity(builder.toUriString(), List.class, videoId).getBody());
     }
 
     @Override
-    public CategoryModel getByArticle(Long articleId) throws MicroServiceException {
+    public List<CategoryModel> getByArticle(Long articleId) throws MicroServiceException {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(buildUrl(CATEGORY_GET_ARTICLE))
                 .queryParam("articleId", articleId);
 
-        return retry(() -> restTemplate.getForEntity(builder.toUriString(), CategoryModel.class, articleId).getBody());
+        return retry(() -> restTemplate.getForEntity(builder.toUriString(), List.class, articleId).getBody());
     }
 
     @Override
-    public CategoryModel getByEvent(Long eventId) throws MicroServiceException {
+    public List<CategoryModel> getByEvent(Long eventId) throws MicroServiceException {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(buildUrl(CATEGORY_GET_EVENT))
                 .queryParam("eventId", eventId);
 
-        return retry(() -> restTemplate.getForEntity(builder.toUriString(), CategoryModel.class, eventId).getBody());
+        return retry(() -> restTemplate.getForEntity(builder.toUriString(), List.class, eventId).getBody());
     }
 
     @Override

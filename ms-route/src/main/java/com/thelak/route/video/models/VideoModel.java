@@ -32,7 +32,7 @@ public class VideoModel {
 
     String language;
 
-    CategoryModel category;
+    List<CategoryModel> category;
 
     Integer duration;
 

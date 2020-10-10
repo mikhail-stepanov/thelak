@@ -6,7 +6,6 @@ import com.thelak.database.entity.DbArticleView;
 import com.thelak.route.article.models.ArticleModel;
 import com.thelak.route.category.models.CategoryModel;
 
-import java.util.Collections;
 import java.util.List;
 
 public class ArticleHelper {
@@ -30,16 +29,16 @@ public class ArticleHelper {
         return sum / ratings.size();
     }
 
-    public static ArticleModel buildArticleModel(DbArticle dbArticle, CategoryModel categoryModel) {
+    public static ArticleModel buildArticleModel(DbArticle dbArticle, List<CategoryModel> categoryModel, boolean fullData) {
         return ArticleModel.builder()
                 .id((Long) dbArticle.getObjectId().getIdSnapshot().get("id"))
                 .title(dbArticle.getTitle())
-                .author(dbArticle.getAuthor())
+                .author(fullData?dbArticle.getAuthor():null)
                 .rating(dbArticle.getRating())
                 .viewsCount(dbArticle.getView())
-                .description(dbArticle.getDescription())
-                .content(dbArticle.getContent())
-                .categories(Collections.singletonList(categoryModel))
+                .description(fullData ? dbArticle.getDescription() : null)
+                .content(fullData ? dbArticle.getContent() : null)
+                .categories(categoryModel)
                 .sourceUrl(dbArticle.getSourceUrl())
                 .coverUrl(dbArticle.getCoverUrl())
                 .createdDate(dbArticle.getCreatedDate())

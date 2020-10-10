@@ -17,8 +17,6 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,8 +36,6 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
 
     ObjectContext objectContext;
 
-    protected static final Logger log = LoggerFactory.getLogger(SpeakerEndpoint.class);
-
     @PostConstruct
     private void initialize() {
         objectContext = databaseService.getContext();
@@ -53,7 +49,6 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
         try {
 
             DbSpeaker dbSpeaker = SelectById.query(DbSpeaker.class, id).selectFirst(objectContext);
-
             return buildSpeakerModel(dbSpeaker);
 
         } catch (Exception e) {

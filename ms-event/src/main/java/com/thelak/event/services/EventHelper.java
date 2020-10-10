@@ -5,14 +5,14 @@ import com.thelak.route.event.models.EventModel;
 
 public class EventHelper {
 
-    public static EventModel buildEventModel(DbEvent dbEvent) {
+    public static EventModel buildEventModel(DbEvent dbEvent, boolean fullData) {
         return EventModel.builder()
                 .id((Long) dbEvent.getObjectId().getIdSnapshot().get("id"))
                 .title(dbEvent.getTitle())
                 .description(dbEvent.getDescription())
                 .startDate(dbEvent.getStartDate())
                 .endDate(dbEvent.getEndDate())
-                .content(dbEvent.getContent())
+                .content(fullData ? dbEvent.getContent() : null)
                 .coverUrl(dbEvent.getCoverUrl())
                 .createdDate(dbEvent.getCreatedDate())
                 .build();

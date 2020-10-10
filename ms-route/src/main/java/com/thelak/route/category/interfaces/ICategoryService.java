@@ -20,11 +20,11 @@ public interface ICategoryService {
 
     CategoryModel get(Long id) throws MicroServiceException;
 
-    CategoryModel getByVideo(Long videoId) throws MicroServiceException;
+    List<CategoryModel> getByVideo(Long videoId) throws MicroServiceException;
 
-    CategoryModel getByArticle(Long articleId) throws MicroServiceException;
+    List<CategoryModel> getByArticle(Long articleId) throws MicroServiceException;
 
-    CategoryModel getByEvent(Long eventId) throws MicroServiceException;
+    List<CategoryModel> getByEvent(Long eventId) throws MicroServiceException;
 
     List<CategoryModel> list() throws MicroServiceException;
 

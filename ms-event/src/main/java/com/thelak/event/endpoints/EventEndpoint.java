@@ -18,8 +18,6 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,8 +37,6 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
 
     ObjectContext objectContext;
 
-    protected static final Logger log = LoggerFactory.getLogger(EventEndpoint.class);
-
     @PostConstruct
     private void initialize() {
         objectContext = databaseService.getContext();
@@ -54,7 +50,7 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
         try {
             DbEvent dbEvent = SelectById.query(DbEvent.class, id).selectFirst(objectContext);
 
-            return buildEventModel(dbEvent);
+            return buildEventModel(dbEvent, true);
 
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
@@ -75,7 +71,7 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
             List<EventModel> eventModels = new ArrayList<>();
 
             dbEvents.forEach(dbEvent -> {
-                eventModels.add(buildEventModel(dbEvent));
+                eventModels.add(buildEventModel(dbEvent, false));
             });
 
             return eventModels;
@@ -142,7 +138,7 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
             List<EventModel> eventModels = new ArrayList<>();
 
             dbEvents.forEach(dbEvent -> {
-                eventModels.add(buildEventModel(dbEvent));
+                eventModels.add(buildEventModel(dbEvent, false));
             });
 
             return eventModels;
@@ -195,7 +191,7 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
             List<EventModel> eventModels = new ArrayList<>();
 
             dbEvents.forEach(dbEvent -> {
-                eventModels.add(buildEventModel(dbEvent));
+                eventModels.add(buildEventModel(dbEvent, false));
             });
 
             return eventModels;
@@ -221,7 +217,7 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
 
             objectContext.commitChanges();
 
-            return buildEventModel(dbEvent);
+            return buildEventModel(dbEvent, true);
 
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
@@ -246,7 +242,7 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
 
             objectContext.commitChanges();
 
-            return buildEventModel(dbEvent);
+            return buildEventModel(dbEvent, true);
 
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());

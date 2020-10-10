@@ -68,26 +68,26 @@ public class VideoHelper {
         }
     }
 
-    public static VideoModel buildVideoModel(DbVideo dbVideo, CategoryModel categoryModel, SpeakerModel speakerModel, UserInfo userInfo) {
+    public static VideoModel buildVideoModel(DbVideo dbVideo, List<CategoryModel> categoryModel, SpeakerModel speakerModel, UserInfo userInfo, boolean fullData) {
         return VideoModel.builder()
                 .id((Long) dbVideo.getObjectId().getIdSnapshot().get("id"))
                 .title(dbVideo.getTitle())
-                .description(dbVideo.getDescription())
-                .year(dbVideo.getYear())
-                .country(dbVideo.getCountry())
-                .language(dbVideo.getLanguage())
+                .description(fullData ? dbVideo.getDescription() : null)
+                .year(fullData ? dbVideo.getYear() : null)
+                .country(fullData ? dbVideo.getCountry() : null)
+                .language(fullData ? dbVideo.getLanguage() : null)
                 .category(categoryModel)
                 .duration(dbVideo.getDuration())
-                .speaker(speakerModel)
-                .playground(dbVideo.getPlayground())
-                .sources(createSources(dbVideo, userInfo))
+                .speaker(fullData ? speakerModel : null)
+                .playground(fullData ? dbVideo.getPlayground() : null)
+                .sources(fullData ? createSources(dbVideo, userInfo) : null)
                 .rating(dbVideo.getRating())
                 .viewsCount((long) dbVideo.getView())
-                .partnerLogoUrl(dbVideo.getPartnerLogoUrl())
+                .partnerLogoUrl(fullData ? dbVideo.getPartnerLogoUrl() : null)
                 .coverUrl(dbVideo.getCoverUrl())
                 .posterUrl(dbVideo.getPosterUrl())
                 .subscription(dbVideo.isIsSubscription())
-                .createdDate(dbVideo.getCreatedDate())
+                .createdDate(fullData ? dbVideo.getCreatedDate() : null)
                 .build();
     }
 }

@@ -22,8 +22,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -50,15 +48,13 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
 
     ObjectContext objectContext;
 
-    protected static final Logger log = LoggerFactory.getLogger(ArticleEndpoint.class);
-
     @PostConstruct
     private void initialize() {
         objectContext = databaseService.getContext();
     }
 
     @Override
-//    @CrossOrigin
+    @CrossOrigin
     @ApiOperation(value = "Get article by id")
     @RequestMapping(value = ARTICLE_GET, method = {RequestMethod.GET})
     public ArticleModel get(@RequestParam Long id) throws MicroServiceException {
@@ -88,9 +84,9 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
 
             objectContext.commitChanges();
 
-            CategoryModel categoryModel = categoryService.getByArticle(id);
+            List<CategoryModel> categoryModel = categoryService.getByArticle(id);
 
-            return buildArticleModel(dbArticle, categoryModel);
+            return buildArticleModel(dbArticle, categoryModel, true);
 
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
@@ -98,7 +94,7 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
     }
 
     @Override
-//    @CrossOrigin
+    @CrossOrigin
     @ApiOperation(value = "Get list of articles by ids")
     @RequestMapping(value = ARTICLE_GET_IDS, method = {RequestMethod.GET})
     public List<ArticleModel> getByIds(@RequestParam List<Long> ids) throws MicroServiceException {
@@ -111,12 +107,12 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
             List<ArticleModel> articleModels = new ArrayList<>();
 
             dbArticles.forEach(dbArticle -> {
-                CategoryModel categoryModel = null;
+                List<CategoryModel> categoryModel = null;
                 try {
                     categoryModel = categoryService.getByArticle((Long) dbArticle.getObjectId().getIdSnapshot().get("id"));
                 } catch (MicroServiceException ignored) {
                 }
-                articleModels.add(buildArticleModel(dbArticle, categoryModel));
+                articleModels.add(buildArticleModel(dbArticle, categoryModel, false));
             });
 
             return articleModels;
@@ -126,7 +122,7 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
     }
 
     @Override
-//    @CrossOrigin
+    @CrossOrigin
     @ApiOperation(value = "Get list of articles")
     @ApiImplicitParams({
             @ApiImplicitParam(
@@ -169,12 +165,12 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
             List<ArticleModel> articleModels = new ArrayList<>();
 
             dbArticles.forEach(dbArticle -> {
-                CategoryModel categoryModel = null;
+                List<CategoryModel> categoryModel = null;
                 try {
                     categoryModel = categoryService.getByArticle((Long) dbArticle.getObjectId().getIdSnapshot().get("id"));
                 } catch (MicroServiceException ignored) {
                 }
-                articleModels.add(buildArticleModel(dbArticle, categoryModel));
+                articleModels.add(buildArticleModel(dbArticle, categoryModel, false));
             });
 
             if (sort != null && !articleModels.isEmpty()) {
@@ -201,7 +197,7 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
     }
 
     @Override
-//    @CrossOrigin
+    @CrossOrigin
     @ApiOperation(value = "Find article by title/author/description")
     @ApiImplicitParams({
             @ApiImplicitParam(
@@ -244,12 +240,12 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
             List<ArticleModel> articleModels = new ArrayList<>();
 
             dbArticles.forEach(dbArticle -> {
-                CategoryModel categoryModel = null;
+                List<CategoryModel> categoryModel = null;
                 try {
                     categoryModel = categoryService.getByArticle((Long) dbArticle.getObjectId().getIdSnapshot().get("id"));
                 } catch (MicroServiceException ignored) {
                 }
-                articleModels.add(buildArticleModel(dbArticle, categoryModel));
+                articleModels.add(buildArticleModel(dbArticle, categoryModel, false));
             });
 
             return articleModels;
@@ -259,7 +255,7 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
     }
 
     @Override
-//    @CrossOrigin
+    @CrossOrigin
     @ApiOperation(value = "Create article")
     @RequestMapping(value = ARTICLE_CREATE, method = {RequestMethod.POST})
     public ArticleModel create(@RequestBody ArticleCreateModel request) throws MicroServiceException {
@@ -275,7 +271,7 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
 
             objectContext.commitChanges();
 
-            return buildArticleModel(dbArticle, null);
+            return buildArticleModel(dbArticle, null, true);
 
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
@@ -283,7 +279,7 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
     }
 
     @Override
-//    @CrossOrigin
+    @CrossOrigin
     @ApiOperation(value = "Update article by id")
     @RequestMapping(value = ARTICLE_UPDATE, method = {RequestMethod.PUT})
     public ArticleModel update(@RequestBody ArticleModel request) throws MicroServiceException {
@@ -300,9 +296,9 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
 
             objectContext.commitChanges();
 
-            CategoryModel categoryModel = categoryService.getByArticle(request.getId());
+            List<CategoryModel> categoryModel = categoryService.getByArticle(request.getId());
 
-            return buildArticleModel(dbArticle, categoryModel);
+            return buildArticleModel(dbArticle, categoryModel, true);
 
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
@@ -310,7 +306,7 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
     }
 
     @Override
-//    @CrossOrigin
+    @CrossOrigin
     @ApiOperation(value = "Delete article by id")
     @RequestMapping(value = ARTICLE_DELETE, method = {RequestMethod.DELETE})
     public Boolean delete(@RequestParam Long id) throws MicroServiceException {
