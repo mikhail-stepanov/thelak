@@ -18,6 +18,7 @@ import com.thelak.route.payments.models.cloudpayments.cryptogramm.CryptogrammPay
 import com.thelak.route.payments.models.cloudpayments.cryptogramm.CryptogrammPayResponse;
 import com.thelak.route.payments.models.cloudpayments.reccurent.ReccurentPayRequest;
 import com.thelak.route.payments.models.cloudpayments.reccurent.ReccurentPayResponse;
+import com.thelak.route.payments.models.cloudpayments.secure.ConfirmModel;
 import com.thelak.route.payments.models.cloudpayments.secure.DSecureRequest;
 import com.thelak.route.payments.models.cloudpayments.secure.DSecureResponse;
 import io.swagger.annotations.Api;
@@ -33,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -149,6 +151,16 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
             e.printStackTrace();
             throw new MsInternalErrorException(e.getMessage());
         }
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Redirect before confirm")
+    @RequestMapping(value = PAYMENTS_REDIRECT, method = {RequestMethod.POST})
+    public ConfirmModel redirectBeforeConfirm(@RequestParam String MD, @RequestParam String PaReq) throws MicroServiceException {
+        return ConfirmModel.builder()
+                .MD(MD)
+                .PaReq(PaReq).build();
     }
 
     @Override

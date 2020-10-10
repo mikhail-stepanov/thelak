@@ -9,6 +9,7 @@ import com.thelak.route.payments.models.CardUpdateRequest;
 import com.thelak.route.payments.models.PaymentsConfigModel;
 import com.thelak.route.payments.models.cloudpayments.cryptogramm.CryptogrammPayResponse;
 import com.thelak.route.payments.models.cloudpayments.reccurent.ReccurentPayResponse;
+import com.thelak.route.payments.models.cloudpayments.secure.ConfirmModel;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +32,11 @@ public class PaymentService extends BaseMicroservice implements IPaymentService 
 
     @Override
     public ReccurentPayResponse buySubscriptionConfirm(String MD, String PaRes) throws MicroServiceException {
+        return null;
+    }
+
+    @Override
+    public ConfirmModel redirectBeforeConfirm(String MD, String PaRes) throws MicroServiceException {
         return null;
     }
 
