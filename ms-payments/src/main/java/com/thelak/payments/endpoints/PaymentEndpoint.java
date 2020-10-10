@@ -5,6 +5,7 @@ import com.thelak.core.endpoints.AbstractMicroservice;
 import com.thelak.core.models.UserInfo;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbPaymentConfig;
+import com.thelak.database.entity.DbPayments;
 import com.thelak.database.entity.DbPaymentsCryptogrammSubscription;
 import com.thelak.database.entity.DbSubscription;
 import com.thelak.route.auth.interfaces.IAuthenticationService;
