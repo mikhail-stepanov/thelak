@@ -161,7 +161,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     public ModelAndView redirectBeforeConfirm(@RequestParam String MD, @RequestParam String PaRes) throws MicroServiceException {
         RedirectView rv = new RedirectView();
         rv.setStatusCode(HttpStatus.MOVED_PERMANENTLY);
-        rv.setUrl("redirect:/v1/payments/sub/confirm/" + MD + "/" + PaRes);
+        rv.setUrl("https://dev.thelak.com/v1/payments/sub/confirm/" + MD + "/" + PaRes);
         return new ModelAndView(rv);
     }
 
