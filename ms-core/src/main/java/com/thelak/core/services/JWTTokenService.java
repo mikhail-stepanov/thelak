@@ -26,6 +26,7 @@ public class JWTTokenService implements ITokenService {
 
         String compactTokenString = Jwts.builder()
                 .claim("id", user.getUserId())
+                .claim("subscribe", user.isSubscribe())
                 .claim("sub", user.getUserEmail())
                 .claim("admin", user.isAdmin())
                 .setExpiration(expirationDate)
@@ -49,11 +50,13 @@ public class JWTTokenService implements ITokenService {
             Long userId = jwsClaims.getBody()
                     .get("id", Long.class);
             boolean isAdmin = jwsClaims.getBody().get("admin", Boolean.class);
+            boolean isSubscribe = jwsClaims.getBody().get("subscribe", Boolean.class);
 
             return UserInfo.builder()
                     .userId(userId)
                     .userEmail(email)
                     .isAdmin(isAdmin)
+                    .isSubscribe(isSubscribe)
                     .build();
     }
 }
