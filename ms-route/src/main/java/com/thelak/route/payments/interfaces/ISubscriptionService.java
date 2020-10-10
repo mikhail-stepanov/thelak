@@ -1,7 +1,7 @@
 package com.thelak.route.payments.interfaces;
 
 import com.thelak.route.exceptions.MicroServiceException;
-import com.thelak.route.payments.models.SubscriptionModel;
+import com.thelak.route.payments.models.subscription.SubscriptionModel;
 
 import java.util.List;
 

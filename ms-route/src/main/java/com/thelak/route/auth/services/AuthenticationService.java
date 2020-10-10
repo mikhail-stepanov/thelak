@@ -7,7 +7,7 @@ import com.thelak.route.auth.models.UpdateUserModel;
 import com.thelak.route.auth.models.VueHelpModel;
 import com.thelak.route.common.services.BaseMicroservice;
 import com.thelak.route.exceptions.MicroServiceException;
-import com.thelak.route.payments.models.SetSubscriptionModel;
+import com.thelak.route.payments.models.subscription.SetSubscriptionModel;
 import org.springframework.web.client.RestTemplate;
 
 public class AuthenticationService extends BaseMicroservice implements IAuthenticationService {

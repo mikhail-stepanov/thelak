@@ -3,13 +3,12 @@ package com.thelak.route.payments.services;
 import com.thelak.route.common.services.BaseMicroservice;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.payments.interfaces.IPaymentService;
-import com.thelak.route.payments.models.BuyCertificateRequest;
-import com.thelak.route.payments.models.BuySubscriptionRequest;
+import com.thelak.route.payments.models.certificate.BuyCertificateRequest;
+import com.thelak.route.payments.models.cloudpayments.secure.SecureResponse;
+import com.thelak.route.payments.models.subscription.BuySubscriptionRequest;
 import com.thelak.route.payments.models.CardUpdateRequest;
 import com.thelak.route.payments.models.PaymentsConfigModel;
 import com.thelak.route.payments.models.cloudpayments.cryptogramm.CryptogrammPayResponse;
-import com.thelak.route.payments.models.cloudpayments.reccurent.ReccurentPayResponse;
-import com.thelak.route.payments.models.cloudpayments.secure.ConfirmModel;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -32,7 +31,7 @@ public class PaymentService extends BaseMicroservice implements IPaymentService 
     }
 
     @Override
-    public ReccurentPayResponse buySubscriptionConfirm(String MD, String PaRes) throws MicroServiceException {
+    public SecureResponse buySubscriptionConfirm(String MD, String PaRes) throws MicroServiceException {
         return null;
     }
 
@@ -44,6 +43,11 @@ public class PaymentService extends BaseMicroservice implements IPaymentService 
     @Override
     public Boolean updateCardInfo(CardUpdateRequest cardUpdateRequest) throws MicroServiceException {
         return retry(() -> restTemplate.postForEntity(buildUrl(PAYMENTS_UPDATE_CARD), cardUpdateRequest, Boolean.class).getBody());
+    }
+
+    @Override
+    public Boolean cancelSubscription() throws MicroServiceException {
+        return null;
     }
 
     @Override

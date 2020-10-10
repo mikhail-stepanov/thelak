@@ -5,21 +5,28 @@ import com.thelak.core.endpoints.AbstractMicroservice;
 import com.thelak.core.models.UserInfo;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbPaymentConfig;
-import com.thelak.database.entity.DbPaymentsCryptogrammSubscription;
+import com.thelak.database.entity.DbPaymentsCryptogramm;
+import com.thelak.database.entity.DbPaymentsRecurrent;
 import com.thelak.database.entity.DbSubscription;
 import com.thelak.route.auth.interfaces.IAuthenticationService;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.exceptions.MsInternalErrorException;
 import com.thelak.route.exceptions.MsNotAuthorizedException;
+import com.thelak.route.message.IMessageService;
 import com.thelak.route.payments.interfaces.IPaymentService;
-import com.thelak.route.payments.models.*;
+import com.thelak.route.payments.models.CardUpdateRequest;
+import com.thelak.route.payments.models.PaymentsConfigModel;
+import com.thelak.route.payments.models.certificate.BuyCertificateRequest;
+import com.thelak.route.payments.models.cloudpayments.cancel.CancelRequest;
+import com.thelak.route.payments.models.cloudpayments.cancel.CancelResponse;
 import com.thelak.route.payments.models.cloudpayments.cryptogramm.CryptogrammPayRequest;
 import com.thelak.route.payments.models.cloudpayments.cryptogramm.CryptogrammPayResponse;
-import com.thelak.route.payments.models.cloudpayments.reccurent.ReccurentPayRequest;
-import com.thelak.route.payments.models.cloudpayments.reccurent.ReccurentPayResponse;
-import com.thelak.route.payments.models.cloudpayments.secure.ConfirmModel;
-import com.thelak.route.payments.models.cloudpayments.secure.DSecureRequest;
-import com.thelak.route.payments.models.cloudpayments.secure.DSecureResponse;
+import com.thelak.route.payments.models.cloudpayments.reccurent.RecurrentPayRequest;
+import com.thelak.route.payments.models.cloudpayments.reccurent.RecurrentPayResponse;
+import com.thelak.route.payments.models.cloudpayments.secure.SecureRequest;
+import com.thelak.route.payments.models.cloudpayments.secure.SecureResponse;
+import com.thelak.route.payments.models.subscription.BuySubscriptionRequest;
+import com.thelak.route.payments.models.subscription.SetSubscriptionModel;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -27,9 +34,8 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,11 +60,17 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     @Autowired
     private IAuthenticationService authenticationService;
 
+    @Autowired
+    private IMessageService messageService;
+
+    @Value("${user.subscription.queue:#{null}}")
+    private String userSubscriptionQueue;
+
     RestTemplate restTemplate;
 
     ObjectContext objectContext;
 
-    protected static final Logger log = LoggerFactory.getLogger(PaymentEndpoint.class);
+    Gson gson;
 
     @PostConstruct
     private void initialize() {
@@ -70,6 +82,9 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
         restTemplate = new RestTemplateBuilder()
                 .basicAuthorization(username.getValue(), password.getValue())
                 .build();
+
+        gson = new Gson();
+
     }
 
     @Override
@@ -96,7 +111,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                     paramType = "header")}
     )
     @RequestMapping(value = PAYMENTS_SUB_CONFIRM, method = {RequestMethod.GET})
-    public ReccurentPayResponse buySubscriptionConfirm(@PathVariable String MD, @PathVariable String PaRes) throws MicroServiceException {
+    public SecureResponse buySubscriptionConfirm(@PathVariable String MD, @PathVariable String PaRes) throws MicroServiceException {
         try {
             UserInfo userInfo = null;
             try {
@@ -108,47 +123,73 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                 throw new MsNotAuthorizedException();
             }
 
-            DbPaymentsCryptogrammSubscription dbPaymentsCryptogrammSubscription = ObjectSelect.query(DbPaymentsCryptogrammSubscription.class)
-                    .where(DbPaymentsCryptogrammSubscription.TRANSACTION_ID.eq(Long.valueOf(MD)))
+            DbPaymentsCryptogramm dbPaymentsCryptogramm = ObjectSelect.query(DbPaymentsCryptogramm.class)
+                    .where(DbPaymentsCryptogramm.TRANSACTION_ID.eq(Long.valueOf(MD)))
                     .selectFirst(objectContext);
 
             DbPaymentConfig dbPaymentConfig = ObjectSelect.query(DbPaymentConfig.class)
                     .where(DbPaymentConfig.NAME.eq("3D_SECURE_URL")).selectFirst(objectContext);
 
-            DSecureRequest dSecureRequest = DSecureRequest.builder()
+            SecureRequest dSecureRequest = SecureRequest.builder()
                     .PaRes(PaRes)
                     .TransactionId(Long.valueOf(MD))
                     .build();
 
             ResponseEntity<String> responseEntity = restTemplate.postForEntity(dbPaymentConfig.getValue(), dSecureRequest, String.class);
-            Gson gson = new Gson();
-            DSecureResponse dSecureResponse = gson.fromJson(responseEntity.getBody(), DSecureResponse.class);
+            SecureResponse secureResponse = gson.fromJson(responseEntity.getBody(), SecureResponse.class);
 
-            DbSubscription subscription = dbPaymentsCryptogrammSubscription.getCryptogrammToSubscription();
+            if (secureResponse.getSuccess()) {
+                dbPaymentsCryptogramm.setStatus(true);
+                dbPaymentsCryptogramm.setModifiedDate(LocalDateTime.now());
+                objectContext.commitChanges();
 
-            ReccurentPayRequest reccurentPayRequest = ReccurentPayRequest.builder()
-                    .accountId(userInfo.getUserId().toString())
-                    .amount(subscription.getPrice())
-                    .currency("RUB")
-                    .description("Подписка Thelak на " + subscription.getMonths() + " месяцев.")
-                    .email(userInfo.getUserEmail())
-                    .interval("Month")
-                    .period(subscription.getMonths())
-                    .startDate(ZonedDateTime.now().plusMonths(subscription.getMonths()))
-                    .requireConfirmation(false)
-                    .token(dSecureResponse.getModel().getToken())
-                    .build();
+                DbSubscription subscription = dbPaymentsCryptogramm.getCryptogrammToSubscription();
+                messageService.publish(userSubscriptionQueue, SetSubscriptionModel.builder()
+                        .userId(userInfo.getUserId())
+                        .subscriptionDate(LocalDateTime.now().plusMonths(subscription.getMonths())).build());
 
-            dbPaymentConfig = ObjectSelect.query(DbPaymentConfig.class)
-                    .where(DbPaymentConfig.NAME.eq("RECCURENT_URL")).selectFirst(objectContext);
+                try {
+                    RecurrentPayRequest reccurentPayRequest = RecurrentPayRequest.builder()
+                            .accountId(userInfo.getUserId().toString())
+                            .amount(subscription.getPrice())
+                            .currency("RUB")
+                            .description("Подписка Thelak на " + subscription.getMonths() + " месяцев.")
+                            .email(userInfo.getUserEmail())
+                            .interval("Month")
+                            .period(subscription.getMonths())
+                            .startDate(ZonedDateTime.now().plusMonths(subscription.getMonths()))
+                            .requireConfirmation(false)
+                            .token(secureResponse.getModel().getToken())
+                            .build();
 
-            responseEntity = restTemplate.postForEntity(dbPaymentConfig.getValue(), reccurentPayRequest, String.class);
+                    DbPaymentsRecurrent dbPaymentsRecurrent = objectContext.newObject(DbPaymentsRecurrent.class);
+                    dbPaymentsRecurrent.setIdUser(userInfo.getUserId());
+                    dbPaymentsRecurrent.setAmount(reccurentPayRequest.getAmount());
+                    dbPaymentsRecurrent.setCurrency(reccurentPayRequest.getCurrency());
+                    dbPaymentsRecurrent.setDescription(reccurentPayRequest.getDescription());
+                    dbPaymentsRecurrent.setEmail(reccurentPayRequest.getEmail());
+                    dbPaymentsRecurrent.setInterval(reccurentPayRequest.getInterval());
+                    dbPaymentsRecurrent.setPeriod(reccurentPayRequest.getPeriod());
+                    dbPaymentsRecurrent.setStartDate(reccurentPayRequest.getStartDate().toLocalDateTime());
+                    dbPaymentsRecurrent.setRequireConfirmation(reccurentPayRequest.getRequireConfirmation());
+                    dbPaymentsRecurrent.setToken(reccurentPayRequest.getToken());
+                    dbPaymentsRecurrent.setStatus(false);
+                    objectContext.commitChanges();
 
-            authenticationService.setSubscription(SetSubscriptionModel.builder()
-                    .userId(userInfo.getUserId())
-                    .subscriptionDate(LocalDateTime.now().plusMonths(subscription.getMonths())).build());
+                    dbPaymentConfig = ObjectSelect.query(DbPaymentConfig.class)
+                            .where(DbPaymentConfig.NAME.eq("RECURRENT_URL")).selectFirst(objectContext);
 
-            return gson.fromJson(responseEntity.getBody(), ReccurentPayResponse.class);
+                    responseEntity = restTemplate.postForEntity(dbPaymentConfig.getValue(), reccurentPayRequest, String.class);
+                    RecurrentPayResponse recurrentPayResponse = gson.fromJson(responseEntity.getBody(), RecurrentPayResponse.class);
+                    if (recurrentPayResponse.getSuccess()) {
+                        dbPaymentsRecurrent.setStatus(true);
+                        dbPaymentsRecurrent.setIdRecurrent(recurrentPayResponse.getModel().getId());
+                        objectContext.commitChanges();
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+            return gson.fromJson(responseEntity.getBody(), SecureResponse.class);
         } catch (Exception e) {
             e.printStackTrace();
             throw new MsInternalErrorException(e.getMessage());
@@ -206,19 +247,19 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                     .where(DbPaymentConfig.NAME.eq("CRYPTOGRAMM_CHARGE_URL")).selectFirst(objectContext);
 
             ResponseEntity<String> responseEntity = restTemplate.postForEntity(dbPaymentConfig.getValue(), cryptogrammPayRequest, String.class);
-            Gson gson = new Gson();
             CryptogrammPayResponse result = gson.fromJson(responseEntity.getBody(), CryptogrammPayResponse.class);
-            DbPaymentsCryptogrammSubscription dbPaymentsCryptogrammSubscription = objectContext.newObject(DbPaymentsCryptogrammSubscription.class);
-            dbPaymentsCryptogrammSubscription.setAmount(cryptogrammPayRequest.getAmount());
-            dbPaymentsCryptogrammSubscription.setCardCryptogram(cryptogrammPayRequest.getCardCryptogramPacket());
-            dbPaymentsCryptogrammSubscription.setCreatedDate(LocalDateTime.now());
-            dbPaymentsCryptogrammSubscription.setCurrency(cryptogrammPayRequest.getCurrency());
-            dbPaymentsCryptogrammSubscription.setDescription(cryptogrammPayRequest.getDescription());
-            dbPaymentsCryptogrammSubscription.setCryptogrammToSubscription(dbSubscription);
-            dbPaymentsCryptogrammSubscription.setIdUser(cryptogrammPayRequest.getAccountId());
-            dbPaymentsCryptogrammSubscription.setName(cryptogrammPayRequest.getName());
-            dbPaymentsCryptogrammSubscription.setStatus(false);
-            dbPaymentsCryptogrammSubscription.setTransactionId(result.getModel().getTransactionId());
+            DbPaymentsCryptogramm dbPaymentsCryptogramm = objectContext.newObject(DbPaymentsCryptogramm.class);
+            dbPaymentsCryptogramm.setAmount(cryptogrammPayRequest.getAmount());
+            dbPaymentsCryptogramm.setCardCryptogram(cryptogrammPayRequest.getCardCryptogramPacket());
+            dbPaymentsCryptogramm.setCreatedDate(LocalDateTime.now());
+            dbPaymentsCryptogramm.setCurrency(cryptogrammPayRequest.getCurrency());
+            dbPaymentsCryptogramm.setDescription(cryptogrammPayRequest.getDescription());
+            dbPaymentsCryptogramm.setCryptogrammToSubscription(dbSubscription);
+            dbPaymentsCryptogramm.setIdUser(cryptogrammPayRequest.getAccountId());
+            dbPaymentsCryptogramm.setName(cryptogrammPayRequest.getName());
+            dbPaymentsCryptogramm.setStatus(false);
+            dbPaymentsCryptogramm.setCryptogrammToSubscription(dbSubscription);
+            dbPaymentsCryptogramm.setTransactionId(result.getModel().getTransactionId());
 
             objectContext.commitChanges();
             return result;
@@ -239,6 +280,44 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     @RequestMapping(value = PAYMENTS_UPDATE_CARD, method = {RequestMethod.POST})
     public Boolean updateCardInfo(CardUpdateRequest cardUpdateRequest) throws MicroServiceException {
         return null;
+    }
+
+    @Override
+    @CrossOrigin
+    @ApiOperation(value = "Update card info")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(required = true,
+                    defaultValue = "Bearer ",
+                    name = "Authorization",
+                    paramType = "header")}
+    )
+    @RequestMapping(value = PAYMENTS_SUB_CANCEL, method = {RequestMethod.GET})
+    public Boolean cancelSubscription() throws MicroServiceException {
+        UserInfo userInfo = null;
+        try {
+            userInfo = (UserInfo) SecurityContextHolder
+                    .getContext()
+                    .getAuthentication()
+                    .getPrincipal();
+        } catch (Exception e) {
+            throw new MsNotAuthorizedException();
+        }
+
+        DbPaymentConfig dbPaymentConfig = ObjectSelect.query(DbPaymentConfig.class)
+                .where(DbPaymentConfig.NAME.eq("RECURRENT_CANCEL_URL")).selectFirst(objectContext);
+
+        DbPaymentsRecurrent dbPaymentsRecurrent = ObjectSelect.query(DbPaymentsRecurrent.class)
+                .where(DbPaymentsRecurrent.ID_USER.eq(userInfo.getUserId()))
+                .and(DbPaymentsRecurrent.STATUS.eq(true))
+                .selectFirst(objectContext);
+
+        CancelRequest cancelRequest = CancelRequest.builder()
+                .Id(dbPaymentsRecurrent.getIdRecurrent()).build();
+
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity(dbPaymentConfig.getValue(), cancelRequest, String.class);
+        CancelResponse cancelResponse = gson.fromJson(responseEntity.getBody(), CancelResponse.class);
+
+        return cancelResponse.getSuccess();
     }
 
     @Override

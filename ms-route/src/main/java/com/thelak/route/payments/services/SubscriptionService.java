@@ -3,7 +3,7 @@ package com.thelak.route.payments.services;
 import com.thelak.route.common.services.BaseMicroservice;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.payments.interfaces.ISubscriptionService;
-import com.thelak.route.payments.models.SubscriptionModel;
+import com.thelak.route.payments.models.subscription.SubscriptionModel;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;

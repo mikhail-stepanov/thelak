@@ -50,15 +50,7 @@
 		<db-attribute name="name" type="VARCHAR" length="1048"/>
 		<db-attribute name="value" type="VARCHAR" length="2056"/>
 	</db-entity>
-	<db-entity name="db_payment_token" schema="public">
-		<db-attribute name="created_date" type="TIMESTAMP"/>
-		<db-attribute name="deleted_date" type="TIMESTAMP"/>
-		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="id_user" type="BIGINT" isMandatory="true"/>
-		<db-attribute name="modified_date" type="TIMESTAMP"/>
-		<db-attribute name="token" type="VARCHAR" isMandatory="true" length="2056"/>
-	</db-entity>
-	<db-entity name="db_payments_cryptogramm_subscription" schema="public">
+	<db-entity name="db_payments_cryptogramm" schema="public">
 		<db-attribute name="amount" type="INTEGER" isMandatory="true"/>
 		<db-attribute name="card_cryptogram" type="VARCHAR" isMandatory="true" length="2048"/>
 		<db-attribute name="created_date" type="TIMESTAMP" isMandatory="true"/>
@@ -66,14 +58,15 @@
 		<db-attribute name="deleted_date" type="TIMESTAMP"/>
 		<db-attribute name="description" type="VARCHAR" isMandatory="true" length="2048"/>
 		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="id_certificate" type="BIGINT"/>
 		<db-attribute name="id_subscription" type="BIGINT"/>
-		<db-attribute name="id_user" type="BIGINT"/>
+		<db-attribute name="id_user" type="BIGINT" isMandatory="true"/>
 		<db-attribute name="modified_date" type="TIMESTAMP"/>
 		<db-attribute name="name" type="VARCHAR" isMandatory="true" length="1049"/>
 		<db-attribute name="status" type="BOOLEAN"/>
-		<db-attribute name="transaction_id" type="BIGINT"/>
+		<db-attribute name="transaction_id" type="BIGINT" isMandatory="true"/>
 	</db-entity>
-	<db-entity name="db_payments_reccurrent" schema="public">
+	<db-entity name="db_payments_recurrent" schema="public">
 		<db-attribute name="amount" type="INTEGER" isMandatory="true"/>
 		<db-attribute name="created_date" type="TIMESTAMP" isMandatory="true"/>
 		<db-attribute name="currency" type="VARCHAR" isMandatory="true" length="32"/>
@@ -81,13 +74,16 @@
 		<db-attribute name="description" type="VARCHAR" isMandatory="true" length="2048"/>
 		<db-attribute name="email" type="VARCHAR" isMandatory="true" length="2048"/>
 		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="id_recurrent" type="VARCHAR" length="2048"/>
+		<db-attribute name="id_subscription" type="BIGINT"/>
+		<db-attribute name="id_user" type="BIGINT" isMandatory="true"/>
 		<db-attribute name="interval" type="VARCHAR" isMandatory="true" length="256"/>
 		<db-attribute name="modified_date" type="TIMESTAMP"/>
 		<db-attribute name="period" type="INTEGER" isMandatory="true"/>
 		<db-attribute name="require_confirmation" type="BOOLEAN" isMandatory="true"/>
 		<db-attribute name="startDate" type="TIMESTAMP" isMandatory="true"/>
 		<db-attribute name="status" type="BOOLEAN"/>
-		<db-attribute name="token" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="token" type="VARCHAR" isMandatory="true" length="100000"/>
 	</db-entity>
 	<db-entity name="db_subscription" schema="public">
 		<db-attribute name="cover" type="INTEGER"/>
@@ -135,14 +131,7 @@
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
 		<obj-attribute name="value" type="java.lang.String" db-attribute-path="value"/>
 	</obj-entity>
-	<obj-entity name="DbPaymentToken" className="com.thelak.database.entity.DbPaymentToken" dbEntityName="db_payment_token">
-		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
-		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
-		<obj-attribute name="idUser" type="long" db-attribute-path="id_user"/>
-		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
-		<obj-attribute name="token" type="java.lang.String" db-attribute-path="token"/>
-	</obj-entity>
-	<obj-entity name="DbPaymentsCryptogrammSubscription" className="com.thelak.database.entity.DbPaymentsCryptogrammSubscription" dbEntityName="db_payments_cryptogramm_subscription">
+	<obj-entity name="DbPaymentsCryptogramm" className="com.thelak.database.entity.DbPaymentsCryptogramm" dbEntityName="db_payments_cryptogramm">
 		<obj-attribute name="amount" type="int" db-attribute-path="amount"/>
 		<obj-attribute name="cardCryptogram" type="java.lang.String" db-attribute-path="card_cryptogram"/>
 		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
@@ -155,19 +144,22 @@
 		<obj-attribute name="status" type="boolean" db-attribute-path="status"/>
 		<obj-attribute name="transactionId" type="long" db-attribute-path="transaction_id"/>
 	</obj-entity>
-	<obj-entity name="DbPaymentsReccurrent" className="com.thelak.database.entity.DbPaymentsReccurrent" dbEntityName="db_payments_reccurrent">
+	<obj-entity name="DbPaymentsRecurrent" className="com.thelak.database.entity.DbPaymentsRecurrent" dbEntityName="db_payments_recurrent">
 		<obj-attribute name="amount" type="int" db-attribute-path="amount"/>
 		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
 		<obj-attribute name="currency" type="java.lang.String" db-attribute-path="currency"/>
 		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
 		<obj-attribute name="description" type="java.lang.String" db-attribute-path="description"/>
 		<obj-attribute name="email" type="java.lang.String" db-attribute-path="email"/>
+		<obj-attribute name="idRecurrent" type="java.lang.String" db-attribute-path="id_recurrent"/>
+		<obj-attribute name="idUser" type="long" db-attribute-path="id_user"/>
 		<obj-attribute name="interval" type="java.lang.String" db-attribute-path="interval"/>
 		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
 		<obj-attribute name="period" type="int" db-attribute-path="period"/>
 		<obj-attribute name="requireConfirmation" type="boolean" db-attribute-path="require_confirmation"/>
 		<obj-attribute name="startDate" type="java.time.LocalDateTime" db-attribute-path="startDate"/>
 		<obj-attribute name="status" type="boolean" db-attribute-path="status"/>
+		<obj-attribute name="token" type="java.lang.String" db-attribute-path="token"/>
 	</obj-entity>
 	<obj-entity name="DbSubscription" className="com.thelak.database.entity.DbSubscription" dbEntityName="db_subscription">
 		<obj-attribute name="cover" type="int" db-attribute-path="cover"/>
@@ -185,6 +177,9 @@
 		<db-attribute-pair source="id" target="id_certificate"/>
 	</db-relationship>
 	<db-relationship name="certificateToOption" source="db_certificate" target="db_option_certificate" toMany="true">
+		<db-attribute-pair source="id" target="id_certificate"/>
+	</db-relationship>
+	<db-relationship name="certificateToCryptogramm" source="db_issued_certificate" target="db_payments_cryptogramm" toMany="true">
 		<db-attribute-pair source="id" target="id_certificate"/>
 	</db-relationship>
 	<db-relationship name="issuedToCertificate" source="db_issued_certificate" target="db_certificate" toMany="false">
@@ -205,28 +200,37 @@
 	<db-relationship name="optionsToOpsub" source="db_options" target="db_option_subscription" toMany="true">
 		<db-attribute-pair source="id" target="id_option"/>
 	</db-relationship>
-	<db-relationship name="cardToPayment" source="db_payment_token" target="db_payments_reccurrent" toMany="true">
-		<db-attribute-pair source="id" target="token"/>
+	<db-relationship name="cryptogrammToCertificate" source="db_payments_cryptogramm" target="db_issued_certificate" toMany="false">
+		<db-attribute-pair source="id_certificate" target="id"/>
 	</db-relationship>
-	<db-relationship name="cryptogrammToSubscription" source="db_payments_cryptogramm_subscription" target="db_subscription" toMany="false">
+	<db-relationship name="cryptogrammToSubscription" source="db_payments_cryptogramm" target="db_subscription" toMany="false">
 		<db-attribute-pair source="id_subscription" target="id"/>
+	</db-relationship>
+	<db-relationship name="recurrentToSubscription" source="db_payments_recurrent" target="db_subscription" toMany="false">
+		<db-attribute-pair source="id_subscription" target="id"/>
+	</db-relationship>
+	<db-relationship name="subscriptionToCryptogramm" source="db_subscription" target="db_payments_cryptogramm" toMany="true">
+		<db-attribute-pair source="id" target="id_subscription"/>
 	</db-relationship>
 	<db-relationship name="subscriptionToOpsub" source="db_subscription" target="db_option_subscription" toMany="true">
 		<db-attribute-pair source="id" target="id_subscription"/>
 	</db-relationship>
-	<db-relationship name="untitledRel" source="db_subscription" target="db_payments_cryptogramm_subscription" toMany="true">
+	<db-relationship name="subscriptionToRecurrent" source="db_subscription" target="db_payments_recurrent" toMany="true">
 		<db-attribute-pair source="id" target="id_subscription"/>
 	</db-relationship>
 	<obj-relationship name="certificateToIssued" source="DbCertificate" target="DbIssuedCertificate" deleteRule="Deny" db-relationship-path="certificateToIssued"/>
 	<obj-relationship name="certificateToOption" source="DbCertificate" target="DbOptionCertificate" deleteRule="Deny" db-relationship-path="certificateToOption"/>
+	<obj-relationship name="certificateToCryptogramm" source="DbIssuedCertificate" target="DbPaymentsCryptogramm" deleteRule="Deny" db-relationship-path="certificateToCryptogramm"/>
 	<obj-relationship name="issuedToCertificate" source="DbIssuedCertificate" target="DbCertificate" deleteRule="Nullify" db-relationship-path="issuedToCertificate"/>
 	<obj-relationship name="opsubToCertificate" source="DbOptionCertificate" target="DbCertificate" deleteRule="Nullify" db-relationship-path="opsubToCertificate"/>
 	<obj-relationship name="opsubToOptions" source="DbOptionCertificate" target="DbOptions" deleteRule="Nullify" db-relationship-path="opsubToOptions"/>
 	<obj-relationship name="opsubToOptions" source="DbOptionSubscription" target="DbOptions" deleteRule="Nullify" db-relationship-path="opsubToOptions"/>
 	<obj-relationship name="opsubToSubscription" source="DbOptionSubscription" target="DbSubscription" deleteRule="Nullify" db-relationship-path="opsubToSubscription"/>
 	<obj-relationship name="optionsToOpsub" source="DbOptions" target="DbOptionSubscription" deleteRule="Deny" db-relationship-path="optionsToOpsub"/>
-	<obj-relationship name="cardToPayment" source="DbPaymentToken" target="DbPaymentsReccurrent" deleteRule="Deny" db-relationship-path="cardToPayment"/>
-	<obj-relationship name="cryptogrammToSubscription" source="DbPaymentsCryptogrammSubscription" target="DbSubscription" deleteRule="Nullify" db-relationship-path="cryptogrammToSubscription"/>
-	<obj-relationship name="dbPaymentsCryptogrammSubscriptions" source="DbSubscription" target="DbPaymentsCryptogrammSubscription" deleteRule="Deny" db-relationship-path="untitledRel"/>
+	<obj-relationship name="cryptogrammToCertificate" source="DbPaymentsCryptogramm" target="DbIssuedCertificate" deleteRule="Nullify" db-relationship-path="cryptogrammToCertificate"/>
+	<obj-relationship name="cryptogrammToSubscription" source="DbPaymentsCryptogramm" target="DbSubscription" deleteRule="Nullify" db-relationship-path="cryptogrammToSubscription"/>
+	<obj-relationship name="recurrentToSubscription" source="DbPaymentsRecurrent" target="DbSubscription" deleteRule="Nullify" db-relationship-path="recurrentToSubscription"/>
+	<obj-relationship name="subscriptionToCryptogramm" source="DbSubscription" target="DbPaymentsCryptogramm" deleteRule="Deny" db-relationship-path="subscriptionToCryptogramm"/>
 	<obj-relationship name="subscriptionToOpsub" source="DbSubscription" target="DbOptionSubscription" deleteRule="Deny" db-relationship-path="subscriptionToOpsub"/>
+	<obj-relationship name="subscriptionToRecurrent" source="DbSubscription" target="DbPaymentsRecurrent" deleteRule="Deny" db-relationship-path="subscriptionToRecurrent"/>
 </data-map>

@@ -3,8 +3,8 @@ package com.thelak.route.payments.services;
 import com.thelak.route.common.services.BaseMicroservice;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.payments.interfaces.ICertificateService;
-import com.thelak.route.payments.models.CertificateModel;
-import com.thelak.route.payments.models.IssuedCertificateModel;
+import com.thelak.route.payments.models.certificate.CertificateModel;
+import com.thelak.route.payments.models.certificate.IssuedCertificateModel;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;

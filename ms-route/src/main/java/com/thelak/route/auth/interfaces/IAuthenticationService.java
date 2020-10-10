@@ -5,7 +5,7 @@ import com.thelak.route.auth.models.AuthSignupRequest;
 import com.thelak.route.auth.models.UpdateUserModel;
 import com.thelak.route.auth.models.VueHelpModel;
 import com.thelak.route.exceptions.MicroServiceException;
-import com.thelak.route.payments.models.SetSubscriptionModel;
+import com.thelak.route.payments.models.subscription.SetSubscriptionModel;
 
 import java.text.ParseException;
 

@@ -10,9 +10,9 @@ import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.exceptions.MsBadRequestException;
 import com.thelak.route.exceptions.MsInternalErrorException;
 import com.thelak.route.payments.interfaces.ICertificateService;
-import com.thelak.route.payments.models.CertificateModel;
-import com.thelak.route.payments.models.IssuedCertificateModel;
-import com.thelak.route.payments.models.SetSubscriptionModel;
+import com.thelak.route.payments.models.certificate.CertificateModel;
+import com.thelak.route.payments.models.certificate.IssuedCertificateModel;
+import com.thelak.route.payments.models.subscription.SetSubscriptionModel;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -20,8 +20,6 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -45,8 +43,6 @@ public class CertificateEndpoint extends AbstractMicroservice implements ICertif
     private IAuthenticationService authenticationService;
 
     ObjectContext objectContext;
-
-    protected static final Logger log = LoggerFactory.getLogger(CertificateEndpoint.class);
 
     @PostConstruct
     private void initialize() {
@@ -86,7 +82,6 @@ public class CertificateEndpoint extends AbstractMicroservice implements ICertif
             });
 
             return certificateModels;
-
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
         }

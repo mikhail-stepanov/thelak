@@ -4,8 +4,8 @@ import com.thelak.database.entity.DbCertificate;
 import com.thelak.database.entity.DbOptionCertificate;
 import com.thelak.database.entity.DbOptionSubscription;
 import com.thelak.database.entity.DbSubscription;
-import com.thelak.route.payments.models.CertificateModel;
-import com.thelak.route.payments.models.SubscriptionModel;
+import com.thelak.route.payments.models.certificate.CertificateModel;
+import com.thelak.route.payments.models.subscription.SubscriptionModel;
 
 import java.util.ArrayList;
 import java.util.List;

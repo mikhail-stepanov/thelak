@@ -11,7 +11,7 @@ import com.thelak.database.entity.DbUserSession;
 import com.thelak.route.auth.interfaces.IAuthenticationService;
 import com.thelak.route.auth.models.*;
 import com.thelak.route.exceptions.*;
-import com.thelak.route.payments.models.SetSubscriptionModel;
+import com.thelak.route.payments.models.subscription.SetSubscriptionModel;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;

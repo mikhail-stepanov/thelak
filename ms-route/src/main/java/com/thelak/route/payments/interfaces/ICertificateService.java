@@ -1,8 +1,8 @@
 package com.thelak.route.payments.interfaces;
 
 import com.thelak.route.exceptions.MicroServiceException;
-import com.thelak.route.payments.models.CertificateModel;
-import com.thelak.route.payments.models.IssuedCertificateModel;
+import com.thelak.route.payments.models.certificate.CertificateModel;
+import com.thelak.route.payments.models.certificate.IssuedCertificateModel;
 
 import java.util.List;
 
