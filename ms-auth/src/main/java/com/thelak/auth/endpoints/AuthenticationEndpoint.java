@@ -23,10 +23,13 @@ import org.apache.cayenne.query.SelectById;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
 import java.text.ParseException;
@@ -163,9 +166,11 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
 
                 objectContext.commitChanges();
 
-                ResponseEntity responseEntity = new ResponseEntity(HttpStatus.OK);
-                responseEntity.getHeaders().add("Authorization", token);
-                return responseEntity;
+                HttpHeaders responseHeaders = new HttpHeaders();
+                responseHeaders.set("Authorization", token);
+                return ResponseEntity.ok()
+                        .headers(responseHeaders)
+                        .body(null);
             } else
                 throw new MsNotAuthorizedException();
         } else
@@ -192,9 +197,11 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
             userInfo.setSubscribe(dbUser.isIsSubscribe());
             userInfo.setUserEmail(dbUser.getEmail());
 
-            ResponseEntity responseEntity = new ResponseEntity(HttpStatus.OK);
-            responseEntity.getHeaders().add("Authorization", tokenService.generateToken(userInfo));
-            return responseEntity;
+            HttpHeaders responseHeaders = new HttpHeaders();
+            responseHeaders.set("Authorization", tokenService.generateToken(userInfo));
+            return ResponseEntity.ok()
+                    .headers(responseHeaders)
+                    .body(null);
         } catch (ExpiredJwtException e) {
             throw new MsNotAuthorizedException();
         }
