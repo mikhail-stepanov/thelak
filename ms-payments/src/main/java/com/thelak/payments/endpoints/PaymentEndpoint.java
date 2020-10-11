@@ -174,6 +174,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                     dbPaymentsRecurrent.setRequireConfirmation(reccurentPayRequest.getRequireConfirmation());
                     dbPaymentsRecurrent.setToken(reccurentPayRequest.getToken());
                     dbPaymentsRecurrent.setStatus(false);
+                    dbPaymentsRecurrent.setCreatedDate(LocalDateTime.now());
                     objectContext.commitChanges();
 
                     dbPaymentConfig = ObjectSelect.query(DbPaymentConfig.class)
