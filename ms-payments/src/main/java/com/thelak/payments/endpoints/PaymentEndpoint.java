@@ -142,7 +142,11 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                 objectContext.commitChanges();
 
                 DbSubscription subscription = dbPaymentsCryptogramm.getCryptogrammToSubscription();
-                messageService.publish(userSubscriptionQueue, SetSubscriptionModel.builder()
+//                messageService.publish(userSubscriptionQueue, SetSubscriptionModel.builder()
+//                        .userId(userInfo.getUserId())
+//                        .subscriptionDate(LocalDateTime.now().plusMonths(subscription.getMonths())).build());
+//
+                authenticationService.setSubscription(SetSubscriptionModel.builder()
                         .userId(userInfo.getUserId())
                         .subscriptionDate(LocalDateTime.now().plusMonths(subscription.getMonths())).build());
 

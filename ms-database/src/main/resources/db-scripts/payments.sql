@@ -60,9 +60,9 @@ CREATE TABLE "public"."db_subscription"
     PRIMARY KEY ("id")
 );
 
-CREATE TABLE "public"."db_payments_reccurrent"
+CREATE TABLE "public"."db_payments_recurrent"
 (
-    "id"             bigint NOT NULL,
+    "id"                   bigint NOT NULL,
     "amount"               integer                  NOT NULL,
     "created_date"         timestamp with time zone NOT NULL,
     "currency"             varchar(32)              NOT NULL,
@@ -78,6 +78,7 @@ CREATE TABLE "public"."db_payments_reccurrent"
     "startDate"            timestamp with time zone NOT NULL,
     "status"               boolean                  NULL,
     "token"                bigint                   NOT NULL,
+    "id_recurrent"         varchar(100000),
     PRIMARY KEY ("id")
 );
 
@@ -147,6 +148,6 @@ CREATE SEQUENCE "public"."pk_db_option_subscription" INCREMENT 1 START 1;
 CREATE SEQUENCE "public"."pk_db_options" INCREMENT 1 START 1;
 CREATE SEQUENCE "public"."pk_db_payment_config" INCREMENT 1 START 1;
 CREATE SEQUENCE "public"."pk_db_payments_cryptogramm" INCREMENT 1 START 1;
-CREATE SEQUENCE "public"."pk_db_payments_reccurrent" INCREMENT 1 START 1;
+CREATE SEQUENCE "public"."pk_db_payments_recurrent" INCREMENT 1 START 1;
 CREATE SEQUENCE "public"."pk_db_subscription" INCREMENT 1 START 1;
 
