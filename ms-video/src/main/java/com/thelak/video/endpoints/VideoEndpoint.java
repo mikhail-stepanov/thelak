@@ -581,6 +581,5 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
 
     public static class Comparators {
         public static final Comparator<VideoModel> NEW = Comparator.comparing(VideoModel::getCreatedDate);
-
     }
 }

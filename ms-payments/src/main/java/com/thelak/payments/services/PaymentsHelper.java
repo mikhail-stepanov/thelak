@@ -6,8 +6,10 @@ import com.thelak.database.entity.DbOptionSubscription;
 import com.thelak.database.entity.DbSubscription;
 import com.thelak.route.payments.models.certificate.CertificateModel;
 import com.thelak.route.payments.models.subscription.SubscriptionModel;
+import com.thelak.route.video.models.VideoModel;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class PaymentsHelper {
