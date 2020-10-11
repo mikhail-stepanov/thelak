@@ -35,7 +35,6 @@ public class CategoryContentEndpoint extends AbstractMicroservice implements ICa
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get video ids by category ids")
     @RequestMapping(value = CATEGORY_VIDEO, method = {RequestMethod.GET})
     public List<Long> videoIds(@RequestParam List<Long> categoryIds) throws MicroServiceException {
@@ -53,7 +52,6 @@ public class CategoryContentEndpoint extends AbstractMicroservice implements ICa
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get article ids by category ids")
     @RequestMapping(value = CATEGORY_ARTICLE, method = {RequestMethod.GET})
     public List<Long> articleIds(List<Long> categoryIds) throws MicroServiceException {
@@ -71,7 +69,6 @@ public class CategoryContentEndpoint extends AbstractMicroservice implements ICa
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get event ids by category ids")
     @RequestMapping(value = CATEGORY_EVENT, method = {RequestMethod.GET})
     public List<Long> eventIds(List<Long> categoryIds) throws MicroServiceException {

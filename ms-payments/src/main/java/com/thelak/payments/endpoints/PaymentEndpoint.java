@@ -88,7 +88,6 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Buy certificate")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -102,7 +101,6 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Buy subscription confirm")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -198,7 +196,6 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Redirect before confirm")
     @RequestMapping(value = PAYMENTS_REDIRECT, method = {RequestMethod.POST})
     public ModelAndView redirectBeforeConfirm(@RequestParam String MD, @RequestParam String PaRes) throws MicroServiceException {
@@ -209,7 +206,6 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Buy subscription request")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -270,7 +266,6 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Update card info")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -284,7 +279,6 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Update card info")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -322,7 +316,6 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get cloudpayments public_id")
     @RequestMapping(value = PAYMENTS_CONFIG, method = {RequestMethod.GET})
     public PaymentsConfigModel getConfig() throws MicroServiceException {

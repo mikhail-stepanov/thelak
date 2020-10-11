@@ -42,7 +42,6 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get speaker by id")
     @RequestMapping(value = SPEAKER_GET, method = {RequestMethod.GET})
     public SpeakerModel get(@RequestParam Long id) throws MicroServiceException {
@@ -57,7 +56,6 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get list of speaker by ids")
     @RequestMapping(value = SPEAKER_GET_IDS, method = {RequestMethod.GET})
     public List<SpeakerModel> getByIds(@RequestParam List<Long> ids) throws MicroServiceException {
@@ -80,7 +78,6 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get speaker by videoId")
     @RequestMapping(value = SPEAKER_GET_VIDEO, method = {RequestMethod.GET})
     public SpeakerModel getByVideo(@RequestParam Long videoId) throws MicroServiceException {
@@ -96,7 +93,6 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get speaker by articleId")
     @RequestMapping(value = SPEAKER_GET_ARTICLE, method = {RequestMethod.GET})
     public SpeakerModel getByArticle(@RequestParam Long articleId) throws MicroServiceException {
@@ -112,7 +108,6 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get speaker by eventId")
     @RequestMapping(value = SPEAKER_GET_EVENT, method = {RequestMethod.GET})
     public SpeakerModel getByEvent(@RequestParam Long eventId) throws MicroServiceException {
@@ -128,7 +123,6 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get list of speakers")
     @ApiImplicitParams({
             @ApiImplicitParam(
@@ -182,7 +176,6 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Find speaker by name/description")
     @ApiImplicitParams({
             @ApiImplicitParam(
@@ -233,7 +226,6 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Create speaker")
     @RequestMapping(value = SPEAKER_CREATE, method = {RequestMethod.POST})
     public SpeakerModel create(@RequestBody SpeakerCreateRequest request) throws MicroServiceException {
@@ -257,7 +249,6 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Update speaker by id")
     @RequestMapping(value = SPEAKER_UPDATE, method = {RequestMethod.PUT})
     public SpeakerModel update(@RequestBody SpeakerModel request) throws MicroServiceException {
@@ -282,7 +273,6 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Delete speaker by id")
     @RequestMapping(value = SPEAKER_DELETE, method = {RequestMethod.DELETE})
     public Boolean delete(@RequestParam Long id) throws MicroServiceException {
