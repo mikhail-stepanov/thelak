@@ -61,7 +61,6 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get user info by token")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -100,7 +99,6 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Sign up")
     @RequestMapping(value = AUTH_SIGN_UP, method = {RequestMethod.POST})
     public VueHelpModel signUp(@RequestBody AuthSignupRequest request) throws MicroServiceException, ParseException {
@@ -139,7 +137,6 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Login user")
     @RequestMapping(value = AUTH_LOGIN, method = {RequestMethod.POST})
     public ResponseEntity login(@RequestBody AuthLoginRequest request) throws MicroServiceException {
@@ -176,7 +173,6 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Refresh token")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -205,7 +201,6 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Update user info")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
@@ -253,7 +248,6 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Set user subscription")
     @RequestMapping(value = AUTH_USER_SUBSCRIPTION, method = {RequestMethod.POST})
     public VueHelpModel setSubscription(@RequestBody SetSubscriptionModel setSubscriptionModel) throws MicroServiceException {

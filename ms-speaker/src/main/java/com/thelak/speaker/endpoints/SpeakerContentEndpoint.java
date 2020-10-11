@@ -34,7 +34,6 @@ public class SpeakerContentEndpoint extends AbstractMicroservice implements ISpe
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get video ids by speaker ids")
     @RequestMapping(value = SPEAKER_VIDEO, method = {RequestMethod.GET})
     public List<Long> videoIds(@RequestParam List<Long> speakerIds) throws MicroServiceException {
@@ -52,7 +51,6 @@ public class SpeakerContentEndpoint extends AbstractMicroservice implements ISpe
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get article ids by speaker ids")
     @RequestMapping(value = SPEAKER_ARTICLE, method = {RequestMethod.GET})
     public List<Long> articleIds(List<Long> speakerIds) throws MicroServiceException {
@@ -70,7 +68,6 @@ public class SpeakerContentEndpoint extends AbstractMicroservice implements ISpe
     }
 
     @Override
-    @CrossOrigin
     @ApiOperation(value = "Get event ids by speaker ids")
     @RequestMapping(value = SPEAKER_EVENT, method = {RequestMethod.GET})
     public List<Long> eventIds(List<Long> speakerIds) throws MicroServiceException {
