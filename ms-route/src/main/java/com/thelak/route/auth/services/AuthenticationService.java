@@ -8,6 +8,7 @@ import com.thelak.route.auth.models.VueHelpModel;
 import com.thelak.route.common.services.BaseMicroservice;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.payments.models.subscription.SetSubscriptionModel;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 public class AuthenticationService extends BaseMicroservice implements IAuthenticationService {
@@ -27,13 +28,13 @@ public class AuthenticationService extends BaseMicroservice implements IAuthenti
     }
 
     @Override
-    public String login(AuthLoginRequest request) throws MicroServiceException {
-        return retry(() -> restTemplate.postForEntity(buildUrl(AUTH_LOGIN), request, String.class).getBody());
+    public ResponseEntity login(AuthLoginRequest request) throws MicroServiceException {
+        return retry(() -> restTemplate.postForEntity(buildUrl(AUTH_LOGIN), request, ResponseEntity.class).getBody());
     }
 
     @Override
-    public String refresh() throws MicroServiceException {
-        return retry(() -> restTemplate.getForEntity(buildUrl(AUTH_REFRESH), String.class).getBody());
+    public ResponseEntity refresh() throws MicroServiceException {
+        return retry(() -> restTemplate.getForEntity(buildUrl(AUTH_REFRESH), ResponseEntity.class).getBody());
     }
 
     @Override

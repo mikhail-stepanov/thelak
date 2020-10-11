@@ -23,6 +23,8 @@ import org.apache.cayenne.query.SelectById;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -140,7 +142,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
     @CrossOrigin
     @ApiOperation(value = "Login user")
     @RequestMapping(value = AUTH_LOGIN, method = {RequestMethod.POST})
-    public String login(@RequestBody AuthLoginRequest request) throws MicroServiceException {
+    public ResponseEntity login(@RequestBody AuthLoginRequest request) throws MicroServiceException {
         if (checkEmailExists(request.getEmail())) {
 
             DbUser user = ObjectSelect.query(DbUser.class)
@@ -164,8 +166,9 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
 
                 objectContext.commitChanges();
 
-                return token;
-
+                ResponseEntity responseEntity = new ResponseEntity(HttpStatus.OK);
+                responseEntity.getHeaders().add("Authorization", token);
+                return responseEntity;
             } else
                 throw new MsNotAuthorizedException();
         } else
@@ -182,15 +185,20 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
                     paramType = "header")}
     )
     @RequestMapping(value = AUTH_REFRESH, method = {RequestMethod.GET})
-    public String refresh() throws MicroServiceException {
+    public ResponseEntity refresh() throws MicroServiceException {
         try {
             UserInfo userInfo = (UserInfo) SecurityContextHolder
                     .getContext()
                     .getAuthentication()
                     .getPrincipal();
 
-            return tokenService.generateToken(userInfo);
+            DbUser dbUser = SelectById.query(DbUser.class, userInfo.getUserId()).selectFirst(objectContext);
+            userInfo.setSubscribe(dbUser.isIsSubscribe());
+            userInfo.setUserEmail(dbUser.getEmail());
 
+            ResponseEntity responseEntity = new ResponseEntity(HttpStatus.OK);
+            responseEntity.getHeaders().add("Authorization", tokenService.generateToken(userInfo));
+            return responseEntity;
         } catch (ExpiredJwtException e) {
             throw new MsNotAuthorizedException();
         }

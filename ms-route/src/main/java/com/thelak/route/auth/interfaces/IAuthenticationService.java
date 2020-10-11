@@ -6,6 +6,7 @@ import com.thelak.route.auth.models.UpdateUserModel;
 import com.thelak.route.auth.models.VueHelpModel;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.payments.models.subscription.SetSubscriptionModel;
+import org.springframework.http.ResponseEntity;
 
 import java.text.ParseException;
 
@@ -23,9 +24,9 @@ public interface IAuthenticationService {
 
     VueHelpModel signUp(AuthSignupRequest request) throws MicroServiceException, ParseException;
 
-    String login(AuthLoginRequest request) throws MicroServiceException;
+    ResponseEntity login(AuthLoginRequest request) throws MicroServiceException;
 
-    String refresh() throws MicroServiceException;
+    ResponseEntity refresh() throws MicroServiceException;
 
     VueHelpModel updateUser(UpdateUserModel user) throws MicroServiceException;
 
