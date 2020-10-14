@@ -338,7 +338,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                     name = "Authorization",
                     paramType = "header")}
     )
-    @RequestMapping(value = PAYMENTS_PROMO_ENTER, method = {RequestMethod.GET})
+    @RequestMapping(value = PAYMENTS_PROMO_ENTER, method = {RequestMethod.POST})
     public PromoModel enterPromo(@RequestParam String code) throws MicroServiceException {
 
         UserInfo userInfo = null;
