@@ -6,6 +6,7 @@ import com.thelak.route.payments.models.PaymentsConfigModel;
 import com.thelak.route.payments.models.certificate.BuyCertificateRequest;
 import com.thelak.route.payments.models.cloudpayments.cryptogramm.CryptogrammPayResponse;
 import com.thelak.route.payments.models.cloudpayments.secure.SecureResponse;
+import com.thelak.route.payments.models.promo.PromoModel;
 import com.thelak.route.payments.models.subscription.BuySubscriptionRequest;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -21,6 +22,8 @@ public interface IPaymentService {
     String PAYMENTS_UPDATE_CARD = "/v1/payments/card/update";
     String PAYMENTS_CONFIG = "/v1/payments/config";
 
+    String PAYMENTS_PROMO_ENTER = "/v1/payments/promo/enter";
+
     Boolean buyCertificateRequest(BuyCertificateRequest buyCertificateRequest) throws MicroServiceException;
 
     CryptogrammPayResponse buySubscriptionRequest(BuySubscriptionRequest buySubscriptionRequest, HttpServletRequest request) throws MicroServiceException;
@@ -34,6 +37,8 @@ public interface IPaymentService {
     Boolean cancelSubscription() throws MicroServiceException;
 
     PaymentsConfigModel getConfig() throws MicroServiceException;
+
+    PromoModel enterPromo(String code) throws MicroServiceException;
 
 }
 

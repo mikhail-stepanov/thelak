@@ -62,7 +62,7 @@ CREATE TABLE "public"."db_subscription"
 
 CREATE TABLE "public"."db_payments_recurrent"
 (
-    "id"                   bigint NOT NULL,
+    "id"                   bigint                   NOT NULL,
     "amount"               integer                  NOT NULL,
     "created_date"         timestamp with time zone NOT NULL,
     "currency"             varchar(32)              NOT NULL,
@@ -117,6 +117,28 @@ CREATE TABLE "public"."db_option_subscription"
     PRIMARY KEY ("id")
 );
 
+CREATE TABLE "public"."db_promo"
+(
+    "active"      boolean       NULL,
+    "code"        varchar(256)  NOT NULL,
+    "days"        integer       NULL,
+    "description" varchar(2048) NULL,
+    "id"          bigint        NOT NULL,
+    "months"      integer       NOT NULL,
+    PRIMARY KEY ("id")
+);
+
+CREATE TABLE "public"."db_promo_email"
+(
+    "email"    varchar(1048) NULL,
+    "id"       bigint        NOT NULL,
+    "id_promo" bigint        NULL,
+    PRIMARY KEY ("id")
+);
+
+ALTER TABLE "public"."db_promo_email"
+    ADD FOREIGN KEY ("id_promo") REFERENCES "public"."db_promo" ("id");
+
 ALTER TABLE "public"."db_issued_certificate"
     ADD FOREIGN KEY ("id_certificate") REFERENCES "public"."db_certificate" ("id");
 
@@ -150,4 +172,5 @@ CREATE SEQUENCE "public"."pk_db_payment_config" INCREMENT 1 START 1;
 CREATE SEQUENCE "public"."pk_db_payments_cryptogramm" INCREMENT 1 START 1;
 CREATE SEQUENCE "public"."pk_db_payments_recurrent" INCREMENT 1 START 1;
 CREATE SEQUENCE "public"."pk_db_subscription" INCREMENT 1 START 1;
-
+CREATE SEQUENCE "public"."pk_db_promo" INCREMENT 1 START 1;
+CREATE SEQUENCE "public"."pk_db_promo_email" INCREMENT 1 START 1;

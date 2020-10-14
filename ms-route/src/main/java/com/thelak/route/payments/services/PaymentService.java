@@ -3,12 +3,13 @@ package com.thelak.route.payments.services;
 import com.thelak.route.common.services.BaseMicroservice;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.payments.interfaces.IPaymentService;
-import com.thelak.route.payments.models.certificate.BuyCertificateRequest;
-import com.thelak.route.payments.models.cloudpayments.secure.SecureResponse;
-import com.thelak.route.payments.models.subscription.BuySubscriptionRequest;
 import com.thelak.route.payments.models.CardUpdateRequest;
 import com.thelak.route.payments.models.PaymentsConfigModel;
+import com.thelak.route.payments.models.certificate.BuyCertificateRequest;
 import com.thelak.route.payments.models.cloudpayments.cryptogramm.CryptogrammPayResponse;
+import com.thelak.route.payments.models.cloudpayments.secure.SecureResponse;
+import com.thelak.route.payments.models.promo.PromoModel;
+import com.thelak.route.payments.models.subscription.BuySubscriptionRequest;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -52,6 +53,11 @@ public class PaymentService extends BaseMicroservice implements IPaymentService 
 
     @Override
     public PaymentsConfigModel getConfig() throws MicroServiceException {
+        return null;
+    }
+
+    @Override
+    public PromoModel enterPromo(String code) throws MicroServiceException {
         return null;
     }
 }

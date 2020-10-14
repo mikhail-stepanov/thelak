@@ -4,10 +4,7 @@ import com.google.gson.Gson;
 import com.thelak.core.endpoints.AbstractMicroservice;
 import com.thelak.core.models.UserInfo;
 import com.thelak.database.DatabaseService;
-import com.thelak.database.entity.DbPaymentConfig;
-import com.thelak.database.entity.DbPaymentsCryptogramm;
-import com.thelak.database.entity.DbPaymentsRecurrent;
-import com.thelak.database.entity.DbSubscription;
+import com.thelak.database.entity.*;
 import com.thelak.route.auth.interfaces.IAuthenticationService;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.exceptions.MsInternalErrorException;
@@ -25,6 +22,7 @@ import com.thelak.route.payments.models.cloudpayments.reccurent.RecurrentPayRequ
 import com.thelak.route.payments.models.cloudpayments.reccurent.RecurrentPayResponse;
 import com.thelak.route.payments.models.cloudpayments.secure.SecureRequest;
 import com.thelak.route.payments.models.cloudpayments.secure.SecureResponse;
+import com.thelak.route.payments.models.promo.PromoModel;
 import com.thelak.route.payments.models.subscription.BuySubscriptionRequest;
 import com.thelak.route.payments.models.subscription.SetSubscriptionModel;
 import io.swagger.annotations.Api;
@@ -329,6 +327,68 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
         return PaymentsConfigModel.builder()
                 .name(dbPaymentConfig.getName())
                 .value(dbPaymentConfig.getValue())
+                .build();
+    }
+
+    @Override
+    @ApiOperation(value = "Enter promo")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(required = true,
+                    defaultValue = "Bearer ",
+                    name = "Authorization",
+                    paramType = "header")}
+    )
+    @RequestMapping(value = PAYMENTS_PROMO_ENTER, method = {RequestMethod.GET})
+    public PromoModel enterPromo(@RequestParam String code) throws MicroServiceException {
+
+        UserInfo userInfo = null;
+        try {
+            userInfo = (UserInfo) SecurityContextHolder
+                    .getContext()
+                    .getAuthentication()
+                    .getPrincipal();
+        } catch (Exception e) {
+            throw new MsNotAuthorizedException();
+        }
+
+        DbPromo dbPromo = ObjectSelect.query(DbPromo.class)
+                .where(DbPromo.CODE.eq(code)).selectFirst(objectContext);
+        try {
+            DbPromoEmail dbPromoEmail = ObjectSelect.query(DbPromoEmail.class)
+                    .where(DbPromoEmail.EMAIL_TO_PROMO.eq(dbPromo))
+                    .selectFirst(objectContext);
+            if (dbPromoEmail != null) {
+                DbPromoEmail dbPromoEmailcheck = ObjectSelect.query(DbPromoEmail.class)
+                        .where(DbPromoEmail.EMAIL_TO_PROMO.eq(dbPromo))
+                        .and(DbPromoEmail.EMAIL.eq(userInfo.getUserEmail()))
+                        .selectFirst(objectContext);
+                if (dbPromoEmailcheck != null) {
+                    authenticationService.setSubscription(SetSubscriptionModel.builder()
+                            .userId(userInfo.getUserId())
+                            .subscriptionDate(LocalDateTime.now().plusMonths(dbPromo.getMonths())).build());
+                    return PromoModel.builder()
+                            .success(true)
+                            .months(dbPromo.getMonths())
+                            .description(dbPromo.getDescription())
+                            .build();
+                }
+                return PromoModel.builder()
+                        .success(false)
+                        .months(dbPromo.getMonths())
+                        .description(dbPromo.getDescription())
+                        .build();
+            }
+
+        } catch (Exception ignored) {
+        }
+        authenticationService.setSubscription(SetSubscriptionModel.builder()
+                .userId(userInfo.getUserId())
+                .subscriptionDate(LocalDateTime.now().plusMonths(dbPromo.getMonths())).build());
+
+        return PromoModel.builder()
+                .success(true)
+                .months(dbPromo.getMonths())
+                .description(dbPromo.getDescription())
                 .build();
     }
 }

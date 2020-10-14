@@ -85,6 +85,19 @@
 		<db-attribute name="status" type="BOOLEAN"/>
 		<db-attribute name="token" type="VARCHAR" isMandatory="true" length="100000"/>
 	</db-entity>
+	<db-entity name="db_promo" schema="public">
+		<db-attribute name="active" type="BOOLEAN"/>
+		<db-attribute name="code" type="VARCHAR" isMandatory="true" length="256"/>
+		<db-attribute name="days" type="INTEGER"/>
+		<db-attribute name="description" type="VARCHAR" length="2048"/>
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="months" type="INTEGER" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="db_promo_email" schema="public">
+		<db-attribute name="email" type="VARCHAR" length="1048"/>
+		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="id_promo" type="BIGINT"/>
+	</db-entity>
 	<db-entity name="db_subscription" schema="public">
 		<db-attribute name="cover" type="INTEGER"/>
 		<db-attribute name="created_date" type="TIMESTAMP" length="29"/>
@@ -161,6 +174,16 @@
 		<obj-attribute name="status" type="boolean" db-attribute-path="status"/>
 		<obj-attribute name="token" type="java.lang.String" db-attribute-path="token"/>
 	</obj-entity>
+	<obj-entity name="DbPromo" className="com.thelak.database.entity.DbPromo" dbEntityName="db_promo">
+		<obj-attribute name="active" type="boolean" db-attribute-path="active"/>
+		<obj-attribute name="code" type="java.lang.String" db-attribute-path="code"/>
+		<obj-attribute name="days" type="int" db-attribute-path="days"/>
+		<obj-attribute name="description" type="java.lang.String" db-attribute-path="description"/>
+		<obj-attribute name="months" type="int" db-attribute-path="months"/>
+	</obj-entity>
+	<obj-entity name="DbPromoEmail" className="com.thelak.database.entity.DbPromoEmail" dbEntityName="db_promo_email">
+		<obj-attribute name="email" type="java.lang.String" db-attribute-path="email"/>
+	</obj-entity>
 	<obj-entity name="DbSubscription" className="com.thelak.database.entity.DbSubscription" dbEntityName="db_subscription">
 		<obj-attribute name="cover" type="int" db-attribute-path="cover"/>
 		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
@@ -209,6 +232,12 @@
 	<db-relationship name="recurrentToSubscription" source="db_payments_recurrent" target="db_subscription" toMany="false">
 		<db-attribute-pair source="id_subscription" target="id"/>
 	</db-relationship>
+	<db-relationship name="promoToEmail" source="db_promo" target="db_promo_email" toMany="true">
+		<db-attribute-pair source="id" target="id_promo"/>
+	</db-relationship>
+	<db-relationship name="emailToPromo" source="db_promo_email" target="db_promo" toMany="false">
+		<db-attribute-pair source="id_promo" target="id"/>
+	</db-relationship>
 	<db-relationship name="subscriptionToCryptogramm" source="db_subscription" target="db_payments_cryptogramm" toMany="true">
 		<db-attribute-pair source="id" target="id_subscription"/>
 	</db-relationship>
@@ -230,6 +259,8 @@
 	<obj-relationship name="cryptogrammToCertificate" source="DbPaymentsCryptogramm" target="DbIssuedCertificate" deleteRule="Nullify" db-relationship-path="cryptogrammToCertificate"/>
 	<obj-relationship name="cryptogrammToSubscription" source="DbPaymentsCryptogramm" target="DbSubscription" deleteRule="Nullify" db-relationship-path="cryptogrammToSubscription"/>
 	<obj-relationship name="recurrentToSubscription" source="DbPaymentsRecurrent" target="DbSubscription" deleteRule="Nullify" db-relationship-path="recurrentToSubscription"/>
+	<obj-relationship name="promoToEmail" source="DbPromo" target="DbPromoEmail" deleteRule="Deny" db-relationship-path="promoToEmail"/>
+	<obj-relationship name="emailToPromo" source="DbPromoEmail" target="DbPromo" deleteRule="Nullify" db-relationship-path="emailToPromo"/>
 	<obj-relationship name="subscriptionToCryptogramm" source="DbSubscription" target="DbPaymentsCryptogramm" deleteRule="Deny" db-relationship-path="subscriptionToCryptogramm"/>
 	<obj-relationship name="subscriptionToOpsub" source="DbSubscription" target="DbOptionSubscription" deleteRule="Deny" db-relationship-path="subscriptionToOpsub"/>
 	<obj-relationship name="subscriptionToRecurrent" source="DbSubscription" target="DbPaymentsRecurrent" deleteRule="Deny" db-relationship-path="subscriptionToRecurrent"/>
