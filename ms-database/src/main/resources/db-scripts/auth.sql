@@ -28,9 +28,25 @@ CREATE TABLE "public"."db_user_session"
     PRIMARY KEY ("id")
 );
 
+CREATE TABLE "public"."db_notification"
+(
+    "content"       boolean NULL,
+    "id"            bigint  NOT NULL,
+    "id_user"       bigint  NOT NULL,
+    "news"          boolean NULL,
+    "recommendation" boolean NULL,
+    "sales"         boolean NULL,
+    PRIMARY KEY ("id")
+);
+
+ALTER TABLE "public"."db_notification"
+    ADD FOREIGN KEY ("id_user") REFERENCES "public"."db_user" ("id");
+
 ALTER TABLE "public"."db_user_session"
     ADD FOREIGN KEY ("id_customer") REFERENCES "public"."db_user" ("id");
 
 CREATE SEQUENCE "public"."pk_db_user" INCREMENT 1 START 1;
 
 CREATE SEQUENCE "public"."pk_db_user_session" INCREMENT 1 START 1;
+
+CREATE SEQUENCE "public"."pk_db_notification" INCREMENT 1 START 1;

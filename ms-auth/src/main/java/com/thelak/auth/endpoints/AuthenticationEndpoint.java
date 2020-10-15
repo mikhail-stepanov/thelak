@@ -6,6 +6,7 @@ import com.thelak.core.interfaces.ITokenService;
 import com.thelak.core.models.UserInfo;
 import com.thelak.core.util.RLUCache;
 import com.thelak.database.DatabaseService;
+import com.thelak.database.entity.DbNotification;
 import com.thelak.database.entity.DbUser;
 import com.thelak.database.entity.DbUserSession;
 import com.thelak.route.auth.interfaces.IAuthenticationService;
@@ -118,6 +119,13 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
             user.setBirthday(LocalDate.parse(request.getBirthday(), DateTimeFormatter.ofPattern("dd.MM.yyyy")));
             user.setSalt(PasswordHelper.generateSalt());
             user.setPassword(PasswordHelper.hashPassword(request.getPassword(), user.getSalt()));
+
+            DbNotification notification = objectContext.newObject(DbNotification.class);
+            notification.setNotificationToUser(user);
+            notification.setContent(true);
+            notification.setNews(true);
+            notification.setRecomendation(true);
+            notification.setSales(true);
 
             objectContext.commitChanges();
 
@@ -279,6 +287,76 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
                             .isSubscribe(dbUser.isIsSubscribe())
                             .subscriptionDate(dbUser.getSubscriptionDate())
                             .build())
+                    .build();
+
+        } catch (Exception e) {
+            throw new MsInternalErrorException(e.getMessage());
+        }
+    }
+
+    @Override
+    @ApiOperation(value = "Get user notification info")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(required = true,
+                    defaultValue = "Bearer ",
+                    name = "Authorization",
+                    paramType = "header")}
+    )
+    @RequestMapping(value = AUTH_USER_SUBSCRIPTION, method = {RequestMethod.GET})
+    public NotificationModel getNotificationInfo() throws MicroServiceException {
+        try {
+            UserInfo userInfo = (UserInfo) SecurityContextHolder
+                    .getContext()
+                    .getAuthentication()
+                    .getPrincipal();
+
+            DbUser dbUser = SelectById.query(DbUser.class, userInfo.getUserId()).selectFirst(objectContext);
+
+            DbNotification notification = dbUser.getUserToNotification().get(0);
+
+            return NotificationModel.builder()
+                    .content(notification.isContent())
+                    .news(notification.isNews())
+                    .recommendation(notification.isContent())
+                    .sales(notification.isSales())
+                    .build();
+
+        } catch (Exception e) {
+            throw new MsInternalErrorException(e.getMessage());
+        }
+    }
+
+    @Override
+    @ApiOperation(value = "Update user notification info")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(required = true,
+                    defaultValue = "Bearer ",
+                    name = "Authorization",
+                    paramType = "header")}
+    )
+    @RequestMapping(value = AUTH_USER_SUBSCRIPTION, method = {RequestMethod.POST})
+    public NotificationModel updateNotificationInfo(@RequestBody NotificationModel notificationModel) throws MicroServiceException {
+        try {
+            UserInfo userInfo = (UserInfo) SecurityContextHolder
+                    .getContext()
+                    .getAuthentication()
+                    .getPrincipal();
+
+            DbUser dbUser = SelectById.query(DbUser.class, userInfo.getUserId()).selectFirst(objectContext);
+
+            DbNotification notification = dbUser.getUserToNotification().get(0);
+            notification.setSales(notification.isSales());
+            notification.setRecomendation(notification.isRecomendation());
+            notification.setNews(notification.isNews());
+            notification.setContent(notification.isContent());
+
+            objectContext.commitChanges();
+
+            return NotificationModel.builder()
+                    .content(notification.isContent())
+                    .news(notification.isNews())
+                    .recommendation(notification.isContent())
+                    .sales(notification.isSales())
                     .build();
 
         } catch (Exception e) {

@@ -1,9 +1,6 @@
 package com.thelak.route.auth.interfaces;
 
-import com.thelak.route.auth.models.AuthLoginRequest;
-import com.thelak.route.auth.models.AuthSignupRequest;
-import com.thelak.route.auth.models.UpdateUserModel;
-import com.thelak.route.auth.models.VueHelpModel;
+import com.thelak.route.auth.models.*;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.payments.models.subscription.SetSubscriptionModel;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +16,9 @@ public interface IAuthenticationService {
     String AUTH_USER_UPDATE = "/v1/auth/update";
     String AUTH_USER_SUBSCRIPTION = "/v1/auth/subscription";
 
+    String AUTH_USER_NOTIFICATION_INFO = "/v1/auth/notification/info";
+    String AUTH_USER_NOTIFICATION_UPDATE = "/v1/auth/notification/update";
+
 
     VueHelpModel info() throws MicroServiceException;
 
@@ -31,5 +31,9 @@ public interface IAuthenticationService {
     VueHelpModel updateUser(UpdateUserModel user) throws MicroServiceException;
 
     VueHelpModel setSubscription(SetSubscriptionModel setSubscrip) throws MicroServiceException;
+
+    NotificationModel getNotificationInfo() throws MicroServiceException;
+
+    NotificationModel updateNotificationInfo(NotificationModel notificationModel) throws MicroServiceException;
 
 }

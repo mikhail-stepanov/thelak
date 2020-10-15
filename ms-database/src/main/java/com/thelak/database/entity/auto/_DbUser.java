@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.exp.Property;
 
+import com.thelak.database.entity.DbNotification;
 import com.thelak.database.entity.DbUserSession;
 
 /**
@@ -34,6 +35,7 @@ public abstract class _DbUser extends CayenneDataObject {
     public static final Property<String> PHONE = Property.create("phone", String.class);
     public static final Property<String> SALT = Property.create("salt", String.class);
     public static final Property<LocalDateTime> SUBSCRIPTION_DATE = Property.create("subscriptionDate", LocalDateTime.class);
+    public static final Property<List<DbNotification>> USER_TO_NOTIFICATION = Property.create("userToNotification", List.class);
     public static final Property<List<DbUserSession>> USER_TO_SESSION = Property.create("userToSession", List.class);
 
     public void setBirthday(LocalDate birthday) {
@@ -127,6 +129,18 @@ public abstract class _DbUser extends CayenneDataObject {
     public LocalDateTime getSubscriptionDate() {
         return (LocalDateTime)readProperty("subscriptionDate");
     }
+
+    public void addToUserToNotification(DbNotification obj) {
+        addToManyTarget("userToNotification", obj, true);
+    }
+    public void removeFromUserToNotification(DbNotification obj) {
+        removeToManyTarget("userToNotification", obj, true);
+    }
+    @SuppressWarnings("unchecked")
+    public List<DbNotification> getUserToNotification() {
+        return (List<DbNotification>)readProperty("userToNotification");
+    }
+
 
     public void addToUserToSession(DbUserSession obj) {
         addToManyTarget("userToSession", obj, true);

@@ -1,10 +1,7 @@
 package com.thelak.route.auth.services;
 
 import com.thelak.route.auth.interfaces.IAuthenticationService;
-import com.thelak.route.auth.models.AuthLoginRequest;
-import com.thelak.route.auth.models.AuthSignupRequest;
-import com.thelak.route.auth.models.UpdateUserModel;
-import com.thelak.route.auth.models.VueHelpModel;
+import com.thelak.route.auth.models.*;
 import com.thelak.route.common.services.BaseMicroservice;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.payments.models.subscription.SetSubscriptionModel;
@@ -45,5 +42,15 @@ public class AuthenticationService extends BaseMicroservice implements IAuthenti
     @Override
     public VueHelpModel setSubscription(SetSubscriptionModel setSubscriptionModel) throws MicroServiceException {
         return retry(() -> restTemplate.postForEntity(buildUrl(AUTH_USER_SUBSCRIPTION), setSubscriptionModel, VueHelpModel.class).getBody());
+    }
+
+    @Override
+    public NotificationModel getNotificationInfo() throws MicroServiceException {
+        return null;
+    }
+
+    @Override
+    public NotificationModel updateNotificationInfo(NotificationModel notificationModel) throws MicroServiceException {
+        return null;
     }
 }

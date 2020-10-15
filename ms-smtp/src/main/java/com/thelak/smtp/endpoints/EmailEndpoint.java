@@ -4,8 +4,14 @@ import com.thelak.core.endpoints.AbstractMicroservice;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbSmtpTemplate;
 import com.thelak.database.entity.DbUser;
+import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.smtp.interfaces.IEmailService;
+import com.thelak.route.smtp.models.PartnerRequest;
+import com.thelak.route.smtp.models.QuestionRequest;
 import com.thelak.route.smtp.models.SendEmailRequest;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.SelectById;
 import org.slf4j.Logger;
@@ -89,5 +95,19 @@ public class EmailEndpoint extends AbstractMicroservice implements IEmailService
             log.error(e.getMessage());
             return false;
         }
+    }
+
+    @Override
+    @ApiOperation(value = "Send partnership request by email")
+    @RequestMapping(value = EMAIL_PARTNER_REQUEST, method = {RequestMethod.POST})
+    public Boolean sendPartnerRequest(PartnerRequest request) throws MicroServiceException {
+        return true;
+    }
+
+    @Override
+    @ApiOperation(value = "Send question request by email")
+    @RequestMapping(value = EMAIL_QUESTION, method = {RequestMethod.POST})
+    public Boolean sendQuestion(QuestionRequest request) throws MicroServiceException {
+        return true;
     }
 }
