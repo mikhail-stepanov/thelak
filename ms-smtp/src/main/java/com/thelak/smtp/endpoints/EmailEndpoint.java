@@ -9,6 +9,7 @@ import com.thelak.route.smtp.interfaces.IEmailService;
 import com.thelak.route.smtp.models.PartnerRequest;
 import com.thelak.route.smtp.models.QuestionRequest;
 import com.thelak.route.smtp.models.SendEmailRequest;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -32,6 +33,7 @@ import javax.annotation.PostConstruct;
 import javax.mail.internet.MimeMessage;
 
 @RestController
+@Api(value = "SMTP API", produces = "application/json")
 public class EmailEndpoint extends AbstractMicroservice implements IEmailService {
 
     @Qualifier("getJavaMailSender")

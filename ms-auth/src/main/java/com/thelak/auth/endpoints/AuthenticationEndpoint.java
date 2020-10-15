@@ -302,7 +302,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
                     name = "Authorization",
                     paramType = "header")}
     )
-    @RequestMapping(value = AUTH_USER_SUBSCRIPTION, method = {RequestMethod.GET})
+    @RequestMapping(value = AUTH_USER_NOTIFICATION_INFO, method = {RequestMethod.GET})
     public NotificationModel getNotificationInfo() throws MicroServiceException {
         try {
             UserInfo userInfo = (UserInfo) SecurityContextHolder
@@ -334,7 +334,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
                     name = "Authorization",
                     paramType = "header")}
     )
-    @RequestMapping(value = AUTH_USER_SUBSCRIPTION, method = {RequestMethod.POST})
+    @RequestMapping(value = AUTH_USER_NOTIFICATION_UPDATE, method = {RequestMethod.POST})
     public NotificationModel updateNotificationInfo(@RequestBody NotificationModel notificationModel) throws MicroServiceException {
         try {
             UserInfo userInfo = (UserInfo) SecurityContextHolder
