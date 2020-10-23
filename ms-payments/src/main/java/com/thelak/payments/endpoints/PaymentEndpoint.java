@@ -163,7 +163,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                     name = "Authorization",
                     paramType = "header")}
     )
-    @RequestMapping(value = PAYMENTS_CERT_CONFIRM, method = {RequestMethod.POST})
+    @RequestMapping(value = PAYMENTS_CERT_CONFIRM, method = {RequestMethod.GET})
     public SecureResponse buyCertificateConfirm(@PathVariable String MD, @PathVariable String PaRes) throws MicroServiceException {
         try {
             UserInfo userInfo = null;
