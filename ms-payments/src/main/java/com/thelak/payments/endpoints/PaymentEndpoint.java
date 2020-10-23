@@ -203,7 +203,8 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
         } catch (Exception e) {
             e.printStackTrace();
             throw new MsInternalErrorException(e.getMessage());
-        }    }
+        }
+    }
 
     @Override
     @ApiOperation(value = "Buy subscription confirm")
@@ -308,10 +309,20 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     @ApiOperation(value = "Redirect before confirm")
     @RequestMapping(value = PAYMENTS_REDIRECT, method = {RequestMethod.POST})
     public ModelAndView redirectBeforeConfirm(@RequestParam String MD, @RequestParam String PaRes) throws MicroServiceException {
-        RedirectView rv = new RedirectView();
-        rv.setStatusCode(HttpStatus.MOVED_PERMANENTLY);
-        rv.setUrl("https://dev.thelak.com/pay/confirm/" + MD + "/" + PaRes);
-        return new ModelAndView(rv);
+        DbPaymentsCryptogramm dbPaymentsCryptogramm = ObjectSelect.query(DbPaymentsCryptogramm.class)
+                .where(DbPaymentsCryptogramm.TRANSACTION_ID.eq(Long.valueOf(MD)))
+                .selectFirst(objectContext);
+        if (dbPaymentsCryptogramm.getCryptogrammToCertificate() != null) {
+            RedirectView rv = new RedirectView();
+            rv.setStatusCode(HttpStatus.MOVED_PERMANENTLY);
+            rv.setUrl("https://dev.thelak.com/pay/confirm/cert/" + MD + "/" + PaRes);
+            return new ModelAndView(rv);
+        } else {
+            RedirectView rv = new RedirectView();
+            rv.setStatusCode(HttpStatus.MOVED_PERMANENTLY);
+            rv.setUrl("https://dev.thelak.com/pay/confirm/sub/" + MD + "/" + PaRes);
+            return new ModelAndView(rv);
+        }
     }
 
     @Override

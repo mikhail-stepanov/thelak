@@ -19,7 +19,7 @@ public interface IPaymentService {
     String PAYMENTS_SUB_REQ = "/v1/payments/sub/req";
     String PAYMENTS_SUB_CONFIRM = "/v1/payments/sub/confirm/{MD}/{PaRes}";
     String PAYMENTS_SUB_CANCEL = "/v1/payments/sub/cancel";
-    String PAYMENTS_REDIRECT = "/v1/payments/sub/redir";
+    String PAYMENTS_REDIRECT = "/v1/payments/redir";
     String PAYMENTS_UPDATE_CARD = "/v1/payments/card/update";
     String PAYMENTS_CONFIG = "/v1/payments/config";
 
