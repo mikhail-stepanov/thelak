@@ -315,12 +315,12 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
         if (dbPaymentsCryptogramm.getCryptogrammToCertificate() != null) {
             RedirectView rv = new RedirectView();
             rv.setStatusCode(HttpStatus.MOVED_PERMANENTLY);
-            rv.setUrl("https://dev.thelak.com/pay/confirm/cert/" + MD + "/" + PaRes);
+            rv.setUrl("https://thelak.com/pay/confirm/cert/" + MD + "/" + PaRes);
             return new ModelAndView(rv);
         } else {
             RedirectView rv = new RedirectView();
             rv.setStatusCode(HttpStatus.MOVED_PERMANENTLY);
-            rv.setUrl("https://dev.thelak.com/pay/confirm/sub/" + MD + "/" + PaRes);
+            rv.setUrl("https://thelak.com/pay/confirm/sub/" + MD + "/" + PaRes);
             return new ModelAndView(rv);
         }
     }
