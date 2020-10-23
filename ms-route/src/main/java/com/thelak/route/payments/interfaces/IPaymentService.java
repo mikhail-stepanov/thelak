@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 public interface IPaymentService {
 
     String PAYMENTS_CERT_REQ = "/v1/payments/cert/req";
+    String PAYMENTS_CERT_CONFIRM = "/v1/payments/sub/confirm/{MD}/{PaRes}";
     String PAYMENTS_SUB_REQ = "/v1/payments/sub/req";
     String PAYMENTS_SUB_CONFIRM = "/v1/payments/sub/confirm/{MD}/{PaRes}";
     String PAYMENTS_SUB_CANCEL = "/v1/payments/sub/cancel";
@@ -24,7 +25,9 @@ public interface IPaymentService {
 
     String PAYMENTS_PROMO_ENTER = "/v1/payments/promo/enter";
 
-    Boolean buyCertificateRequest(BuyCertificateRequest buyCertificateRequest) throws MicroServiceException;
+    CryptogrammPayResponse buyCertificateRequest(BuyCertificateRequest buyCertificateRequest, HttpServletRequest request) throws MicroServiceException;
+
+    SecureResponse buyCertificateConfirm(String MD, String PaRes) throws MicroServiceException;
 
     CryptogrammPayResponse buySubscriptionRequest(BuySubscriptionRequest buySubscriptionRequest, HttpServletRequest request) throws MicroServiceException;
 

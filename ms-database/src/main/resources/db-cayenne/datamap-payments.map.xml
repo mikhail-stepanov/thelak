@@ -11,6 +11,8 @@
 		<db-attribute name="created_date" type="TIMESTAMP"/>
 		<db-attribute name="deleted_date" type="TIMESTAMP"/>
 		<db-attribute name="description" type="VARCHAR" length="1048"/>
+		<db-attribute name="html_horizontal" type="VARCHAR" length="100000"/>
+		<db-attribute name="html_vertical" type="VARCHAR" length="100000"/>
 		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="length" type="VARCHAR" length="1048"/>
 		<db-attribute name="modified_date" type="TIMESTAMP"/>
@@ -116,6 +118,8 @@
 		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
 		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
 		<obj-attribute name="description" type="java.lang.String" db-attribute-path="description"/>
+		<obj-attribute name="htmlHorizontal" type="java.lang.String" db-attribute-path="html_horizontal"/>
+		<obj-attribute name="htmlVertical" type="java.lang.String" db-attribute-path="html_vertical"/>
 		<obj-attribute name="length" type="java.lang.String" db-attribute-path="length"/>
 		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
 		<obj-attribute name="months" type="long" db-attribute-path="months"/>

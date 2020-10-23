@@ -13,5 +13,13 @@ public class BuyCertificateRequest {
 
     Long certificateId;
 
+    String fio;
+
+    String description;
+
+    String type;
+
     String cardCryptogramPacket;
+
+    String cardName;
 }

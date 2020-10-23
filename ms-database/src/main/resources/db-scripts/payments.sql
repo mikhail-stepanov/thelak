@@ -19,6 +19,8 @@ CREATE TABLE "public"."db_certificate"
     "price"         integer                  NULL,
     "price_str"     varchar(1048)            NULL,
     "price_str_2"   varchar(1048)            NULL,
+    "html_horizontal" varchar null,
+    "html_vertical" varchar null,
     PRIMARY KEY ("id")
 );
 

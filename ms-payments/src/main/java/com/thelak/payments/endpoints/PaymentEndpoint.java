@@ -47,6 +47,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 @RestController
 @Api(value = "Payment API", produces = "application/json")
@@ -94,9 +95,115 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                     paramType = "header")}
     )
     @RequestMapping(value = PAYMENTS_CERT_REQ, method = {RequestMethod.POST})
-    public Boolean buyCertificateRequest(BuyCertificateRequest buyCertificateRequest) throws MicroServiceException {
-        return null;
+    public CryptogrammPayResponse buyCertificateRequest(BuyCertificateRequest buyCertificateRequest, HttpServletRequest request) throws MicroServiceException {
+        try {
+            UserInfo userInfo = null;
+            try {
+                userInfo = (UserInfo) SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getPrincipal();
+            } catch (Exception e) {
+                throw new MsNotAuthorizedException();
+            }
+
+            DbCertificate dbCertificate = SelectById.query(DbCertificate.class, buyCertificateRequest.getCertificateId())
+                    .selectFirst(objectContext);
+
+            DbIssuedCertificate dbIssuedCertificate = objectContext.newObject(DbIssuedCertificate.class);
+            dbIssuedCertificate.setActive(true);
+            dbIssuedCertificate.setActiveDate(LocalDateTime.now().plusMonths(1L));
+            dbIssuedCertificate.setCreatedDate(LocalDateTime.now());
+            dbIssuedCertificate.setUuid(UUID.randomUUID().toString());
+            dbIssuedCertificate.setIssuedToCertificate(dbCertificate);
+            dbIssuedCertificate.setFio(buyCertificateRequest.getFio());
+            objectContext.commitChanges();
+
+            CryptogrammPayRequest cryptogrammPayRequest = CryptogrammPayRequest.builder()
+                    .AccountId(userInfo.getUserId())
+                    .Amount(dbCertificate.getPrice())
+                    .CardCryptogramPacket(buyCertificateRequest.getCardCryptogramPacket())
+                    .Currency("RUB")
+                    .Description("Покупка сертификата Thelak на " + dbCertificate.getMonths() + " месяцев.")
+                    .Email(userInfo.getUserEmail())
+                    .IpAddress(request.getRemoteAddr())
+                    .Name(buyCertificateRequest.getCardName())
+                    .build();
+
+            DbPaymentConfig dbPaymentConfig = ObjectSelect.query(DbPaymentConfig.class)
+                    .where(DbPaymentConfig.NAME.eq("CRYPTOGRAMM_CHARGE_URL")).selectFirst(objectContext);
+
+            ResponseEntity<String> responseEntity = restTemplate.postForEntity(dbPaymentConfig.getValue(), cryptogrammPayRequest, String.class);
+            CryptogrammPayResponse result = gson.fromJson(responseEntity.getBody(), CryptogrammPayResponse.class);
+            DbPaymentsCryptogramm dbPaymentsCryptogramm = objectContext.newObject(DbPaymentsCryptogramm.class);
+            dbPaymentsCryptogramm.setAmount(cryptogrammPayRequest.getAmount());
+            dbPaymentsCryptogramm.setCardCryptogram(cryptogrammPayRequest.getCardCryptogramPacket());
+            dbPaymentsCryptogramm.setCreatedDate(LocalDateTime.now());
+            dbPaymentsCryptogramm.setCurrency(cryptogrammPayRequest.getCurrency());
+            dbPaymentsCryptogramm.setDescription(cryptogrammPayRequest.getDescription());
+            dbPaymentsCryptogramm.setIdUser(cryptogrammPayRequest.getAccountId());
+            dbPaymentsCryptogramm.setName(cryptogrammPayRequest.getName());
+            dbPaymentsCryptogramm.setStatus(false);
+            dbPaymentsCryptogramm.setCryptogrammToCertificate(dbIssuedCertificate);
+            dbPaymentsCryptogramm.setTransactionId(result.getModel().getTransactionId());
+
+            objectContext.commitChanges();
+
+            return result;
+        } catch (Exception e) {
+            throw new MsInternalErrorException(e.getMessage());
+        }
     }
+
+    @Override
+    @ApiOperation(value = "Buy certificate")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(required = true,
+                    defaultValue = "Bearer ",
+                    name = "Authorization",
+                    paramType = "header")}
+    )
+    @RequestMapping(value = PAYMENTS_CERT_CONFIRM, method = {RequestMethod.POST})
+    public SecureResponse buyCertificateConfirm(@PathVariable String MD, @PathVariable String PaRes) throws MicroServiceException {
+        try {
+            UserInfo userInfo = null;
+            try {
+                userInfo = (UserInfo) SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getPrincipal();
+            } catch (Exception e) {
+                throw new MsNotAuthorizedException();
+            }
+
+            DbPaymentsCryptogramm dbPaymentsCryptogramm = ObjectSelect.query(DbPaymentsCryptogramm.class)
+                    .where(DbPaymentsCryptogramm.TRANSACTION_ID.eq(Long.valueOf(MD)))
+                    .selectFirst(objectContext);
+
+            DbPaymentConfig dbPaymentConfig = ObjectSelect.query(DbPaymentConfig.class)
+                    .where(DbPaymentConfig.NAME.eq("3D_SECURE_URL")).selectFirst(objectContext);
+
+            SecureRequest dSecureRequest = SecureRequest.builder()
+                    .PaRes(PaRes)
+                    .TransactionId(Long.valueOf(MD))
+                    .build();
+
+            ResponseEntity<String> responseEntity = restTemplate.postForEntity(dbPaymentConfig.getValue(), dSecureRequest, String.class);
+            SecureResponse secureResponse = gson.fromJson(responseEntity.getBody(), SecureResponse.class);
+
+            if (secureResponse.getSuccess()) {
+                dbPaymentsCryptogramm.setStatus(true);
+                dbPaymentsCryptogramm.setModifiedDate(LocalDateTime.now());
+                objectContext.commitChanges();
+
+                DbIssuedCertificate certificate = dbPaymentsCryptogramm.getCryptogrammToCertificate();
+
+            }
+            return gson.fromJson(responseEntity.getBody(), SecureResponse.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MsInternalErrorException(e.getMessage());
+        }    }
 
     @Override
     @ApiOperation(value = "Buy subscription confirm")

@@ -22,8 +22,13 @@ public class PaymentService extends BaseMicroservice implements IPaymentService 
     }
 
     @Override
-    public Boolean buyCertificateRequest(BuyCertificateRequest buyCertificateRequest) throws MicroServiceException {
-        return retry(() -> restTemplate.postForEntity(buildUrl(PAYMENTS_CERT_REQ), buyCertificateRequest, Boolean.class).getBody());
+    public CryptogrammPayResponse buyCertificateRequest(BuyCertificateRequest buyCertificateRequest, HttpServletRequest request) throws MicroServiceException {
+        return retry(() -> restTemplate.postForEntity(buildUrl(PAYMENTS_CERT_REQ), buyCertificateRequest, CryptogrammPayResponse.class).getBody());
+    }
+
+    @Override
+    public SecureResponse buyCertificateConfirm(String MD, String PaRes) throws MicroServiceException {
+        return null;
     }
 
     @Override

@@ -25,6 +25,8 @@ public abstract class _DbCertificate extends CayenneDataObject {
     public static final Property<LocalDateTime> CREATED_DATE = Property.create("createdDate", LocalDateTime.class);
     public static final Property<LocalDateTime> DELETED_DATE = Property.create("deletedDate", LocalDateTime.class);
     public static final Property<String> DESCRIPTION = Property.create("description", String.class);
+    public static final Property<String> HTML_HORIZONTAL = Property.create("htmlHorizontal", String.class);
+    public static final Property<String> HTML_VERTICAL = Property.create("htmlVertical", String.class);
     public static final Property<String> LENGTH = Property.create("length", String.class);
     public static final Property<LocalDateTime> MODIFIED_DATE = Property.create("modifiedDate", LocalDateTime.class);
     public static final Property<Long> MONTHS = Property.create("months", Long.class);
@@ -62,6 +64,20 @@ public abstract class _DbCertificate extends CayenneDataObject {
     }
     public String getDescription() {
         return (String)readProperty("description");
+    }
+
+    public void setHtmlHorizontal(String htmlHorizontal) {
+        writeProperty("htmlHorizontal", htmlHorizontal);
+    }
+    public String getHtmlHorizontal() {
+        return (String)readProperty("htmlHorizontal");
+    }
+
+    public void setHtmlVertical(String htmlVertical) {
+        writeProperty("htmlVertical", htmlVertical);
+    }
+    public String getHtmlVertical() {
+        return (String)readProperty("htmlVertical");
     }
 
     public void setLength(String length) {
