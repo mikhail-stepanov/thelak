@@ -27,10 +27,12 @@
 		<db-attribute name="active_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="created_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="deleted_date" type="TIMESTAMP" length="29"/>
+		<db-attribute name="description" type="VARCHAR" length="4096"/>
 		<db-attribute name="fio" type="VARCHAR" length="1048"/>
 		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="id_certificate" type="BIGINT"/>
 		<db-attribute name="modified_date" type="TIMESTAMP" length="29"/>
+		<db-attribute name="type" type="VARCHAR" length="256"/>
 		<db-attribute name="uuid" type="VARCHAR" length="256"/>
 	</db-entity>
 	<db-entity name="db_option_certificate" schema="public">
@@ -133,8 +135,10 @@
 		<obj-attribute name="activeDate" type="java.time.LocalDateTime" db-attribute-path="active_date"/>
 		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
 		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
+		<obj-attribute name="description" type="java.lang.String" db-attribute-path="description"/>
 		<obj-attribute name="fio" type="java.lang.String" db-attribute-path="fio"/>
 		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
+		<obj-attribute name="type" type="java.lang.String" db-attribute-path="type"/>
 		<obj-attribute name="uuid" type="java.lang.String" db-attribute-path="uuid"/>
 	</obj-entity>
 	<obj-entity name="DbOptionCertificate" className="com.thelak.database.entity.DbOptionCertificate" dbEntityName="db_option_certificate">

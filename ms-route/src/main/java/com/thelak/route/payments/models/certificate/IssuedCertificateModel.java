@@ -19,6 +19,10 @@ public class IssuedCertificateModel {
 
     String fio;
 
+    String description;
+
+    CertificateViewType type;
+
     Boolean active;
 
     LocalDateTime activeDate;

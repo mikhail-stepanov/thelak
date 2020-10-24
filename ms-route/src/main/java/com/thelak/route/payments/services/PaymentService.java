@@ -6,6 +6,7 @@ import com.thelak.route.payments.interfaces.IPaymentService;
 import com.thelak.route.payments.models.CardUpdateRequest;
 import com.thelak.route.payments.models.PaymentsConfigModel;
 import com.thelak.route.payments.models.certificate.BuyCertificateRequest;
+import com.thelak.route.payments.models.certificate.BuyCertificateResponse;
 import com.thelak.route.payments.models.cloudpayments.cryptogramm.CryptogrammPayResponse;
 import com.thelak.route.payments.models.cloudpayments.secure.SecureResponse;
 import com.thelak.route.payments.models.promo.PromoModel;
@@ -27,7 +28,7 @@ public class PaymentService extends BaseMicroservice implements IPaymentService 
     }
 
     @Override
-    public SecureResponse buyCertificateConfirm(String MD, String PaRes) throws MicroServiceException {
+    public BuyCertificateResponse buyCertificateConfirm(String MD, String PaRes) throws MicroServiceException {
         return null;
     }
 

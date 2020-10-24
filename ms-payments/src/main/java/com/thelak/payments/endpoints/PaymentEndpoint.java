@@ -14,6 +14,9 @@ import com.thelak.route.payments.interfaces.IPaymentService;
 import com.thelak.route.payments.models.CardUpdateRequest;
 import com.thelak.route.payments.models.PaymentsConfigModel;
 import com.thelak.route.payments.models.certificate.BuyCertificateRequest;
+import com.thelak.route.payments.models.certificate.BuyCertificateResponse;
+import com.thelak.route.payments.models.certificate.CertificateViewType;
+import com.thelak.route.payments.models.certificate.IssuedCertificateModel;
 import com.thelak.route.payments.models.cloudpayments.cancel.CancelRequest;
 import com.thelak.route.payments.models.cloudpayments.cancel.CancelResponse;
 import com.thelak.route.payments.models.cloudpayments.cryptogramm.CryptogrammPayRequest;
@@ -48,6 +51,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.UUID;
+
+import static com.thelak.payments.services.PaymentsHelper.buildCertificateModel;
 
 @RestController
 @Api(value = "Payment API", produces = "application/json")
@@ -117,6 +122,8 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
             dbIssuedCertificate.setUuid(UUID.randomUUID().toString());
             dbIssuedCertificate.setIssuedToCertificate(dbCertificate);
             dbIssuedCertificate.setFio(buyCertificateRequest.getFio());
+            dbIssuedCertificate.setDescription(buyCertificateRequest.getDescription());
+            dbIssuedCertificate.setType(buyCertificateRequest.getType().name());
             objectContext.commitChanges();
 
             CryptogrammPayRequest cryptogrammPayRequest = CryptogrammPayRequest.builder()
@@ -164,7 +171,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                     paramType = "header")}
     )
     @RequestMapping(value = PAYMENTS_CERT_CONFIRM, method = {RequestMethod.GET})
-    public SecureResponse buyCertificateConfirm(@PathVariable String MD, @PathVariable String PaRes) throws MicroServiceException {
+    public BuyCertificateResponse buyCertificateConfirm(@PathVariable String MD, @PathVariable String PaRes) throws MicroServiceException {
         try {
             UserInfo userInfo = null;
             try {
@@ -198,8 +205,25 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
 
                 DbIssuedCertificate certificate = dbPaymentsCryptogramm.getCryptogrammToCertificate();
 
+                return BuyCertificateResponse.builder()
+                        .payResponse(secureResponse)
+                        .certificate(IssuedCertificateModel.builder()
+                                .id((Long) certificate.getObjectId().getIdSnapshot().get("id"))
+                                .uuid(certificate.getUuid())
+                                .fio(certificate.getFio())
+                                .description(certificate.getDescription())
+                                .active(certificate.isActive())
+                                .activeDate(certificate.getActiveDate())
+                                .type(CertificateViewType.valueOf(certificate.getType()))
+                                .certificateModel(buildCertificateModel(certificate.getIssuedToCertificate()))
+                                .build())
+                        .build();
             }
-            return gson.fromJson(responseEntity.getBody(), SecureResponse.class);
+
+            return BuyCertificateResponse.builder()
+                    .payResponse(secureResponse)
+                    .build();
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new MsInternalErrorException(e.getMessage());

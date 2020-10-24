@@ -4,6 +4,7 @@ import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.payments.models.CardUpdateRequest;
 import com.thelak.route.payments.models.PaymentsConfigModel;
 import com.thelak.route.payments.models.certificate.BuyCertificateRequest;
+import com.thelak.route.payments.models.certificate.BuyCertificateResponse;
 import com.thelak.route.payments.models.cloudpayments.cryptogramm.CryptogrammPayResponse;
 import com.thelak.route.payments.models.cloudpayments.secure.SecureResponse;
 import com.thelak.route.payments.models.promo.PromoModel;
@@ -27,7 +28,7 @@ public interface IPaymentService {
 
     CryptogrammPayResponse buyCertificateRequest(BuyCertificateRequest buyCertificateRequest, HttpServletRequest request) throws MicroServiceException;
 
-    SecureResponse buyCertificateConfirm(String MD, String PaRes) throws MicroServiceException;
+    BuyCertificateResponse buyCertificateConfirm(String MD, String PaRes) throws MicroServiceException;
 
     CryptogrammPayResponse buySubscriptionRequest(BuySubscriptionRequest buySubscriptionRequest, HttpServletRequest request) throws MicroServiceException;
 

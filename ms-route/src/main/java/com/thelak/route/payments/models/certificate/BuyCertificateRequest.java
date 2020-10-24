@@ -17,7 +17,7 @@ public class BuyCertificateRequest {
 
     String description;
 
-    String type;
+    CertificateViewType type;
 
     String cardCryptogramPacket;
 

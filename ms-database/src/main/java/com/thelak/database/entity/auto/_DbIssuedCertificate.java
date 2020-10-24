@@ -25,8 +25,10 @@ public abstract class _DbIssuedCertificate extends CayenneDataObject {
     public static final Property<LocalDateTime> ACTIVE_DATE = Property.create("activeDate", LocalDateTime.class);
     public static final Property<LocalDateTime> CREATED_DATE = Property.create("createdDate", LocalDateTime.class);
     public static final Property<LocalDateTime> DELETED_DATE = Property.create("deletedDate", LocalDateTime.class);
+    public static final Property<String> DESCRIPTION = Property.create("description", String.class);
     public static final Property<String> FIO = Property.create("fio", String.class);
     public static final Property<LocalDateTime> MODIFIED_DATE = Property.create("modifiedDate", LocalDateTime.class);
+    public static final Property<String> TYPE = Property.create("type", String.class);
     public static final Property<String> UUID = Property.create("uuid", String.class);
     public static final Property<List<DbPaymentsCryptogramm>> CERTIFICATE_TO_CRYPTOGRAMM = Property.create("certificateToCryptogramm", List.class);
     public static final Property<DbCertificate> ISSUED_TO_CERTIFICATE = Property.create("issuedToCertificate", DbCertificate.class);
@@ -60,6 +62,13 @@ public abstract class _DbIssuedCertificate extends CayenneDataObject {
         return (LocalDateTime)readProperty("deletedDate");
     }
 
+    public void setDescription(String description) {
+        writeProperty("description", description);
+    }
+    public String getDescription() {
+        return (String)readProperty("description");
+    }
+
     public void setFio(String fio) {
         writeProperty("fio", fio);
     }
@@ -72,6 +81,13 @@ public abstract class _DbIssuedCertificate extends CayenneDataObject {
     }
     public LocalDateTime getModifiedDate() {
         return (LocalDateTime)readProperty("modifiedDate");
+    }
+
+    public void setType(String type) {
+        writeProperty("type", type);
+    }
+    public String getType() {
+        return (String)readProperty("type");
     }
 
     public void setUuid(String uuid) {
