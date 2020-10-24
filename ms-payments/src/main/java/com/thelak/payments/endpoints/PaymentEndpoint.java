@@ -201,9 +201,14 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
             if (secureResponse.getSuccess()) {
                 dbPaymentsCryptogramm.setStatus(true);
                 dbPaymentsCryptogramm.setModifiedDate(LocalDateTime.now());
-                objectContext.commitChanges();
 
                 DbIssuedCertificate certificate = dbPaymentsCryptogramm.getCryptogrammToCertificate();
+
+                DbPromo dbPromo = objectContext.newObject(DbPromo.class);
+                dbPromo.setCode(certificate.getUuid());
+                dbPromo.setMonths((int) certificate.getIssuedToCertificate().getMonths());
+
+                objectContext.commitChanges();
 
                 return BuyCertificateResponse.builder()
                         .payResponse(secureResponse)
