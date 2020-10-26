@@ -22,14 +22,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import javax.annotation.PostConstruct;
+import javax.mail.Address;
+import javax.mail.Message;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 @RestController
@@ -77,8 +77,36 @@ public class EmailEndpoint extends AbstractMicroservice implements IEmailService
     }
 
     @Override
+    @RequestMapping(value = EMAIL_CERTIFICATE, method = {RequestMethod.GET})
+    public Boolean sendCert(@RequestParam String to, @RequestParam Long templateId,
+                            @RequestParam String promo, @RequestParam String fio, @RequestParam String description) throws MicroServiceException {
+        try {
+            DbSmtpTemplate smtpTemplate = SelectById.query(DbSmtpTemplate.class, templateId).selectFirst(objectContext);
+
+            Context thymeleafContext = new Context();
+            thymeleafContext.setVariable("promo", promo);
+            thymeleafContext.setVariable("fio", fio);
+            thymeleafContext.setVariable("description", description);
+
+            String htmlBody = thymeleafTemplateEngine.process(smtpTemplate.getContent(), thymeleafContext);
+            System.out.println("!!!!!!!!!!!!!!!\n" + htmlBody);
+
+            MimeMessage message = emailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, false, "utf-8");
+            helper.setTo(to);
+            helper.setSubject("Сертификат Thelak");
+            helper.setText(htmlBody, true);
+            emailSender.send(message);
+            return true;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
     @RequestMapping(value = EMAIL_HTML, method = {RequestMethod.GET})
-    public Boolean sendHtmlMessage(String to, String subject, String link, Long templateId) {
+    public Boolean sendHtmlMessage(@RequestParam String to, @RequestParam String subject, @RequestParam String link, @RequestParam Long templateId) {
         try {
             DbSmtpTemplate smtpTemplate = SelectById.query(DbSmtpTemplate.class, templateId).selectFirst(objectContext);
 

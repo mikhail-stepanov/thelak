@@ -16,9 +16,9 @@ import javax.servlet.http.HttpServletRequest;
 public interface IPaymentService {
 
     String PAYMENTS_CERT_REQ = "/v1/payments/cert/req";
-    String PAYMENTS_CERT_CONFIRM = "/v1/payments/cert/confirm/{MD}/{PaRes}";
+    String PAYMENTS_CERT_CONFIRM = "/v1/payments/cert/confirm/";
     String PAYMENTS_SUB_REQ = "/v1/payments/sub/req";
-    String PAYMENTS_SUB_CONFIRM = "/v1/payments/sub/confirm/{MD}/{PaRes}";
+    String PAYMENTS_SUB_CONFIRM = "/v1/payments/sub/confirm/";
     String PAYMENTS_SUB_CANCEL = "/v1/payments/sub/cancel";
     String PAYMENTS_REDIRECT = "/v1/payments/redir";
     String PAYMENTS_UPDATE_CARD = "/v1/payments/card/update";

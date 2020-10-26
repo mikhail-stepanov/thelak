@@ -12,11 +12,14 @@ public interface IEmailService {
 
     String EMAIL_SIMPLE = "/v1/email";
     String EMAIL_HTML = "/v1/email/html";
+    String EMAIL_CERTIFICATE = "/v1/email/cert";
 
     String EMAIL_PARTNER_REQUEST = "/v1/email/partner";
     String EMAIL_QUESTION = "/v1/email/question";
 
     Boolean sendMessage(SendEmailRequest request) throws MicroServiceException;
+
+    Boolean sendCert(String to, Long templateId, String promo, String fio, String description) throws MicroServiceException;
 
     Boolean sendHtmlMessage(String to, String subject, String link, Long templateId) throws MicroServiceException;
 

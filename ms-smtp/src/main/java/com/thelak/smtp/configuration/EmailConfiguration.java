@@ -8,8 +8,12 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
+import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.StringTemplateResolver;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Properties;
 
 @Configuration
@@ -23,12 +27,13 @@ public class EmailConfiguration {
 
         mailSender.setUsername("thelak.service@gmail.com");
         mailSender.setPassword("thelak2020");
+        mailSender.setDefaultEncoding("text/html; charset=utf-8");
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.debug", "true");
+        props.put("mail.debug", "false");
 
         return mailSender;
     }
@@ -42,18 +47,30 @@ public class EmailConfiguration {
         return message;
     }
 
-    @Bean
-    public StringTemplateResolver thymeleafTemplateResolver(){
-        StringTemplateResolver templateResolver = new StringTemplateResolver();
+
+    private ITemplateResolver stringTemplateResolver() {
+        final StringTemplateResolver templateResolver = new StringTemplateResolver();
         templateResolver.setOrder(1);
+        templateResolver.setTemplateMode("HTML5");
+        templateResolver.setCacheable(false);
+        return templateResolver;
+    }
+
+    private ITemplateResolver htmlTemplateResolver() {
+        final ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+        templateResolver.setOrder(Integer.valueOf(1));
+        templateResolver.setResolvablePatterns(Collections.singleton("html/*"));
+        templateResolver.setPrefix("/mail/");
+        templateResolver.setSuffix(".html");
         templateResolver.setTemplateMode(TemplateMode.HTML);
+        templateResolver.setCacheable(false);
         return templateResolver;
     }
 
     @Bean
     public SpringTemplateEngine thymeleafTemplateEngine() {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-        templateEngine.setTemplateResolver(thymeleafTemplateResolver());
+        templateEngine.addTemplateResolver(stringTemplateResolver());
         return templateEngine;
     }
 }

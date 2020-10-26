@@ -171,7 +171,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                     paramType = "header")}
     )
     @RequestMapping(value = PAYMENTS_CERT_CONFIRM, method = {RequestMethod.GET})
-    public BuyCertificateResponse buyCertificateConfirm(@PathVariable String MD, @PathVariable String PaRes) throws MicroServiceException {
+    public BuyCertificateResponse buyCertificateConfirm(@RequestParam String MD, @RequestParam String PaRes) throws MicroServiceException {
         try {
             UserInfo userInfo = null;
             try {
@@ -244,7 +244,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                     paramType = "header")}
     )
     @RequestMapping(value = PAYMENTS_SUB_CONFIRM, method = {RequestMethod.GET})
-    public SecureResponse buySubscriptionConfirm(@PathVariable String MD, @PathVariable String PaRes) throws MicroServiceException {
+    public SecureResponse buySubscriptionConfirm(@RequestParam String MD, @RequestParam String PaRes) throws MicroServiceException {
         try {
             UserInfo userInfo = null;
             try {
@@ -344,12 +344,12 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
         if (dbPaymentsCryptogramm.getCryptogrammToCertificate() != null) {
             RedirectView rv = new RedirectView();
             rv.setStatusCode(HttpStatus.MOVED_PERMANENTLY);
-            rv.setUrl("https://thelak.com/pay/confirm/cert/" + MD + "/" + PaRes);
+            rv.setUrl("https://thelak.com/pay/confirm/cert/?MD=" + MD + "&paRes=" + PaRes);
             return new ModelAndView(rv);
         } else {
             RedirectView rv = new RedirectView();
             rv.setStatusCode(HttpStatus.MOVED_PERMANENTLY);
-            rv.setUrl("https://thelak.com/pay/confirm/sub/" + MD + "/" + PaRes);
+            rv.setUrl("https://thelak.com/pay/confirm/sub/?MD=" + MD + "&paRes=" + PaRes);
             return new ModelAndView(rv);
         }
     }

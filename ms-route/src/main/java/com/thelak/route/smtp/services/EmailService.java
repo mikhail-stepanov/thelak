@@ -7,6 +7,7 @@ import com.thelak.route.smtp.models.PartnerRequest;
 import com.thelak.route.smtp.models.QuestionRequest;
 import com.thelak.route.smtp.models.SendEmailRequest;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 public class EmailService extends BaseMicroservice implements IEmailService {
 
@@ -18,6 +19,17 @@ public class EmailService extends BaseMicroservice implements IEmailService {
     public Boolean sendMessage(SendEmailRequest request) throws MicroServiceException {
         return retry(() -> restTemplate.postForEntity(buildUrl(EMAIL_SIMPLE), request, Boolean.class).getBody());
 
+    }
+
+    @Override
+    public Boolean sendCert(String to, Long templateId, String promo, String fio, String description) throws MicroServiceException {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(buildUrl(EMAIL_CERTIFICATE))
+                .queryParam("to", to)
+                .queryParam("templateId", templateId)
+                .queryParam("promo", promo)
+                .queryParam("fio", fio)
+                .queryParam("description", description);
+        return retry(() -> restTemplate.getForEntity(builder.toUriString(), Boolean.class, to, templateId, promo, fio, description).getBody());
     }
 
     @Override
