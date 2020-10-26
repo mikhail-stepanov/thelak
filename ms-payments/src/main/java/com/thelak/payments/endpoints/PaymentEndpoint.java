@@ -174,7 +174,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     @RequestMapping(value = PAYMENTS_CERT_CONFIRM, method = {RequestMethod.GET})
     public BuyCertificateResponse buyCertificateConfirm(@RequestParam String MD, @RequestParam String PaRes) throws MicroServiceException {
         try {
-            PaRes = Base64.decode(PaRes).toString();
+            PaRes = new String(Base64.decode(PaRes));
             UserInfo userInfo = null;
             try {
                 userInfo = (UserInfo) SecurityContextHolder
@@ -248,7 +248,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     @RequestMapping(value = PAYMENTS_SUB_CONFIRM, method = {RequestMethod.GET})
     public SecureResponse buySubscriptionConfirm(@RequestParam String MD, @RequestParam String PaRes) throws MicroServiceException {
         try {
-            PaRes = Base64.decode(PaRes).toString();
+            PaRes = new String(Base64.decode(PaRes));
             UserInfo userInfo = null;
             try {
                 userInfo = (UserInfo) SecurityContextHolder
@@ -347,12 +347,12 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
         if (dbPaymentsCryptogramm.getCryptogrammToCertificate() != null) {
             RedirectView rv = new RedirectView();
             rv.setStatusCode(HttpStatus.MOVED_PERMANENTLY);
-            rv.setUrl("https://thelak.com/pay/confirm/cert/?MD=" + MD + "&paRes=" + Base64.encode(PaRes.getBytes()).toString());
+            rv.setUrl("https://thelak.com/pay/confirm/cert/?MD=" + MD + "&paRes=" + Base64.toBase64String(PaRes.getBytes()));
             return new ModelAndView(rv);
         } else {
             RedirectView rv = new RedirectView();
             rv.setStatusCode(HttpStatus.MOVED_PERMANENTLY);
-            rv.setUrl("https://thelak.com/pay/confirm/sub/?MD=" + MD + "&paRes=" + Base64.encode(PaRes.getBytes()).toString());
+            rv.setUrl("https://thelak.com/pay/confirm/sub/?MD=" + MD + "&paRes=" + Base64.toBase64String(PaRes.getBytes()));
             return new ModelAndView(rv);
         }
     }
