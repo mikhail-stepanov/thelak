@@ -172,9 +172,8 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                     paramType = "header")}
     )
     @RequestMapping(value = PAYMENTS_CERT_CONFIRM, method = {RequestMethod.GET})
-    public BuyCertificateResponse buyCertificateConfirm(@RequestParam String MD, @RequestParam String PaRes) throws MicroServiceException {
+    public BuyCertificateResponse buyCertificateConfirm(@RequestParam String MD) throws MicroServiceException {
         try {
-            PaRes = new String(Base64.decode(PaRes));
             UserInfo userInfo = null;
             try {
                 userInfo = (UserInfo) SecurityContextHolder
@@ -193,7 +192,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                     .where(DbPaymentConfig.NAME.eq("3D_SECURE_URL")).selectFirst(objectContext);
 
             SecureRequest dSecureRequest = SecureRequest.builder()
-                    .PaRes(PaRes)
+                    .PaRes(dbPaymentsCryptogramm.getPares())
                     .TransactionId(Long.valueOf(MD))
                     .build();
 
@@ -246,9 +245,8 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                     paramType = "header")}
     )
     @RequestMapping(value = PAYMENTS_SUB_CONFIRM, method = {RequestMethod.GET})
-    public SecureResponse buySubscriptionConfirm(@RequestParam String MD, @RequestParam String PaRes) throws MicroServiceException {
+    public SecureResponse buySubscriptionConfirm(@RequestParam String MD) throws MicroServiceException {
         try {
-            PaRes = new String(Base64.decode(PaRes));
             UserInfo userInfo = null;
             try {
                 userInfo = (UserInfo) SecurityContextHolder
@@ -267,7 +265,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                     .where(DbPaymentConfig.NAME.eq("3D_SECURE_URL")).selectFirst(objectContext);
 
             SecureRequest dSecureRequest = SecureRequest.builder()
-                    .PaRes(PaRes)
+                    .PaRes(dbPaymentsCryptogramm.getPares())
                     .TransactionId(Long.valueOf(MD))
                     .build();
 
@@ -344,15 +342,17 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
         DbPaymentsCryptogramm dbPaymentsCryptogramm = ObjectSelect.query(DbPaymentsCryptogramm.class)
                 .where(DbPaymentsCryptogramm.TRANSACTION_ID.eq(Long.valueOf(MD)))
                 .selectFirst(objectContext);
+        dbPaymentsCryptogramm.setPares(PaRes);
+        objectContext.commitChanges();
         if (dbPaymentsCryptogramm.getCryptogrammToCertificate() != null) {
             RedirectView rv = new RedirectView();
             rv.setStatusCode(HttpStatus.MOVED_PERMANENTLY);
-            rv.setUrl("https://thelak.com/pay/confirm/cert/?MD=" + MD + "&paRes=" + Base64.toBase64String(PaRes.getBytes()));
+            rv.setUrl("https://thelak.com/pay/confirm/cert/?MD=" + MD);
             return new ModelAndView(rv);
         } else {
             RedirectView rv = new RedirectView();
             rv.setStatusCode(HttpStatus.MOVED_PERMANENTLY);
-            rv.setUrl("https://thelak.com/pay/confirm/sub/?MD=" + MD + "&paRes=" + Base64.toBase64String(PaRes.getBytes()));
+            rv.setUrl("https://thelak.com/pay/confirm/sub/?MD=" + MD);
             return new ModelAndView(rv);
         }
     }

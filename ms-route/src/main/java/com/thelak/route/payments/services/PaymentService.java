@@ -28,7 +28,7 @@ public class PaymentService extends BaseMicroservice implements IPaymentService 
     }
 
     @Override
-    public BuyCertificateResponse buyCertificateConfirm(String MD, String PaRes) throws MicroServiceException {
+    public BuyCertificateResponse buyCertificateConfirm(String MD) throws MicroServiceException {
         return null;
     }
 
@@ -38,7 +38,7 @@ public class PaymentService extends BaseMicroservice implements IPaymentService 
     }
 
     @Override
-    public SecureResponse buySubscriptionConfirm(String MD, String PaRes) throws MicroServiceException {
+    public SecureResponse buySubscriptionConfirm(String MD) throws MicroServiceException {
         return null;
     }
 

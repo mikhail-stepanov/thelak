@@ -28,11 +28,11 @@ public interface IPaymentService {
 
     CryptogrammPayResponse buyCertificateRequest(BuyCertificateRequest buyCertificateRequest, HttpServletRequest request) throws MicroServiceException;
 
-    BuyCertificateResponse buyCertificateConfirm(String MD, String PaRes) throws MicroServiceException;
+    BuyCertificateResponse buyCertificateConfirm(String MD) throws MicroServiceException;
 
     CryptogrammPayResponse buySubscriptionRequest(BuySubscriptionRequest buySubscriptionRequest, HttpServletRequest request) throws MicroServiceException;
 
-    SecureResponse buySubscriptionConfirm(String MD, String PaRes) throws MicroServiceException;
+    SecureResponse buySubscriptionConfirm(String MD) throws MicroServiceException;
 
     ModelAndView redirectBeforeConfirm(String MD, String PaRes, HttpServletRequest request) throws MicroServiceException;
 

@@ -29,6 +29,7 @@ public abstract class _DbPaymentsCryptogramm extends CayenneDataObject {
     public static final Property<Long> ID_USER = Property.create("idUser", Long.class);
     public static final Property<LocalDateTime> MODIFIED_DATE = Property.create("modifiedDate", LocalDateTime.class);
     public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<String> PARES = Property.create("pares", String.class);
     public static final Property<Boolean> STATUS = Property.create("status", Boolean.class);
     public static final Property<Long> TRANSACTION_ID = Property.create("transactionId", Long.class);
     public static final Property<DbIssuedCertificate> CRYPTOGRAMM_TO_CERTIFICATE = Property.create("cryptogrammToCertificate", DbIssuedCertificate.class);
@@ -97,6 +98,13 @@ public abstract class _DbPaymentsCryptogramm extends CayenneDataObject {
     }
     public String getName() {
         return (String)readProperty("name");
+    }
+
+    public void setPares(String pares) {
+        writeProperty("pares", pares);
+    }
+    public String getPares() {
+        return (String)readProperty("pares");
     }
 
     public void setStatus(boolean status) {

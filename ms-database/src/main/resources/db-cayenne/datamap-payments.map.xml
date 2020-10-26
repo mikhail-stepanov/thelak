@@ -67,6 +67,7 @@
 		<db-attribute name="id_user" type="BIGINT" isMandatory="true"/>
 		<db-attribute name="modified_date" type="TIMESTAMP"/>
 		<db-attribute name="name" type="VARCHAR" isMandatory="true" length="1049"/>
+		<db-attribute name="pares" type="VARCHAR" length="10000000"/>
 		<db-attribute name="status" type="BOOLEAN"/>
 		<db-attribute name="transaction_id" type="BIGINT" isMandatory="true"/>
 	</db-entity>
@@ -162,6 +163,7 @@
 		<obj-attribute name="idUser" type="long" db-attribute-path="id_user"/>
 		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
+		<obj-attribute name="pares" type="java.lang.String" db-attribute-path="pares"/>
 		<obj-attribute name="status" type="boolean" db-attribute-path="status"/>
 		<obj-attribute name="transactionId" type="long" db-attribute-path="transaction_id"/>
 	</obj-entity>
