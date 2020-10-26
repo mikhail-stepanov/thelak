@@ -35,6 +35,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
+import org.bouncycastle.util.encoders.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -173,6 +174,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     @RequestMapping(value = PAYMENTS_CERT_CONFIRM, method = {RequestMethod.GET})
     public BuyCertificateResponse buyCertificateConfirm(@RequestParam String MD, @RequestParam String PaRes) throws MicroServiceException {
         try {
+            PaRes = Base64.decode(PaRes).toString();
             UserInfo userInfo = null;
             try {
                 userInfo = (UserInfo) SecurityContextHolder
@@ -246,6 +248,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     @RequestMapping(value = PAYMENTS_SUB_CONFIRM, method = {RequestMethod.GET})
     public SecureResponse buySubscriptionConfirm(@RequestParam String MD, @RequestParam String PaRes) throws MicroServiceException {
         try {
+            PaRes = Base64.decode(PaRes).toString();
             UserInfo userInfo = null;
             try {
                 userInfo = (UserInfo) SecurityContextHolder
@@ -338,23 +341,18 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     @ApiOperation(value = "Redirect before confirm")
     @RequestMapping(value = PAYMENTS_REDIRECT, method = {RequestMethod.POST})
     public ModelAndView redirectBeforeConfirm(@RequestParam String MD, @RequestParam String PaRes, HttpServletRequest request) throws MicroServiceException {
-        System.out.println("!!!!!!!!!"+PaRes+"!!!!!!!!!!!!!!!!!!!");
-        System.out.println("localAddress:" + request.getLocalAddr());
-        System.out.println("remoteAddress:" + request.getRemoteAddr());
-        System.out.println("headerNames:" + request.getHeaderNames());
-
         DbPaymentsCryptogramm dbPaymentsCryptogramm = ObjectSelect.query(DbPaymentsCryptogramm.class)
                 .where(DbPaymentsCryptogramm.TRANSACTION_ID.eq(Long.valueOf(MD)))
                 .selectFirst(objectContext);
         if (dbPaymentsCryptogramm.getCryptogrammToCertificate() != null) {
             RedirectView rv = new RedirectView();
             rv.setStatusCode(HttpStatus.MOVED_PERMANENTLY);
-            rv.setUrl("https://thelak.com/pay/confirm/cert/?MD=" + MD + "&paRes=" + PaRes);
+            rv.setUrl("https://thelak.com/pay/confirm/cert/?MD=" + MD + "&paRes=" + Base64.encode(PaRes.getBytes()).toString());
             return new ModelAndView(rv);
         } else {
             RedirectView rv = new RedirectView();
             rv.setStatusCode(HttpStatus.MOVED_PERMANENTLY);
-            rv.setUrl("https://thelak.com/pay/confirm/sub/?MD=" + MD + "&paRes=" + PaRes);
+            rv.setUrl("https://thelak.com/pay/confirm/sub/?MD=" + MD + "&paRes=" + Base64.encode(PaRes.getBytes()).toString());
             return new ModelAndView(rv);
         }
     }
