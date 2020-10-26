@@ -337,7 +337,12 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     @Override
     @ApiOperation(value = "Redirect before confirm")
     @RequestMapping(value = PAYMENTS_REDIRECT, method = {RequestMethod.POST})
-    public ModelAndView redirectBeforeConfirm(@RequestParam String MD, @RequestParam String PaRes) throws MicroServiceException {
+    public ModelAndView redirectBeforeConfirm(@RequestParam String MD, @RequestParam String PaRes, HttpServletRequest request) throws MicroServiceException {
+        System.out.println("!!!!!!!!!"+PaRes+"!!!!!!!!!!!!!!!!!!!");
+        System.out.println("localAddress:" + request.getLocalAddr());
+        System.out.println("remoteAddress:" + request.getRemoteAddr());
+        System.out.println("headerNames:" + request.getHeaderNames());
+
         DbPaymentsCryptogramm dbPaymentsCryptogramm = ObjectSelect.query(DbPaymentsCryptogramm.class)
                 .where(DbPaymentsCryptogramm.TRANSACTION_ID.eq(Long.valueOf(MD)))
                 .selectFirst(objectContext);

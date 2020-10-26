@@ -34,7 +34,7 @@ public interface IPaymentService {
 
     SecureResponse buySubscriptionConfirm(String MD, String PaRes) throws MicroServiceException;
 
-    ModelAndView redirectBeforeConfirm(String MD, String PaRes) throws MicroServiceException;
+    ModelAndView redirectBeforeConfirm(String MD, String PaRes, HttpServletRequest request) throws MicroServiceException;
 
     Boolean updateCardInfo(CardUpdateRequest cardUpdateRequest) throws MicroServiceException;
 

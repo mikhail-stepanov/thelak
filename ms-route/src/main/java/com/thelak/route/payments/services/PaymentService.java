@@ -43,7 +43,7 @@ public class PaymentService extends BaseMicroservice implements IPaymentService 
     }
 
     @Override
-    public ModelAndView redirectBeforeConfirm(String MD, String PaRes) throws MicroServiceException {
+    public ModelAndView redirectBeforeConfirm(String MD, String PaRes, HttpServletRequest request) throws MicroServiceException {
         return null;
     }
 
