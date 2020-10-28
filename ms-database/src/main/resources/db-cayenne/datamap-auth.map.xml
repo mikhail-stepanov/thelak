@@ -28,7 +28,9 @@
 		<db-attribute name="name" type="VARCHAR" isMandatory="true" length="255"/>
 		<db-attribute name="password" type="VARCHAR" isMandatory="true" length="64"/>
 		<db-attribute name="phone" type="VARCHAR" isMandatory="true" length="64"/>
+		<db-attribute name="renew" type="BOOLEAN"/>
 		<db-attribute name="salt" type="VARCHAR" isMandatory="true" length="64"/>
+		<db-attribute name="sub_type" type="VARCHAR" length="64"/>
 		<db-attribute name="subscription_date" type="TIMESTAMP"/>
 	</db-entity>
 	<db-entity name="db_user_session" schema="public">
@@ -58,7 +60,9 @@
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
 		<obj-attribute name="password" type="java.lang.String" db-attribute-path="password"/>
 		<obj-attribute name="phone" type="java.lang.String" db-attribute-path="phone"/>
+		<obj-attribute name="renew" type="boolean" db-attribute-path="renew"/>
 		<obj-attribute name="salt" type="java.lang.String" db-attribute-path="salt"/>
+		<obj-attribute name="subType" type="java.lang.String" db-attribute-path="sub_type"/>
 		<obj-attribute name="subscriptionDate" type="java.time.LocalDateTime" db-attribute-path="subscription_date"/>
 	</obj-entity>
 	<obj-entity name="DbUserSession" className="com.thelak.database.entity.DbUserSession" dbEntityName="db_user_session">

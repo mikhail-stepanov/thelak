@@ -15,5 +15,7 @@ public class SetSubscriptionModel {
 
     Long userId;
 
+    String subType;
+
     LocalDateTime subscriptionDate;
 }

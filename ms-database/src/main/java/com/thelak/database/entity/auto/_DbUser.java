@@ -34,7 +34,9 @@ public abstract class _DbUser extends CayenneDataObject {
     public static final Property<String> NAME = Property.create("name", String.class);
     public static final Property<String> PASSWORD = Property.create("password", String.class);
     public static final Property<String> PHONE = Property.create("phone", String.class);
+    public static final Property<Boolean> RENEW = Property.create("renew", Boolean.class);
     public static final Property<String> SALT = Property.create("salt", String.class);
+    public static final Property<String> SUB_TYPE = Property.create("subType", String.class);
     public static final Property<LocalDateTime> SUBSCRIPTION_DATE = Property.create("subscriptionDate", LocalDateTime.class);
     public static final Property<List<DbNotification>> USER_TO_NOTIFICATION = Property.create("userToNotification", List.class);
     public static final Property<List<DbUserSession>> USER_TO_SESSION = Property.create("userToSession", List.class);
@@ -125,11 +127,26 @@ public abstract class _DbUser extends CayenneDataObject {
         return (String)readProperty("phone");
     }
 
+    public void setRenew(boolean renew) {
+        writeProperty("renew", renew);
+    }
+	public boolean isRenew() {
+        Boolean value = (Boolean)readProperty("renew");
+        return (value != null) ? value.booleanValue() : false;
+    }
+
     public void setSalt(String salt) {
         writeProperty("salt", salt);
     }
     public String getSalt() {
         return (String)readProperty("salt");
+    }
+
+    public void setSubType(String subType) {
+        writeProperty("subType", subType);
+    }
+    public String getSubType() {
+        return (String)readProperty("subType");
     }
 
     public void setSubscriptionDate(LocalDateTime subscriptionDate) {

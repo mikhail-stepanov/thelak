@@ -166,7 +166,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
                         .userId((Long) user.getObjectId().getIdSnapshot().get("id"))
                         .userEmail(user.getEmail())
                         .isSubscribe(user.isIsSubscribe())
-                        .isAdmin(false)
+                        .isAdmin(user.isIsAdmin())
                         .build();
 
                 String token = tokenService.generateToken(userInfo);
@@ -207,6 +207,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
             DbUser dbUser = SelectById.query(DbUser.class, userInfo.getUserId()).selectFirst(objectContext);
             userInfo.setSubscribe(dbUser.isIsSubscribe());
             userInfo.setUserEmail(dbUser.getEmail());
+            userInfo.setAdmin(dbUser.isIsAdmin());
 
             HttpHeaders responseHeaders = new HttpHeaders();
             responseHeaders.set("Authorization", tokenService.generateToken(userInfo));
@@ -274,6 +275,9 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
             DbUser dbUser = SelectById.query(DbUser.class, setSubscriptionModel.getUserId()).selectFirst(objectContext);
             dbUser.setSubscriptionDate(setSubscriptionModel.getSubscriptionDate());
             dbUser.setIsSubscribe(true);
+            dbUser.setSubType(setSubscriptionModel.getSubType());
+            if(setSubscriptionModel.getSubType().equals("SUBSCRIPTION"))
+                dbUser.setRenew(true);
 
             objectContext.commitChanges();
 
