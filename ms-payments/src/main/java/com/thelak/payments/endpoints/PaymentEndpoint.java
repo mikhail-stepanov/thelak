@@ -288,7 +288,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                         .subscriptionDate(LocalDateTime.now().plusMonths(subscription.getMonths())).build());
 
                 try {
-                    RecurrentPayRequest reccurentPayRequest = RecurrentPayRequest.builder()
+                    RecurrentPayRequest recurrentPayRequest = RecurrentPayRequest.builder()
                             .accountId(userInfo.getUserId().toString())
                             .amount(subscription.getPrice())
                             .currency("RUB")
@@ -301,25 +301,28 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                             .token(secureResponse.getModel().getToken())
                             .build();
 
+                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!" + recurrentPayRequest);
+
                     DbPaymentsRecurrent dbPaymentsRecurrent = objectContext.newObject(DbPaymentsRecurrent.class);
                     dbPaymentsRecurrent.setIdUser(userInfo.getUserId());
-                    dbPaymentsRecurrent.setAmount(reccurentPayRequest.getAmount());
-                    dbPaymentsRecurrent.setCurrency(reccurentPayRequest.getCurrency());
-                    dbPaymentsRecurrent.setDescription(reccurentPayRequest.getDescription());
-                    dbPaymentsRecurrent.setEmail(reccurentPayRequest.getEmail());
-                    dbPaymentsRecurrent.setInterval(reccurentPayRequest.getInterval());
-                    dbPaymentsRecurrent.setPeriod(reccurentPayRequest.getPeriod());
-                    dbPaymentsRecurrent.setStartDate(reccurentPayRequest.getStartDate());
-                    dbPaymentsRecurrent.setRequireConfirmation(reccurentPayRequest.getRequireConfirmation());
-                    dbPaymentsRecurrent.setToken(reccurentPayRequest.getToken());
+                    dbPaymentsRecurrent.setAmount(recurrentPayRequest.getAmount());
+                    dbPaymentsRecurrent.setCurrency(recurrentPayRequest.getCurrency());
+                    dbPaymentsRecurrent.setDescription(recurrentPayRequest.getDescription());
+                    dbPaymentsRecurrent.setEmail(recurrentPayRequest.getEmail());
+                    dbPaymentsRecurrent.setInterval(recurrentPayRequest.getInterval());
+                    dbPaymentsRecurrent.setPeriod(recurrentPayRequest.getPeriod());
+                    dbPaymentsRecurrent.setStartDate(recurrentPayRequest.getStartDate());
+                    dbPaymentsRecurrent.setRequireConfirmation(recurrentPayRequest.getRequireConfirmation());
+                    dbPaymentsRecurrent.setToken(recurrentPayRequest.getToken());
                     dbPaymentsRecurrent.setStatus(false);
                     dbPaymentsRecurrent.setCreatedDate(LocalDateTime.now());
+                    dbPaymentsRecurrent.setRecurrentToSubscription(subscription);
                     objectContext.commitChanges();
 
                     dbPaymentConfig = ObjectSelect.query(DbPaymentConfig.class)
                             .where(DbPaymentConfig.NAME.eq("RECURRENT_URL")).selectFirst(objectContext);
 
-                    responseEntity = restTemplate.postForEntity(dbPaymentConfig.getValue(), reccurentPayRequest, String.class);
+                    responseEntity = restTemplate.postForEntity(dbPaymentConfig.getValue(), recurrentPayRequest, String.class);
                     System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!" + responseEntity);
                     RecurrentPayResponse recurrentPayResponse = gson.fromJson(responseEntity.getBody(), RecurrentPayResponse.class);
                     if (recurrentPayResponse.getSuccess()) {
