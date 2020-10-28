@@ -272,8 +272,6 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
             ResponseEntity<String> responseEntity = restTemplate.postForEntity(dbPaymentConfig.getValue(), dSecureRequest, String.class);
             SecureResponse secureResponse = gson.fromJson(responseEntity.getBody(), SecureResponse.class);
 
-            System.out.println(secureResponse);
-
             if (secureResponse.getSuccess()) {
                 dbPaymentsCryptogramm.setStatus(true);
                 dbPaymentsCryptogramm.setModifiedDate(LocalDateTime.now());
@@ -322,6 +320,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                             .where(DbPaymentConfig.NAME.eq("RECURRENT_URL")).selectFirst(objectContext);
 
                     responseEntity = restTemplate.postForEntity(dbPaymentConfig.getValue(), reccurentPayRequest, String.class);
+                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!" + responseEntity);
                     RecurrentPayResponse recurrentPayResponse = gson.fromJson(responseEntity.getBody(), RecurrentPayResponse.class);
                     if (recurrentPayResponse.getSuccess()) {
                         dbPaymentsRecurrent.setStatus(true);
