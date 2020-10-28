@@ -433,7 +433,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     }
 
     @Override
-    @ApiOperation(value = "Update card info")
+    @ApiOperation(value = "Cancel subscription")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
                     defaultValue = "Bearer ",
