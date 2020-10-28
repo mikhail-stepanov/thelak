@@ -26,11 +26,15 @@ public class UserModel {
 
     String country;
 
+    String subType;
+
     LocalDate birthday;
 
     Boolean isSubscribe;
 
     Boolean isAdmin;
+
+    Boolean renew;
 
     LocalDateTime subscriptionDate;
 

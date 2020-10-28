@@ -95,6 +95,8 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
                             .isSubscribe(user.isIsSubscribe())
                             .subscriptionDate(user.getSubscriptionDate())
                             .isAdmin(user.isIsAdmin())
+                            .renew(user.isRenew())
+                            .subType(user.getSubType())
                             .build())
                     .status("success").build();
 
