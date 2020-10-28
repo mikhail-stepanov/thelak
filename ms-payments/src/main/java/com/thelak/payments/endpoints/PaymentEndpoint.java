@@ -296,7 +296,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                             .email(userInfo.getUserEmail())
                             .interval("Month")
                             .period(subscription.getMonths())
-                            .startDate(LocalDateTime.now().plusMonths(subscription.getMonths()))
+                            .startDate(LocalDateTime.now().plusMonths(subscription.getMonths()).toString())
                             .requireConfirmation(false)
                             .token(secureResponse.getModel().getToken())
                             .build();
@@ -311,7 +311,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                     dbPaymentsRecurrent.setEmail(recurrentPayRequest.getEmail());
                     dbPaymentsRecurrent.setInterval(recurrentPayRequest.getInterval());
                     dbPaymentsRecurrent.setPeriod(recurrentPayRequest.getPeriod());
-                    dbPaymentsRecurrent.setStartDate(recurrentPayRequest.getStartDate());
+                    dbPaymentsRecurrent.setStartDate(LocalDateTime.parse(recurrentPayRequest.getStartDate()));
                     dbPaymentsRecurrent.setRequireConfirmation(recurrentPayRequest.getRequireConfirmation());
                     dbPaymentsRecurrent.setToken(recurrentPayRequest.getToken());
                     dbPaymentsRecurrent.setStatus(false);
