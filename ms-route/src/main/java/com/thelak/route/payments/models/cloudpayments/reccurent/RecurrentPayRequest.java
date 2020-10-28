@@ -28,7 +28,7 @@ public class RecurrentPayRequest {
 
     Boolean requireConfirmation;
 
-    ZonedDateTime startDate;
+    LocalDateTime startDate;
 
     String interval;
 
