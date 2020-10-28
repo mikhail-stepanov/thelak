@@ -30,6 +30,8 @@ public class UserModel {
 
     Boolean isSubscribe;
 
+    Boolean isAdmin;
+
     LocalDateTime subscriptionDate;
 
     LocalDateTime createdDate;

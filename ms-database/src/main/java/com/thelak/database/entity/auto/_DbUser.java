@@ -28,6 +28,7 @@ public abstract class _DbUser extends CayenneDataObject {
     public static final Property<LocalDateTime> CREATED_DATE = Property.create("createdDate", LocalDateTime.class);
     public static final Property<LocalDateTime> DELETED_DATE = Property.create("deletedDate", LocalDateTime.class);
     public static final Property<String> EMAIL = Property.create("email", String.class);
+    public static final Property<Boolean> IS_ADMIN = Property.create("isAdmin", Boolean.class);
     public static final Property<Boolean> IS_SUBSCRIBE = Property.create("isSubscribe", Boolean.class);
     public static final Property<LocalDateTime> MODIFIED_DATE = Property.create("modifiedDate", LocalDateTime.class);
     public static final Property<String> NAME = Property.create("name", String.class);
@@ -78,6 +79,14 @@ public abstract class _DbUser extends CayenneDataObject {
     }
     public String getEmail() {
         return (String)readProperty("email");
+    }
+
+    public void setIsAdmin(boolean isAdmin) {
+        writeProperty("isAdmin", isAdmin);
+    }
+	public boolean isIsAdmin() {
+        Boolean value = (Boolean)readProperty("isAdmin");
+        return (value != null) ? value.booleanValue() : false;
     }
 
     public void setIsSubscribe(boolean isSubscribe) {

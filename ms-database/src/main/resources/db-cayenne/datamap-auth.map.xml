@@ -22,6 +22,7 @@
 		<db-attribute name="deleted_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="email" type="VARCHAR" isMandatory="true" length="255"/>
 		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="is_admin" type="BOOLEAN" isMandatory="true"/>
 		<db-attribute name="is_subscribe" type="BOOLEAN"/>
 		<db-attribute name="modified_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="name" type="VARCHAR" isMandatory="true" length="255"/>
@@ -41,7 +42,7 @@
 	<obj-entity name="DbNotification" className="com.thelak.database.entity.DbNotification" dbEntityName="db_notification">
 		<obj-attribute name="content" type="boolean" db-attribute-path="content"/>
 		<obj-attribute name="news" type="boolean" db-attribute-path="news"/>
-		<obj-attribute name="recomendation" type="boolean" db-attribute-path="recommendation"/>
+		<obj-attribute name="recommendation" type="boolean" db-attribute-path="recommendation"/>
 		<obj-attribute name="sales" type="boolean" db-attribute-path="sales"/>
 	</obj-entity>
 	<obj-entity name="DbUser" className="com.thelak.database.entity.DbUser" dbEntityName="db_user">
@@ -51,6 +52,7 @@
 		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
 		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
 		<obj-attribute name="email" type="java.lang.String" db-attribute-path="email"/>
+		<obj-attribute name="isAdmin" type="boolean" db-attribute-path="is_admin"/>
 		<obj-attribute name="isSubscribe" type="boolean" db-attribute-path="is_subscribe"/>
 		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>

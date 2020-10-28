@@ -19,7 +19,7 @@ public abstract class _DbNotification extends CayenneDataObject {
 
     public static final Property<Boolean> CONTENT = Property.create("content", Boolean.class);
     public static final Property<Boolean> NEWS = Property.create("news", Boolean.class);
-    public static final Property<Boolean> RECOMENDATION = Property.create("recomendation", Boolean.class);
+    public static final Property<Boolean> RECOMMENDATION = Property.create("recommendation", Boolean.class);
     public static final Property<Boolean> SALES = Property.create("sales", Boolean.class);
     public static final Property<DbUser> NOTIFICATION_TO_USER = Property.create("notificationToUser", DbUser.class);
 
@@ -39,11 +39,11 @@ public abstract class _DbNotification extends CayenneDataObject {
         return (value != null) ? value.booleanValue() : false;
     }
 
-    public void setRecomendation(boolean recomendation) {
-        writeProperty("recomendation", recomendation);
+    public void setRecommendation(boolean recommendation) {
+        writeProperty("recommendation", recommendation);
     }
-	public boolean isRecomendation() {
-        Boolean value = (Boolean)readProperty("recomendation");
+	public boolean isRecommendation() {
+        Boolean value = (Boolean)readProperty("recommendation");
         return (value != null) ? value.booleanValue() : false;
     }
 

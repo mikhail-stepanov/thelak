@@ -94,6 +94,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
                             .birthday(user.getBirthday())
                             .isSubscribe(user.isIsSubscribe())
                             .subscriptionDate(user.getSubscriptionDate())
+                            .isAdmin(user.isIsAdmin())
                             .build())
                     .status("success").build();
 
@@ -119,12 +120,13 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
             user.setBirthday(LocalDate.parse(request.getBirthday(), DateTimeFormatter.ofPattern("dd.MM.yyyy")));
             user.setSalt(PasswordHelper.generateSalt());
             user.setPassword(PasswordHelper.hashPassword(request.getPassword(), user.getSalt()));
+            user.setIsAdmin(false);
 
             DbNotification notification = objectContext.newObject(DbNotification.class);
             notification.setNotificationToUser(user);
             notification.setContent(true);
             notification.setNews(true);
-            notification.setRecomendation(true);
+            notification.setRecommendation(true);
             notification.setSales(true);
 
             objectContext.commitChanges();
@@ -140,6 +142,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
                             .birthday(user.getBirthday())
                             .isSubscribe(user.isIsSubscribe())
                             .subscriptionDate(user.getSubscriptionDate())
+                            .isAdmin(user.isIsAdmin())
                             .build())
                     .status("success").build();
 
@@ -346,7 +349,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
 
             DbNotification notification = dbUser.getUserToNotification().get(0);
             notification.setSales(notification.isSales());
-            notification.setRecomendation(notification.isRecomendation());
+            notification.setRecommendation(notification.isRecommendation());
             notification.setNews(notification.isNews());
             notification.setContent(notification.isContent());
 
