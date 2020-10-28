@@ -272,6 +272,8 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
             ResponseEntity<String> responseEntity = restTemplate.postForEntity(dbPaymentConfig.getValue(), dSecureRequest, String.class);
             SecureResponse secureResponse = gson.fromJson(responseEntity.getBody(), SecureResponse.class);
 
+            System.out.println(secureResponse);
+
             if (secureResponse.getSuccess()) {
                 dbPaymentsCryptogramm.setStatus(true);
                 dbPaymentsCryptogramm.setModifiedDate(LocalDateTime.now());
@@ -284,6 +286,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
 //
                 authenticationService.setSubscription(SetSubscriptionModel.builder()
                         .userId(userInfo.getUserId())
+                        .subType("SUBSCRIPTION")
                         .subscriptionDate(LocalDateTime.now().plusMonths(subscription.getMonths())).build());
 
                 try {
@@ -328,7 +331,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                 } catch (Exception ignored) {
                 }
             }
-            return gson.fromJson(responseEntity.getBody(), SecureResponse.class);
+            return secureResponse;
         } catch (Exception e) {
             e.printStackTrace();
             throw new MsInternalErrorException(e.getMessage());
@@ -515,6 +518,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                 if (dbPromoEmailcheck != null) {
                     authenticationService.setSubscription(SetSubscriptionModel.builder()
                             .userId(userInfo.getUserId())
+                            .subType("PROMO")
                             .subscriptionDate(LocalDateTime.now().plusMonths(dbPromo.getMonths())).build());
                     return PromoModel.builder()
                             .success(true)
@@ -533,6 +537,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
         }
         authenticationService.setSubscription(SetSubscriptionModel.builder()
                 .userId(userInfo.getUserId())
+                .subType("PROMO")
                 .subscriptionDate(LocalDateTime.now().plusMonths(dbPromo.getMonths())).build());
 
         return PromoModel.builder()
