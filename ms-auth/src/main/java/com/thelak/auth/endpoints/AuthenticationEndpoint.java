@@ -37,6 +37,7 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Optional;
 
 @RestController
@@ -94,7 +95,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
                             .birthday(user.getBirthday())
                             .isSubscribe(user.isIsSubscribe())
                             .subscriptionDate(user.getSubscriptionDate())
-                            .isAdmin(user.isIsAdmin())
+                            .roles(user.isIsAdmin() ? Arrays.asList("admin") : null)
                             .renew(user.isRenew())
                             .subType(user.getSubType())
                             .build())
@@ -144,7 +145,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
                             .birthday(user.getBirthday())
                             .isSubscribe(user.isIsSubscribe())
                             .subscriptionDate(user.getSubscriptionDate())
-                            .isAdmin(user.isIsAdmin())
+                            .roles(user.isIsAdmin() ? Arrays.asList("admin") : null)
                             .build())
                     .status("success").build();
 
@@ -278,7 +279,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
             dbUser.setSubscriptionDate(setSubscriptionModel.getSubscriptionDate());
             dbUser.setIsSubscribe(true);
             dbUser.setSubType(setSubscriptionModel.getSubType());
-            if(setSubscriptionModel.getSubType().equals("SUBSCRIPTION"))
+            if (setSubscriptionModel.getSubType().equals("SUBSCRIPTION"))
                 dbUser.setRenew(true);
 
             objectContext.commitChanges();
