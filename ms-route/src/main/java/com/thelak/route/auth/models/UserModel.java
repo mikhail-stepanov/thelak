@@ -33,7 +33,7 @@ public class UserModel {
 
     Boolean isSubscribe;
 
-    List<String> roles;
+    String roles;
 
     Boolean renew;
 

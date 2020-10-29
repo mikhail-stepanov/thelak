@@ -95,7 +95,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
                             .birthday(user.getBirthday())
                             .isSubscribe(user.isIsSubscribe())
                             .subscriptionDate(user.getSubscriptionDate())
-                            .roles(user.isIsAdmin() ? Arrays.asList("admin") : null)
+                            .roles(user.isIsAdmin() ? "admin" : "user")
                             .renew(user.isRenew())
                             .subType(user.getSubType())
                             .build())
@@ -145,7 +145,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
                             .birthday(user.getBirthday())
                             .isSubscribe(user.isIsSubscribe())
                             .subscriptionDate(user.getSubscriptionDate())
-                            .roles(user.isIsAdmin() ? Arrays.asList("admin") : null)
+                            .roles(user.isIsAdmin() ? "admin" : "user")
                             .build())
                     .status("success").build();
 
