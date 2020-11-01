@@ -40,6 +40,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import static com.thelak.video.services.VideoHelper.buildVideoModel;
 import static com.thelak.video.services.VideoHelper.countView;
@@ -91,6 +92,8 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
 
             DbVideo dbVideo = SelectById.query(DbVideo.class, id).selectFirst(objectContext);
 
+            if (dbVideo.getDeletedDate() != null) return null;
+
             DbVideoViews dbVideoViews = objectContext.newObject(DbVideoViews.class);
             dbVideoViews.setCreatedDate(LocalDateTime.now());
             dbVideoViews.setIdUser(userId);
@@ -130,6 +133,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
             List<DbVideo> dbVideos;
             dbVideos = ObjectSelect.query(DbVideo.class).
                     where(ExpressionFactory.inDbExp(DbVideo.ID_PK_COLUMN, ids))
+                    .and(DbVideo.DELETED_DATE.isNull())
                     .select(objectContext);
 
             List<VideoModel> videos = new ArrayList<>();
@@ -246,7 +250,8 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
             if (sort != null) {
                 if (sort == VideoSortEnum.NEW && sortType == VideoSortTypeEnum.ASC)
                     dbVideos = ObjectSelect.query(DbVideo.class)
-                            .where(speakerExpression)
+                            .where(DbVideo.DELETED_DATE.isNull())
+                            .and(speakerExpression)
                             .and(categoryExpression)
                             .and(countryFilterExpression)
                             .and(yearFilterExpression)
@@ -256,7 +261,8 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                             .select(objectContext);
                 if (sort == VideoSortEnum.NEW && sortType == VideoSortTypeEnum.DESC)
                     dbVideos = ObjectSelect.query(DbVideo.class)
-                            .where(speakerExpression)
+                            .where(DbVideo.DELETED_DATE.isNull())
+                            .and(speakerExpression)
                             .and(categoryExpression)
                             .and(countryFilterExpression)
                             .and(yearFilterExpression)
@@ -266,7 +272,8 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                             .select(objectContext);
                 if (sort == VideoSortEnum.DURATION && sortType == VideoSortTypeEnum.ASC)
                     dbVideos = ObjectSelect.query(DbVideo.class)
-                            .where(speakerExpression)
+                            .where(DbVideo.DELETED_DATE.isNull())
+                            .and(speakerExpression)
                             .and(categoryExpression)
                             .and(countryFilterExpression)
                             .and(yearFilterExpression)
@@ -276,7 +283,8 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                             .select(objectContext);
                 if (sort == VideoSortEnum.DURATION && sortType == VideoSortTypeEnum.DESC)
                     dbVideos = ObjectSelect.query(DbVideo.class)
-                            .where(speakerExpression)
+                            .where(DbVideo.DELETED_DATE.isNull())
+                            .and(speakerExpression)
                             .and(categoryExpression)
                             .and(countryFilterExpression)
                             .and(yearFilterExpression)
@@ -286,7 +294,8 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                             .select(objectContext);
                 if (sort == VideoSortEnum.POPULAR && sortType == VideoSortTypeEnum.ASC)
                     dbVideos = ObjectSelect.query(DbVideo.class)
-                            .where(speakerExpression)
+                            .where(DbVideo.DELETED_DATE.isNull())
+                            .and(speakerExpression)
                             .and(categoryExpression)
                             .and(countryFilterExpression)
                             .and(yearFilterExpression)
@@ -296,7 +305,8 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                             .select(objectContext);
                 if (sort == VideoSortEnum.POPULAR && sortType == VideoSortTypeEnum.DESC)
                     dbVideos = ObjectSelect.query(DbVideo.class)
-                            .where(speakerExpression)
+                            .where(DbVideo.DELETED_DATE.isNull())
+                            .and(speakerExpression)
                             .and(categoryExpression)
                             .and(countryFilterExpression)
                             .and(yearFilterExpression)
@@ -306,7 +316,8 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                             .select(objectContext);
                 if (sort == VideoSortEnum.RATING && sortType == VideoSortTypeEnum.ASC)
                     dbVideos = ObjectSelect.query(DbVideo.class)
-                            .where(speakerExpression)
+                            .where(DbVideo.DELETED_DATE.isNull())
+                            .and(speakerExpression)
                             .and(categoryExpression)
                             .and(countryFilterExpression)
                             .and(yearFilterExpression)
@@ -316,7 +327,8 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                             .select(objectContext);
                 if (sort == VideoSortEnum.RATING && sortType == VideoSortTypeEnum.DESC)
                     dbVideos = ObjectSelect.query(DbVideo.class)
-                            .where(speakerExpression)
+                            .where(DbVideo.DELETED_DATE.isNull())
+                            .and(speakerExpression)
                             .and(categoryExpression)
                             .and(countryFilterExpression)
                             .and(yearFilterExpression)
@@ -326,7 +338,8 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                             .select(objectContext);
             } else
                 dbVideos = ObjectSelect.query(DbVideo.class)
-                        .where(speakerExpression)
+                        .where(DbVideo.DELETED_DATE.isNull())
+                        .and(speakerExpression)
                         .and(categoryExpression)
                         .and(countryFilterExpression)
                         .and(yearFilterExpression)
@@ -461,13 +474,14 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
             dbVideo.setTitle(request.getTitle());
             dbVideo.setDescription(request.getDescription());
             dbVideo.setYear(request.getYear());
+            dbVideo.setLanguage(request.getLanguage());
             dbVideo.setCountry(request.getCountry());
             dbVideo.setDuration(request.getDuration());
-            dbVideo.setCategory(request.getCategory());
-            dbVideo.setSpeaker(request.getSpeaker());
-            dbVideo.setSpeakerInformation(request.getSpeakerInformation());
+            dbVideo.setPlayground(request.getPlayground());
             dbVideo.setPartnerLogoUrl(request.getPartnerLogoUrl());
             dbVideo.setCoverUrl(request.getCoverUrl());
+            dbVideo.setPosterUrl(request.getPosterUrl());
+            dbVideo.setIsSubscription(request.getSubscription());
             dbVideo.setCreatedDate(LocalDateTime.now());
 
             List<VideoSourceModel> sources = request.getSources();
@@ -483,6 +497,15 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
             });
 
             objectContext.commitChanges();
+
+            request.getCategory().forEach(categoryModel -> {
+                try {
+                    categoryContentService.videoToCategoryAdd((Long) dbVideo.getObjectId().getIdSnapshot().get("id"),
+                            categoryModel.getId());
+                } catch (MicroServiceException e) {
+                    e.printStackTrace();
+                }
+            });
 
             List<CategoryModel> categoryModel = categoryService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
 
@@ -510,28 +533,44 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
 
             DbVideo dbVideo = SelectById.query(DbVideo.class, request.getId()).selectFirst(objectContext);
 
-            List<VideoSourceModel> sources = request.getSources();
-            sources.forEach(source -> {
-                if (source.getRes() == 360)
-                    dbVideo.setContentUrl360(source.getSrc());
-                if (source.getRes() == 480)
-                    dbVideo.setContentUrl480(source.getSrc());
-                if (source.getRes() == 720)
-                    dbVideo.setContentUrl720(source.getSrc());
-                if (source.getRes() == 1080)
-                    dbVideo.setContentUrl1080(source.getSrc());
-            });
+            if (request.getSources() != null) {
+                List<VideoSourceModel> sources = request.getSources();
+                sources.forEach(source -> {
+                    if (source.getRes() == 360)
+                        dbVideo.setContentUrl360(source.getSrc());
+                    if (source.getRes() == 480)
+                        dbVideo.setContentUrl480(source.getSrc());
+                    if (source.getRes() == 720)
+                        dbVideo.setContentUrl720(source.getSrc());
+                    if (source.getRes() == 1080)
+                        dbVideo.setContentUrl1080(source.getSrc());
+                });
+            }
 
-            dbVideo.setTitle(request.getTitle());
-            dbVideo.setDescription(request.getDescription());
-            dbVideo.setYear(request.getYear());
-            dbVideo.setCountry(request.getCountry());
-            dbVideo.setDuration(request.getDuration());
-            dbVideo.setPartnerLogoUrl(request.getPartnerLogoUrl());
-            dbVideo.setCoverUrl(request.getCoverUrl());
-            dbVideo.setCreatedDate(LocalDateTime.now());
+            dbVideo.setTitle(Optional.ofNullable(request.getTitle()).orElse(dbVideo.getTitle()));
+            dbVideo.setDescription(Optional.ofNullable(request.getDescription()).orElse(dbVideo.getDescription()));
+            dbVideo.setYear(Optional.ofNullable(request.getYear()).orElse(dbVideo.getYear()));
+            dbVideo.setLanguage(Optional.ofNullable(request.getLanguage()).orElse(dbVideo.getLanguage()));
+            dbVideo.setCountry(Optional.ofNullable(request.getCountry()).orElse(dbVideo.getCountry()));
+            dbVideo.setDuration(Optional.ofNullable(request.getDuration()).orElse(dbVideo.getDuration()));
+            dbVideo.setPlayground(Optional.ofNullable(request.getPlayground()).orElse(dbVideo.getPlayground()));
+            dbVideo.setPartnerLogoUrl(Optional.ofNullable(request.getPartnerLogoUrl()).orElse(dbVideo.getPartnerLogoUrl()));
+            dbVideo.setCoverUrl(Optional.ofNullable(request.getCoverUrl()).orElse(dbVideo.getCoverUrl()));
+            dbVideo.setPosterUrl(Optional.ofNullable(request.getPosterUrl()).orElse(dbVideo.getPosterUrl()));
+            dbVideo.setIsSubscription(Optional.ofNullable(request.getSubscription()).orElse(dbVideo.isIsSubscription()));
+            dbVideo.setModifiedDate(LocalDateTime.now());
 
             objectContext.commitChanges();
+
+            categoryContentService.videoToCategoryDelete((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
+            request.getCategory().forEach(categoryModel -> {
+                try {
+                    categoryContentService.videoToCategoryAdd((Long) dbVideo.getObjectId().getIdSnapshot().get("id"),
+                            categoryModel.getId());
+                } catch (MicroServiceException e) {
+                    e.printStackTrace();
+                }
+            });
 
             List<CategoryModel> categoryModels = categoryService.getByVideo(request.getId());
 

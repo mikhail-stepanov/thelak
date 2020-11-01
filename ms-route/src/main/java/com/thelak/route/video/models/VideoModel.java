@@ -36,7 +36,7 @@ public class VideoModel {
 
     Integer duration;
 
-    SpeakerModel speaker;
+    List<SpeakerModel> speaker;
 
     String playground;
 

@@ -14,8 +14,12 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.query.SelectById;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -83,5 +87,98 @@ public class CategoryContentEndpoint extends AbstractMicroservice implements ICa
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
         }
+    }
+
+    @Override
+    @ApiOperation(value = "Add category to video")
+    @RequestMapping(value = CATEGORY_VIDEO_ADD, method = {RequestMethod.GET})
+    public Boolean videoToCategoryAdd(Long videoId, Long categoryId) throws MicroServiceException {
+        try {
+            DbCategory dbCategory = SelectById.query(DbCategory.class, categoryId)
+                    .selectFirst(objectContext);
+
+            DbCategoryVideos dbCategoryVideos = objectContext.newObject(DbCategoryVideos.class);
+            dbCategoryVideos.setIdVideo(videoId);
+            dbCategoryVideos.setVideoToCategory(dbCategory);
+
+            objectContext.commitChanges();
+
+            return true;
+
+        } catch (Exception e) {
+            throw new MsInternalErrorException(e.getMessage());
+        }
+    }
+
+    @Override
+    @ApiOperation(value = "Add category to article")
+    @RequestMapping(value = CATEGORY_ARTICLE_ADD, method = {RequestMethod.GET})
+    public Boolean articleToCategoryAdd(Long articleId, Long categoryId) throws MicroServiceException {
+        try {
+            DbCategory dbCategory = SelectById.query(DbCategory.class, categoryId)
+                    .selectFirst(objectContext);
+
+            DbCategoryArticles dbCategoryArticles = objectContext.newObject(DbCategoryArticles.class);
+            dbCategoryArticles.setIdArticle(articleId);
+            dbCategoryArticles.setArticleToCategory(dbCategory);
+
+            objectContext.commitChanges();
+
+            return true;
+
+        } catch (Exception e) {
+            throw new MsInternalErrorException(e.getMessage());
+        }
+    }
+
+    @Override
+    @ApiOperation(value = "Add category to event")
+    @RequestMapping(value = CATEGORY_EVENT_ADD, method = {RequestMethod.GET})
+    public Boolean eventToCategoryAdd(Long eventId, Long categoryId) throws MicroServiceException {
+        try {
+            DbCategory dbCategory = SelectById.query(DbCategory.class, categoryId)
+                    .selectFirst(objectContext);
+
+            DbCategoryEvents dbCategoryEvents = objectContext.newObject(DbCategoryEvents.class);
+            dbCategoryEvents.setIdEvent(eventId);
+            dbCategoryEvents.setEventToCategory(dbCategory);
+
+            objectContext.commitChanges();
+
+            return true;
+
+        } catch (Exception e) {
+            throw new MsInternalErrorException(e.getMessage());
+        }
+    }
+
+    @Override
+    public Boolean videoToCategoryDelete(Long videoId) throws MicroServiceException {
+        List<DbCategoryVideos> dbCategoryVideos = ObjectSelect.query(DbCategoryVideos.class)
+                .where(DbCategoryVideos.ID_VIDEO.eq(videoId))
+                .select(objectContext);
+        objectContext.deleteObjects(dbCategoryVideos);
+        objectContext.commitChanges();
+        return true;
+    }
+
+    @Override
+    public Boolean articleToCategoryDelete(Long articleId) throws MicroServiceException {
+        List<DbCategoryArticles> dbCategoryArticles = ObjectSelect.query(DbCategoryArticles.class)
+                .where(DbCategoryArticles.ID_ARTICLE.eq(articleId))
+                .select(objectContext);
+        objectContext.deleteObjects(dbCategoryArticles);
+        objectContext.commitChanges();
+        return true;
+    }
+
+    @Override
+    public Boolean eventToCategory(Long eventId) throws MicroServiceException {
+        List<DbCategoryEvents> dbCategoryEvents = ObjectSelect.query(DbCategoryEvents.class)
+                .where(DbCategoryEvents.ID_EVENT.eq(eventId))
+                .select(objectContext);
+        objectContext.deleteObjects(dbCategoryEvents);
+        objectContext.commitChanges();
+        return true;
     }
 }

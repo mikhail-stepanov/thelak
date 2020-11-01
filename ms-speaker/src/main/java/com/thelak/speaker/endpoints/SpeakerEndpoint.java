@@ -24,6 +24,7 @@ import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.thelak.speaker.services.SpeakerHelper.buildSpeakerModel;
 
@@ -48,6 +49,7 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
         try {
 
             DbSpeaker dbSpeaker = SelectById.query(DbSpeaker.class, id).selectFirst(objectContext);
+            if (dbSpeaker.getDeletedDate()!=null) return null;
             return buildSpeakerModel(dbSpeaker);
 
         } catch (Exception e) {
@@ -63,6 +65,7 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
             List<DbSpeaker> dbSpeakers;
             dbSpeakers = ObjectSelect.query(DbSpeaker.class).
                     where(ExpressionFactory.inDbExp(DbVideo.ID_PK_COLUMN, ids))
+                    .and(DbSpeaker.DELETED_DATE.isNull())
                     .select(objectContext);
 
             List<SpeakerModel> speakerModels = new ArrayList<>();
@@ -83,7 +86,9 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
     public SpeakerModel getByVideo(@RequestParam Long videoId) throws MicroServiceException {
         try {
             DbSpeakerVideos dbSpeakerVideos = ObjectSelect.query(DbSpeakerVideos.class)
-                    .where(DbSpeakerVideos.ID_VIDEO.eq(videoId)).selectFirst(objectContext);
+                    .where(DbSpeakerVideos.ID_VIDEO.eq(videoId))
+                    .and(DbSpeaker.DELETED_DATE.isNull())
+                    .selectFirst(objectContext);
 
             return buildSpeakerModel(dbSpeakerVideos.getVideoToSpeaker());
 
@@ -98,7 +103,8 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
     public SpeakerModel getByArticle(@RequestParam Long articleId) throws MicroServiceException {
         try {
             DbSpeakerArticles speakerArticles = ObjectSelect.query(DbSpeakerArticles.class)
-                    .where(DbSpeakerArticles.ID_ARTICLE.eq(articleId)).selectFirst(objectContext);
+                    .where(DbSpeakerArticles.ID_ARTICLE.eq(articleId))
+                    .selectFirst(objectContext);
 
             return buildSpeakerModel(speakerArticles.getArticleToSpeaker());
 
@@ -148,11 +154,13 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
             if (page == null || size == null)
                 dbSpeakers = ObjectSelect.query(DbSpeaker.class)
                         .where(countryFilterExpression)
+                        .and(DbSpeaker.DELETED_DATE.isNull())
                         .pageSize(30)
                         .select(objectContext);
             else {
                 dbSpeakers = ObjectSelect.query(DbSpeaker.class)
                         .where(countryFilterExpression)
+                        .and(DbSpeaker.DELETED_DATE.isNull())
                         .pageSize(size)
                         .select(objectContext);
                 if (dbSpeakers.size() >= size * page)
@@ -256,11 +264,11 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
 
             DbSpeaker dbSpeaker = SelectById.query(DbSpeaker.class, request.getId()).selectFirst(objectContext);
 
-            dbSpeaker.setName(request.getName());
-            dbSpeaker.setDescription(request.getDescription());
-            dbSpeaker.setShortDescription(request.getShortDescription());
-            dbSpeaker.setCountry(request.getCountry());
-            dbSpeaker.setPhotoUrl(request.getPhotoUrl());
+            dbSpeaker.setName(Optional.ofNullable(request.getName()).orElse(dbSpeaker.getName()));
+            dbSpeaker.setDescription(Optional.ofNullable(request.getDescription()).orElse(dbSpeaker.getDescription()));
+            dbSpeaker.setShortDescription(Optional.ofNullable(request.getShortDescription()).orElse(dbSpeaker.getShortDescription()));
+            dbSpeaker.setCountry(Optional.ofNullable(request.getCountry()).orElse(dbSpeaker.getCountry()));
+            dbSpeaker.setPhotoUrl(Optional.ofNullable(request.getPhotoUrl()).orElse(dbSpeaker.getPhotoUrl()));
             dbSpeaker.setModifiedDate(LocalDateTime.now());
 
             objectContext.commitChanges();

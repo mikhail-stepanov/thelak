@@ -10,6 +10,7 @@ import com.thelak.route.article.enums.ArticleSortTypeEnum;
 import com.thelak.route.article.interfaces.IArticleService;
 import com.thelak.route.article.models.ArticleCreateModel;
 import com.thelak.route.article.models.ArticleModel;
+import com.thelak.route.category.interfaces.ICategoryContentService;
 import com.thelak.route.category.interfaces.ICategoryService;
 import com.thelak.route.category.models.CategoryModel;
 import com.thelak.route.exceptions.MicroServiceException;
@@ -23,17 +24,12 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import static com.thelak.article.services.ArticleHelper.buildArticleModel;
 import static com.thelak.article.services.ArticleHelper.countView;
@@ -47,6 +43,9 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
 
     @Autowired
     private ICategoryService categoryService;
+
+    @Autowired
+    private ICategoryContentService categoryContentService;
 
     ObjectContext objectContext;
 
@@ -73,6 +72,8 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
             }
 
             DbArticle dbArticle = SelectById.query(DbArticle.class, id).selectFirst(objectContext);
+
+            if (dbArticle.getDeletedDate() != null) return null;
 
             DbArticleView dbArticleView = objectContext.newObject(DbArticleView.class);
             dbArticleView.setCreatedDate(LocalDateTime.now());
@@ -102,6 +103,7 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
             List<DbArticle> dbArticles;
             dbArticles = ObjectSelect.query(DbArticle.class).
                     where(ExpressionFactory.inDbExp(DbArticle.ID_PK_COLUMN, ids))
+                    .and(DbArticle.DELETED_DATE.isNull())
                     .select(objectContext);
 
             List<ArticleModel> articleModels = new ArrayList<>();
@@ -147,10 +149,12 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
             List<DbArticle> dbArticles;
             if (page == null || size == null)
                 dbArticles = ObjectSelect.query(DbArticle.class)
+                        .where(DbArticle.DELETED_DATE.isNull())
                         .pageSize(30)
                         .select(objectContext);
             else {
                 dbArticles = ObjectSelect.query(DbArticle.class)
+                        .where(DbArticle.DELETED_DATE.isNull())
                         .pageSize(size)
                         .select(objectContext);
                 if (dbArticles.size() >= size * page)
@@ -264,11 +268,23 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
             dbArticle.setAuthor(request.getAuthor());
             dbArticle.setContent(request.getContent());
             dbArticle.setSourceUrl(request.getSourceUrl());
+            dbArticle.setCoverUrl(request.getCoverUrl());
+            dbArticle.setRating(0);
+            dbArticle.setView(0);
             dbArticle.setCreatedDate(LocalDateTime.now());
 
             objectContext.commitChanges();
 
-            return buildArticleModel(dbArticle, null, true);
+            request.getCategories().forEach(categoryModel -> {
+                try {
+                    categoryContentService.articleToCategoryAdd((Long) dbArticle.getObjectId().getIdSnapshot().get("id"),
+                            categoryModel.getId());
+                } catch (MicroServiceException e) {
+                    e.printStackTrace();
+                }
+            });
+
+            return buildArticleModel(dbArticle, request.getCategories(), true);
 
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
@@ -280,17 +296,27 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
     @RequestMapping(value = ARTICLE_UPDATE, method = {RequestMethod.PUT})
     public ArticleModel update(@RequestBody ArticleModel request) throws MicroServiceException {
         try {
-
             DbArticle dbArticle = SelectById.query(DbArticle.class, request.getId()).selectFirst(objectContext);
 
-            dbArticle.setTitle(request.getTitle());
-            dbArticle.setDescription(request.getDescription());
-            dbArticle.setAuthor(request.getAuthor());
-            dbArticle.setContent(request.getContent());
-            dbArticle.setSourceUrl(request.getSourceUrl());
+            dbArticle.setTitle(Optional.ofNullable(request.getTitle()).orElse(dbArticle.getTitle()));
+            dbArticle.setDescription(Optional.ofNullable(request.getDescription()).orElse(dbArticle.getDescription()));
+            dbArticle.setAuthor(Optional.ofNullable(request.getAuthor()).orElse(dbArticle.getAuthor()));
+            dbArticle.setContent(Optional.ofNullable(request.getContent()).orElse(dbArticle.getContent()));
+            dbArticle.setSourceUrl(Optional.ofNullable(request.getSourceUrl()).orElse(dbArticle.getSourceUrl()));
+            dbArticle.setCoverUrl(Optional.ofNullable(request.getCoverUrl()).orElse(dbArticle.getCoverUrl()));
             dbArticle.setModifiedDate(LocalDateTime.now());
 
             objectContext.commitChanges();
+
+            categoryContentService.articleToCategoryDelete((Long) dbArticle.getObjectId().getIdSnapshot().get("id"));
+            request.getCategories().forEach(categoryModel -> {
+                try {
+                    categoryContentService.articleToCategoryAdd((Long) dbArticle.getObjectId().getIdSnapshot().get("id"),
+                            categoryModel.getId());
+                } catch (MicroServiceException e) {
+                    e.printStackTrace();
+                }
+            });
 
             List<CategoryModel> categoryModel = categoryService.getByArticle(request.getId());
 
@@ -307,7 +333,6 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
     public Boolean delete(@RequestParam Long id) throws MicroServiceException {
         try {
             DbArticle dbArticle = SelectById.query(DbArticle.class, id).selectFirst(objectContext);
-
             dbArticle.setDeletedDate(LocalDateTime.now());
 
             objectContext.commitChanges();

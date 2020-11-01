@@ -1,5 +1,7 @@
 package com.thelak.route.video.models;
 
+import com.thelak.route.category.models.CategoryModel;
+import com.thelak.route.speaker.models.SpeakerModel;
 import io.swagger.models.auth.In;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,19 +22,29 @@ public class VideoCreateRequest {
 
     Integer year;
 
+    Integer rating;
+
+    Long viewsCount;
+
     String country;
 
-    String category;
+    String language;
+
+    List<CategoryModel> category;
 
     Integer duration;
 
-    String speaker;
+    List<SpeakerModel> speaker;
 
-    String speakerInformation;
+    String playground;
 
     List<VideoSourceModel> sources;
 
     String partnerLogoUrl;
 
     String coverUrl;
+
+    String posterUrl;
+
+    Boolean subscription;
 }

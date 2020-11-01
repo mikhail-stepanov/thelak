@@ -10,6 +10,7 @@ import com.thelak.route.video.models.VideoModel;
 import com.thelak.route.video.models.VideoSourceModel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -78,7 +79,7 @@ public class VideoHelper {
                 .language(fullData ? dbVideo.getLanguage() : null)
                 .category(categoryModel)
                 .duration(dbVideo.getDuration())
-                .speaker(fullData ? speakerModel : null)
+                .speaker(fullData ? Arrays.asList(speakerModel) : null)
                 .playground(fullData ? dbVideo.getPlayground() : null)
                 .sources(fullData ? createSources(dbVideo, userInfo) : null)
                 .rating(dbVideo.getRating())

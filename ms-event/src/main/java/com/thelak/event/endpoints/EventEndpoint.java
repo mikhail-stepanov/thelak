@@ -25,6 +25,7 @@ import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.thelak.event.services.EventHelper.buildEventModel;
 
@@ -48,6 +49,7 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
     public EventModel get(@RequestParam Long id) throws MicroServiceException {
         try {
             DbEvent dbEvent = SelectById.query(DbEvent.class, id).selectFirst(objectContext);
+            if (dbEvent.getDeletedDate() != null) return null;
 
             return buildEventModel(dbEvent, true);
 
@@ -64,6 +66,7 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
             List<DbEvent> dbEvents;
             dbEvents = ObjectSelect.query(DbEvent.class).
                     where(ExpressionFactory.inDbExp(DbEvent.ID_PK_COLUMN, ids))
+                    .and(DbEvent.DELETED_DATE.isNull())
                     .select(objectContext);
 
             List<EventModel> eventModels = new ArrayList<>();
@@ -116,12 +119,14 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
                 dbEvents = ObjectSelect.query(DbEvent.class)
                         .where(startDateExpression)
                         .and(endDateExpression)
+                        .and(DbEvent.DELETED_DATE.isNull())
                         .pageSize(30)
                         .select(objectContext);
             else {
                 dbEvents = ObjectSelect.query(DbEvent.class)
                         .where(startDateExpression)
                         .and(endDateExpression)
+                        .and(DbEvent.DELETED_DATE.isNull())
                         .pageSize(size)
                         .select(objectContext);
                 if (dbEvents.size() >= size * page)
@@ -206,6 +211,7 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
             dbEvent.setTitle(request.getTitle());
             dbEvent.setDescription(request.getDescription());
             dbEvent.setContent(request.getContent());
+            dbEvent.setCoverUrl(request.getCoverUrl());
             dbEvent.setStartDate(request.getStartDate());
             dbEvent.setEndDate(request.getEndDate());
             dbEvent.setCreatedDate(LocalDateTime.now());
@@ -227,11 +233,12 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
 
             DbEvent dbEvent = SelectById.query(DbEvent.class, request.getId()).selectFirst(objectContext);
 
-            dbEvent.setTitle(request.getTitle());
-            dbEvent.setDescription(request.getDescription());
-            dbEvent.setContent(request.getContent());
-            dbEvent.setStartDate(request.getStartDate());
-            dbEvent.setEndDate(request.getEndDate());
+            dbEvent.setTitle(Optional.ofNullable(request.getTitle()).orElse(dbEvent.getTitle()));
+            dbEvent.setDescription(Optional.ofNullable(request.getDescription()).orElse(dbEvent.getDescription()));
+            dbEvent.setContent(Optional.ofNullable(request.getContent()).orElse(dbEvent.getContent()));
+            dbEvent.setCoverUrl(Optional.ofNullable(request.getCoverUrl()).orElse(dbEvent.getCoverUrl()));
+            dbEvent.setStartDate(Optional.ofNullable(request.getStartDate()).orElse(dbEvent.getStartDate()));
+            dbEvent.setEndDate(Optional.ofNullable(request.getEndDate()).orElse(dbEvent.getEndDate()));
             dbEvent.setModifiedDate(LocalDateTime.now());
 
             objectContext.commitChanges();

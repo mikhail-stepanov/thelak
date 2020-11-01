@@ -24,6 +24,8 @@ public class ArticleCreateModel {
 
     String sourceUrl;
 
+    String coverUrl;
+
     List<CategoryModel> categories;
 
 }
