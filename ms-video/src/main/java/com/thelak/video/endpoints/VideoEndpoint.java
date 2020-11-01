@@ -498,14 +498,15 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
 
             objectContext.commitChanges();
 
-            request.getCategory().forEach(categoryModel -> {
-                try {
-                    categoryContentService.videoToCategoryAdd((Long) dbVideo.getObjectId().getIdSnapshot().get("id"),
-                            categoryModel.getId());
-                } catch (MicroServiceException e) {
-                    e.printStackTrace();
-                }
-            });
+            if (request.getCategory() != null)
+                request.getCategory().forEach(categoryModel -> {
+                    try {
+                        categoryContentService.videoToCategoryAdd((Long) dbVideo.getObjectId().getIdSnapshot().get("id"),
+                                categoryModel.getId());
+                    } catch (MicroServiceException e) {
+                        e.printStackTrace();
+                    }
+                });
 
             List<CategoryModel> categoryModel = categoryService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
 
@@ -563,14 +564,15 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
             objectContext.commitChanges();
 
             categoryContentService.videoToCategoryDelete((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
-            request.getCategory().forEach(categoryModel -> {
-                try {
-                    categoryContentService.videoToCategoryAdd((Long) dbVideo.getObjectId().getIdSnapshot().get("id"),
-                            categoryModel.getId());
-                } catch (MicroServiceException e) {
-                    e.printStackTrace();
-                }
-            });
+            if (request.getCategory() != null)
+                request.getCategory().forEach(categoryModel -> {
+                    try {
+                        categoryContentService.videoToCategoryAdd((Long) dbVideo.getObjectId().getIdSnapshot().get("id"),
+                                categoryModel.getId());
+                    } catch (MicroServiceException e) {
+                        e.printStackTrace();
+                    }
+                });
 
             List<CategoryModel> categoryModels = categoryService.getByVideo(request.getId());
 

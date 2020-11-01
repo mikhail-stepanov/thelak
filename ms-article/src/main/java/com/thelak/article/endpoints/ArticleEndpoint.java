@@ -275,14 +275,15 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
 
             objectContext.commitChanges();
 
-            request.getCategories().forEach(categoryModel -> {
-                try {
-                    categoryContentService.articleToCategoryAdd((Long) dbArticle.getObjectId().getIdSnapshot().get("id"),
-                            categoryModel.getId());
-                } catch (MicroServiceException e) {
-                    e.printStackTrace();
-                }
-            });
+            if (request.getCategories() != null)
+                request.getCategories().forEach(categoryModel -> {
+                    try {
+                        categoryContentService.articleToCategoryAdd((Long) dbArticle.getObjectId().getIdSnapshot().get("id"),
+                                categoryModel.getId());
+                    } catch (MicroServiceException e) {
+                        e.printStackTrace();
+                    }
+                });
 
             return buildArticleModel(dbArticle, request.getCategories(), true);
 
@@ -309,14 +310,15 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
             objectContext.commitChanges();
 
             categoryContentService.articleToCategoryDelete((Long) dbArticle.getObjectId().getIdSnapshot().get("id"));
-            request.getCategories().forEach(categoryModel -> {
-                try {
-                    categoryContentService.articleToCategoryAdd((Long) dbArticle.getObjectId().getIdSnapshot().get("id"),
-                            categoryModel.getId());
-                } catch (MicroServiceException e) {
-                    e.printStackTrace();
-                }
-            });
+            if (request.getCategories() != null)
+                request.getCategories().forEach(categoryModel -> {
+                    try {
+                        categoryContentService.articleToCategoryAdd((Long) dbArticle.getObjectId().getIdSnapshot().get("id"),
+                                categoryModel.getId());
+                    } catch (MicroServiceException e) {
+                        e.printStackTrace();
+                    }
+                });
 
             List<CategoryModel> categoryModel = categoryService.getByArticle(request.getId());
 
