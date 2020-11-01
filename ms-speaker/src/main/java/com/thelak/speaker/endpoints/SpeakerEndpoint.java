@@ -87,7 +87,6 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
         try {
             DbSpeakerVideos dbSpeakerVideos = ObjectSelect.query(DbSpeakerVideos.class)
                     .where(DbSpeakerVideos.ID_VIDEO.eq(videoId))
-                    .and(DbSpeaker.DELETED_DATE.isNull())
                     .selectFirst(objectContext);
 
             return buildSpeakerModel(dbSpeakerVideos.getVideoToSpeaker());
