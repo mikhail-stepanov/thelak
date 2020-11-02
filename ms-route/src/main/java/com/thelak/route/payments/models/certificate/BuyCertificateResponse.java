@@ -15,4 +15,6 @@ public class BuyCertificateResponse {
     SecureResponse payResponse;
 
     IssuedCertificateModel certificate;
+
+    Boolean success;
 }

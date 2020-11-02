@@ -5,11 +5,13 @@ import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.payments.interfaces.IPaymentService;
 import com.thelak.route.payments.models.CardUpdateRequest;
 import com.thelak.route.payments.models.PaymentsConfigModel;
+import com.thelak.route.payments.models.apple.ApplePayCertRequest;
 import com.thelak.route.payments.models.certificate.BuyCertificateRequest;
 import com.thelak.route.payments.models.certificate.BuyCertificateResponse;
 import com.thelak.route.payments.models.cloudpayments.cryptogramm.CryptogrammPayResponse;
 import com.thelak.route.payments.models.cloudpayments.secure.SecureResponse;
 import com.thelak.route.payments.models.promo.PromoModel;
+import com.thelak.route.payments.models.apple.ApplePaySubRequest;
 import com.thelak.route.payments.models.subscription.BuySubscriptionRequest;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
@@ -39,6 +41,16 @@ public class PaymentService extends BaseMicroservice implements IPaymentService 
 
     @Override
     public SecureResponse buySubscriptionConfirm(String MD) throws MicroServiceException {
+        return null;
+    }
+
+    @Override
+    public CryptogrammPayResponse buySubscriptionApplePay(ApplePaySubRequest request, HttpServletRequest httpRequest) throws MicroServiceException {
+        return null;
+    }
+
+    @Override
+    public BuyCertificateResponse buyCertificateApplePay(ApplePayCertRequest request, HttpServletRequest httpRequest) throws MicroServiceException {
         return null;
     }
 

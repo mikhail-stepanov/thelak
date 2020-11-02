@@ -13,6 +13,10 @@ import com.thelak.route.message.IMessageService;
 import com.thelak.route.payments.interfaces.IPaymentService;
 import com.thelak.route.payments.models.CardUpdateRequest;
 import com.thelak.route.payments.models.PaymentsConfigModel;
+import com.thelak.route.payments.models.apple.ApplePayCertRequest;
+import com.thelak.route.payments.models.apple.ApplePaySubRequest;
+import com.thelak.route.payments.models.apple.ApplePayValidationResponse;
+import com.thelak.route.payments.models.apple.AppleValidationRequest;
 import com.thelak.route.payments.models.certificate.BuyCertificateRequest;
 import com.thelak.route.payments.models.certificate.BuyCertificateResponse;
 import com.thelak.route.payments.models.certificate.CertificateViewType;
@@ -35,7 +39,6 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
-import org.bouncycastle.util.encoders.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -50,7 +53,6 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import static com.thelak.payments.services.PaymentsHelper.buildCertificateModel;
@@ -301,7 +303,134 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                             .token(secureResponse.getModel().getToken())
                             .build();
 
-                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!" + recurrentPayRequest);
+                    DbPaymentsRecurrent dbPaymentsRecurrent = objectContext.newObject(DbPaymentsRecurrent.class);
+                    dbPaymentsRecurrent.setIdUser(userInfo.getUserId());
+                    dbPaymentsRecurrent.setAmount(recurrentPayRequest.getAmount());
+                    dbPaymentsRecurrent.setCurrency(recurrentPayRequest.getCurrency());
+                    dbPaymentsRecurrent.setDescription(recurrentPayRequest.getDescription());
+                    dbPaymentsRecurrent.setEmail(recurrentPayRequest.getEmail());
+                    dbPaymentsRecurrent.setInterval(recurrentPayRequest.getInterval());
+                    dbPaymentsRecurrent.setPeriod(recurrentPayRequest.getPeriod());
+                    dbPaymentsRecurrent.setStartDate(LocalDateTime.parse(recurrentPayRequest.getStartDate()));
+                    dbPaymentsRecurrent.setRequireConfirmation(recurrentPayRequest.getRequireConfirmation());
+                    dbPaymentsRecurrent.setToken(recurrentPayRequest.getToken());
+                    dbPaymentsRecurrent.setStatus(false);
+                    dbPaymentsRecurrent.setCreatedDate(LocalDateTime.now());
+                    dbPaymentsRecurrent.setRecurrentToSubscription(subscription);
+                    objectContext.commitChanges();
+
+                    dbPaymentConfig = ObjectSelect.query(DbPaymentConfig.class)
+                            .where(DbPaymentConfig.NAME.eq("RECURRENT_URL")).selectFirst(objectContext);
+
+                    responseEntity = restTemplate.postForEntity(dbPaymentConfig.getValue(), recurrentPayRequest, String.class);
+                    RecurrentPayResponse recurrentPayResponse = gson.fromJson(responseEntity.getBody(), RecurrentPayResponse.class);
+                    if (recurrentPayResponse.getSuccess()) {
+                        dbPaymentsRecurrent.setStatus(true);
+                        dbPaymentsRecurrent.setIdRecurrent(recurrentPayResponse.getModel().getId());
+                        objectContext.commitChanges();
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+            return secureResponse;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MsInternalErrorException(e.getMessage());
+        }
+    }
+
+    @Override
+    @ApiOperation(value = "Buy subscription (Apple Psy)")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(required = true,
+                    defaultValue = "Bearer ",
+                    name = "Authorization",
+                    paramType = "header")}
+    )
+    @RequestMapping(value = PAYMENTS_SUB_APPLE, method = {RequestMethod.POST})
+    public CryptogrammPayResponse buySubscriptionApplePay(@RequestBody ApplePaySubRequest request, HttpServletRequest httpRequest) throws MicroServiceException {
+        try {
+            UserInfo userInfo = null;
+            try {
+                userInfo = (UserInfo) SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getPrincipal();
+            } catch (Exception e) {
+                throw new MsNotAuthorizedException();
+            }
+
+            DbSubscription dbSubscription = SelectById.query(DbSubscription.class, request.getSubscriptionId())
+                    .selectFirst(objectContext);
+
+            AppleValidationRequest appleValidationRequest = AppleValidationRequest.builder()
+                    .ValidationUrl(request.getValidationUrl())
+                    .build();
+
+            DbPaymentConfig dbPaymentConfig = ObjectSelect.query(DbPaymentConfig.class)
+                    .where(DbPaymentConfig.NAME.eq("APPLE_PAY_URL")).selectFirst(objectContext);
+
+            ResponseEntity<String> appleResponseEntity = restTemplate.postForEntity(dbPaymentConfig.getValue(), appleValidationRequest, String.class);
+            ApplePayValidationResponse appleResult = gson.fromJson(appleResponseEntity.getBody(), ApplePayValidationResponse.class);
+
+            CryptogrammPayRequest cryptogrammPayRequest = CryptogrammPayRequest.builder()
+                    .AccountId(userInfo.getUserId())
+                    .Amount(dbSubscription.getPrice())
+                    .CardCryptogramPacket(appleResult.getModel().getMerchantIdentifier())
+                    .Currency("RUB")
+                    .Description("Покупка подписки Thelak на " + dbSubscription.getMonths() + " месяцев.")
+                    .Email(userInfo.getUserEmail())
+                    .IpAddress(httpRequest.getRemoteAddr())
+                    .build();
+
+            dbPaymentConfig = ObjectSelect.query(DbPaymentConfig.class)
+                    .where(DbPaymentConfig.NAME.eq("CRYPTOGRAMM_CHARGE_URL")).selectFirst(objectContext);
+
+            ResponseEntity<String> responseEntity = restTemplate.postForEntity(dbPaymentConfig.getValue(), cryptogrammPayRequest, String.class);
+            CryptogrammPayResponse result = gson.fromJson(responseEntity.getBody(), CryptogrammPayResponse.class);
+            DbPaymentsCryptogramm dbPaymentsCryptogramm = objectContext.newObject(DbPaymentsCryptogramm.class);
+            dbPaymentsCryptogramm.setAmount(cryptogrammPayRequest.getAmount());
+            dbPaymentsCryptogramm.setCardCryptogram(cryptogrammPayRequest.getCardCryptogramPacket());
+            dbPaymentsCryptogramm.setCreatedDate(LocalDateTime.now());
+            dbPaymentsCryptogramm.setCurrency(cryptogrammPayRequest.getCurrency());
+            dbPaymentsCryptogramm.setDescription(cryptogrammPayRequest.getDescription());
+            dbPaymentsCryptogramm.setCryptogrammToSubscription(dbSubscription);
+            dbPaymentsCryptogramm.setIdUser(cryptogrammPayRequest.getAccountId());
+            dbPaymentsCryptogramm.setName(cryptogrammPayRequest.getName());
+            dbPaymentsCryptogramm.setStatus(false);
+            dbPaymentsCryptogramm.setCryptogrammToSubscription(dbSubscription);
+            dbPaymentsCryptogramm.setTransactionId(result.getModel().getTransactionId());
+
+            objectContext.commitChanges();
+
+            if (result.getSuccess()) {
+                dbPaymentsCryptogramm.setStatus(true);
+                dbPaymentsCryptogramm.setModifiedDate(LocalDateTime.now());
+                objectContext.commitChanges();
+
+                DbSubscription subscription = dbPaymentsCryptogramm.getCryptogrammToSubscription();
+//                messageService.publish(userSubscriptionQueue, SetSubscriptionModel.builder()
+//                        .userId(userInfo.getUserId())
+//                        .subscriptionDate(LocalDateTime.now().plusMonths(subscription.getMonths())).build());
+//
+                authenticationService.setSubscription(SetSubscriptionModel.builder()
+                        .userId(userInfo.getUserId())
+                        .subType("SUBSCRIPTION")
+                        .subscriptionDate(LocalDateTime.now().plusMonths(subscription.getMonths())).build());
+
+                try {
+                    RecurrentPayRequest recurrentPayRequest = RecurrentPayRequest.builder()
+                            .accountId(userInfo.getUserId().toString())
+                            .amount(subscription.getPrice())
+                            .currency("RUB")
+                            .description("Подписка Thelak на " + subscription.getMonths() + " месяцев.")
+                            .email(userInfo.getUserEmail())
+                            .interval("Month")
+                            .period(subscription.getMonths())
+                            .startDate(LocalDateTime.now().plusMonths(subscription.getMonths()).toString())
+                            .requireConfirmation(false)
+                            .token(result.getModel().getToken())
+                            .build();
 
                     DbPaymentsRecurrent dbPaymentsRecurrent = objectContext.newObject(DbPaymentsRecurrent.class);
                     dbPaymentsRecurrent.setIdUser(userInfo.getUserId());
@@ -323,7 +452,6 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                             .where(DbPaymentConfig.NAME.eq("RECURRENT_URL")).selectFirst(objectContext);
 
                     responseEntity = restTemplate.postForEntity(dbPaymentConfig.getValue(), recurrentPayRequest, String.class);
-                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!" + responseEntity);
                     RecurrentPayResponse recurrentPayResponse = gson.fromJson(responseEntity.getBody(), RecurrentPayResponse.class);
                     if (recurrentPayResponse.getSuccess()) {
                         dbPaymentsRecurrent.setStatus(true);
@@ -333,9 +461,119 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                 } catch (Exception ignored) {
                 }
             }
-            return secureResponse;
+            return result;
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new MsInternalErrorException(e.getMessage());
+        }
+    }
+
+    @Override
+    @ApiOperation(value = "Buy certificate (Apple Psy)")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(required = true,
+                    defaultValue = "Bearer ",
+                    name = "Authorization",
+                    paramType = "header")}
+    )
+    @RequestMapping(value = PAYMENTS_CERT_APPLE, method = {RequestMethod.POST})
+    public BuyCertificateResponse buyCertificateApplePay(@RequestBody ApplePayCertRequest request, HttpServletRequest httpRequest) throws MicroServiceException {
+        try {
+            UserInfo userInfo = null;
+            try {
+                userInfo = (UserInfo) SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getPrincipal();
+            } catch (Exception e) {
+                throw new MsNotAuthorizedException();
+            }
+
+            DbCertificate dbCertificate = SelectById.query(DbCertificate.class, request.getCertificateId())
+                    .selectFirst(objectContext);
+
+            AppleValidationRequest appleValidationRequest = AppleValidationRequest.builder()
+                    .ValidationUrl(request.getValidationUrl())
+                    .build();
+
+            DbPaymentConfig dbPaymentConfig = ObjectSelect.query(DbPaymentConfig.class)
+                    .where(DbPaymentConfig.NAME.eq("APPLE_PAY_URL")).selectFirst(objectContext);
+
+            ResponseEntity<String> appleResponseEntity = restTemplate.postForEntity(dbPaymentConfig.getValue(), appleValidationRequest, String.class);
+            ApplePayValidationResponse appleResult = gson.fromJson(appleResponseEntity.getBody(), ApplePayValidationResponse.class);
+
+            DbIssuedCertificate dbIssuedCertificate = objectContext.newObject(DbIssuedCertificate.class);
+            dbIssuedCertificate.setActive(true);
+            dbIssuedCertificate.setActiveDate(LocalDateTime.now().plusMonths(1L));
+            dbIssuedCertificate.setCreatedDate(LocalDateTime.now());
+            dbIssuedCertificate.setUuid(UUID.randomUUID().toString());
+            dbIssuedCertificate.setIssuedToCertificate(dbCertificate);
+            dbIssuedCertificate.setFio(request.getFio());
+            dbIssuedCertificate.setDescription(request.getDescription());
+            dbIssuedCertificate.setType(request.getType().name());
+            objectContext.commitChanges();
+
+            CryptogrammPayRequest cryptogrammPayRequest = CryptogrammPayRequest.builder()
+                    .AccountId(userInfo.getUserId())
+                    .Amount(dbCertificate.getPrice())
+                    .CardCryptogramPacket(appleResult.getModel().getMerchantIdentifier())
+                    .Currency("RUB")
+                    .Description("Покупка сертификата Thelak на " + dbCertificate.getMonths() + " месяцев.")
+                    .Email(userInfo.getUserEmail())
+                    .IpAddress(httpRequest.getRemoteAddr())
+                    .build();
+
+            dbPaymentConfig = ObjectSelect.query(DbPaymentConfig.class)
+                    .where(DbPaymentConfig.NAME.eq("CRYPTOGRAMM_CHARGE_URL")).selectFirst(objectContext);
+
+            ResponseEntity<String> responseEntity = restTemplate.postForEntity(dbPaymentConfig.getValue(), cryptogrammPayRequest, String.class);
+            CryptogrammPayResponse result = gson.fromJson(responseEntity.getBody(), CryptogrammPayResponse.class);
+            DbPaymentsCryptogramm dbPaymentsCryptogramm = objectContext.newObject(DbPaymentsCryptogramm.class);
+            dbPaymentsCryptogramm.setAmount(cryptogrammPayRequest.getAmount());
+            dbPaymentsCryptogramm.setCardCryptogram(cryptogrammPayRequest.getCardCryptogramPacket());
+            dbPaymentsCryptogramm.setCreatedDate(LocalDateTime.now());
+            dbPaymentsCryptogramm.setCurrency(cryptogrammPayRequest.getCurrency());
+            dbPaymentsCryptogramm.setDescription(cryptogrammPayRequest.getDescription());
+            dbPaymentsCryptogramm.setIdUser(cryptogrammPayRequest.getAccountId());
+            dbPaymentsCryptogramm.setName(cryptogrammPayRequest.getName());
+            dbPaymentsCryptogramm.setStatus(false);
+            dbPaymentsCryptogramm.setCryptogrammToCertificate(dbIssuedCertificate);
+            dbPaymentsCryptogramm.setTransactionId(result.getModel().getTransactionId());
+
+            objectContext.commitChanges();
+
+            if (result.getSuccess()) {
+                dbPaymentsCryptogramm.setStatus(true);
+                dbPaymentsCryptogramm.setModifiedDate(LocalDateTime.now());
+
+                DbIssuedCertificate certificate = dbPaymentsCryptogramm.getCryptogrammToCertificate();
+
+                DbPromo dbPromo = objectContext.newObject(DbPromo.class);
+                dbPromo.setCode(certificate.getUuid());
+                dbPromo.setMonths((int) certificate.getIssuedToCertificate().getMonths());
+
+                objectContext.commitChanges();
+
+                return BuyCertificateResponse.builder()
+                        .success(result.getSuccess())
+                        .certificate(IssuedCertificateModel.builder()
+                                .id((Long) certificate.getObjectId().getIdSnapshot().get("id"))
+                                .uuid(certificate.getUuid())
+                                .fio(certificate.getFio())
+                                .description(certificate.getDescription())
+                                .active(certificate.isActive())
+                                .activeDate(certificate.getActiveDate())
+                                .type(CertificateViewType.valueOf(certificate.getType()))
+                                .certificateModel(buildCertificateModel(certificate.getIssuedToCertificate()))
+                                .build())
+                        .build();
+
+            }
+
+            return BuyCertificateResponse.builder()
+                    .success(result.getSuccess())
+                    .build();
+
+        } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
         }
     }

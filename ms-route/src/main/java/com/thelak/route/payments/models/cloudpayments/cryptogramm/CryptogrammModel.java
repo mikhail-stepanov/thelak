@@ -24,4 +24,6 @@ public class CryptogrammModel {
     String FrameHeight;
 
     String ThreeDsCallbackId;
+
+    String Token;
 }
