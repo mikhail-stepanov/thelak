@@ -19,7 +19,7 @@ public class JWTTokenService implements ITokenService {
 
     @Override
     public String generateToken(UserInfo user) {
-        Instant expirationTime = Instant.now().plus(1, ChronoUnit.HOURS);
+        Instant expirationTime = Instant.now().plus(48, ChronoUnit.HOURS);
         Date expirationDate = Date.from(expirationTime);
 
         Key key = Keys.hmacShaKeyFor(JWT_SECRET.getBytes());
