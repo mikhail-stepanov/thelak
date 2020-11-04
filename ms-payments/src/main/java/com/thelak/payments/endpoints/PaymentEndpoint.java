@@ -42,8 +42,7 @@ import org.apache.cayenne.query.SelectById;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -343,14 +342,29 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     @ApiOperation(value = "Start Apple Pay session")
     @RequestMapping(value = PAYMENTS_APPLE, method = {RequestMethod.POST})
     public ResponseEntity<String> applePayStartSession(ApplePayStartSessionRequest request) {
+
+        DbPaymentConfig username = ObjectSelect.query(DbPaymentConfig.class)
+                .where(DbPaymentConfig.NAME.eq("PUBLIC_ID")).selectFirst(objectContext);
+        DbPaymentConfig password = ObjectSelect.query(DbPaymentConfig.class)
+                .where(DbPaymentConfig.NAME.eq("SECRET_KEY")).selectFirst(objectContext);
+
+
+        RestTemplate restTemplate = new RestTemplateBuilder()
+                .basicAuthorization(username.getValue(), password.getValue())
+                .build();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         AppleValidationRequest appleValidationRequest = AppleValidationRequest.builder()
                 .ValidationUrl(request.getValidationUrl())
                 .build();
 
+        HttpEntity<AppleValidationRequest> entity = new HttpEntity<>(appleValidationRequest, headers);
+
         DbPaymentConfig dbPaymentConfig = ObjectSelect.query(DbPaymentConfig.class)
                 .where(DbPaymentConfig.NAME.eq("APPLE_PAY_URL")).selectFirst(objectContext);
 
-        return restTemplate.postForEntity(dbPaymentConfig.getValue(), appleValidationRequest, String.class);
+        return restTemplate.postForEntity(dbPaymentConfig.getValue(), entity, String.class);
     }
 
     @Override
