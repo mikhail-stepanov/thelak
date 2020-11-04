@@ -342,7 +342,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     @Override
     @ApiOperation(value = "Start Apple Pay session")
     @RequestMapping(value = PAYMENTS_APPLE, method = {RequestMethod.POST})
-    public ResponseEntity<String> applePayStartSession(ApplePayStartSessionRequest request) {
+    public ResponseEntity<String> applePayStartSession(@RequestBody ApplePayStartSessionRequest request) {
 
         AppleValidationRequest appleValidationRequest = AppleValidationRequest.builder()
                 .ValidationUrl(request.getValidationUrl())
