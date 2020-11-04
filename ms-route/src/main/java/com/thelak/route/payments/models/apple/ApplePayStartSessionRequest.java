@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApplePaySubRequest {
+public class ApplePayStartSessionRequest {
 
-    String cryptogram;
+    String validationUrl;
 
-    Long subscriptionId;
 }

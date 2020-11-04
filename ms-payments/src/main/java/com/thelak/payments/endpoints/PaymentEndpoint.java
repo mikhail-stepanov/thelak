@@ -14,8 +14,8 @@ import com.thelak.route.payments.interfaces.IPaymentService;
 import com.thelak.route.payments.models.CardUpdateRequest;
 import com.thelak.route.payments.models.PaymentsConfigModel;
 import com.thelak.route.payments.models.apple.ApplePayCertRequest;
+import com.thelak.route.payments.models.apple.ApplePayStartSessionRequest;
 import com.thelak.route.payments.models.apple.ApplePaySubRequest;
-import com.thelak.route.payments.models.apple.ApplePayValidationResponse;
 import com.thelak.route.payments.models.apple.AppleValidationRequest;
 import com.thelak.route.payments.models.certificate.BuyCertificateRequest;
 import com.thelak.route.payments.models.certificate.BuyCertificateResponse;
@@ -340,7 +340,21 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     }
 
     @Override
-    @ApiOperation(value = "Buy subscription (Apple Psy)")
+    @ApiOperation(value = "Start Apple Pay session")
+    @RequestMapping(value = PAYMENTS_SUB_APPLE, method = {RequestMethod.POST})
+    public ResponseEntity<String> applePayStartSession(ApplePayStartSessionRequest request) {
+        AppleValidationRequest appleValidationRequest = AppleValidationRequest.builder()
+                .ValidationUrl(request.getValidationUrl())
+                .build();
+
+        DbPaymentConfig dbPaymentConfig = ObjectSelect.query(DbPaymentConfig.class)
+                .where(DbPaymentConfig.NAME.eq("APPLE_PAY_URL")).selectFirst(objectContext);
+
+        return restTemplate.postForEntity(dbPaymentConfig.getValue(), appleValidationRequest, String.class);
+    }
+
+    @Override
+    @ApiOperation(value = "Buy subscription (Apple Pay)")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
                     defaultValue = "Bearer ",
@@ -363,27 +377,17 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
             DbSubscription dbSubscription = SelectById.query(DbSubscription.class, request.getSubscriptionId())
                     .selectFirst(objectContext);
 
-            AppleValidationRequest appleValidationRequest = AppleValidationRequest.builder()
-                    .ValidationUrl(request.getValidationUrl())
-                    .build();
-
-            DbPaymentConfig dbPaymentConfig = ObjectSelect.query(DbPaymentConfig.class)
-                    .where(DbPaymentConfig.NAME.eq("APPLE_PAY_URL")).selectFirst(objectContext);
-
-            ResponseEntity<String> appleResponseEntity = restTemplate.postForEntity(dbPaymentConfig.getValue(), appleValidationRequest, String.class);
-            ApplePayValidationResponse appleResult = gson.fromJson(appleResponseEntity.getBody(), ApplePayValidationResponse.class);
-
             CryptogrammPayRequest cryptogrammPayRequest = CryptogrammPayRequest.builder()
                     .AccountId(userInfo.getUserId())
                     .Amount(dbSubscription.getPrice())
-                    .CardCryptogramPacket(appleResult.getModel().getMerchantIdentifier())
+                    .CardCryptogramPacket(request.getCryptogram())
                     .Currency("RUB")
                     .Description("Покупка подписки Thelak на " + dbSubscription.getMonths() + " месяцев.")
                     .Email(userInfo.getUserEmail())
                     .IpAddress(httpRequest.getRemoteAddr())
                     .build();
 
-            dbPaymentConfig = ObjectSelect.query(DbPaymentConfig.class)
+            DbPaymentConfig dbPaymentConfig = ObjectSelect.query(DbPaymentConfig.class)
                     .where(DbPaymentConfig.NAME.eq("CRYPTOGRAMM_CHARGE_URL")).selectFirst(objectContext);
 
             ResponseEntity<String> responseEntity = restTemplate.postForEntity(dbPaymentConfig.getValue(), cryptogrammPayRequest, String.class);
@@ -468,7 +472,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     }
 
     @Override
-    @ApiOperation(value = "Buy certificate (Apple Psy)")
+    @ApiOperation(value = "Buy certificate (Apple Pay)")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,
                     defaultValue = "Bearer ",
@@ -491,16 +495,6 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
             DbCertificate dbCertificate = SelectById.query(DbCertificate.class, request.getCertificateId())
                     .selectFirst(objectContext);
 
-            AppleValidationRequest appleValidationRequest = AppleValidationRequest.builder()
-                    .ValidationUrl(request.getValidationUrl())
-                    .build();
-
-            DbPaymentConfig dbPaymentConfig = ObjectSelect.query(DbPaymentConfig.class)
-                    .where(DbPaymentConfig.NAME.eq("APPLE_PAY_URL")).selectFirst(objectContext);
-
-            ResponseEntity<String> appleResponseEntity = restTemplate.postForEntity(dbPaymentConfig.getValue(), appleValidationRequest, String.class);
-            ApplePayValidationResponse appleResult = gson.fromJson(appleResponseEntity.getBody(), ApplePayValidationResponse.class);
-
             DbIssuedCertificate dbIssuedCertificate = objectContext.newObject(DbIssuedCertificate.class);
             dbIssuedCertificate.setActive(true);
             dbIssuedCertificate.setActiveDate(LocalDateTime.now().plusMonths(1L));
@@ -515,14 +509,14 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
             CryptogrammPayRequest cryptogrammPayRequest = CryptogrammPayRequest.builder()
                     .AccountId(userInfo.getUserId())
                     .Amount(dbCertificate.getPrice())
-                    .CardCryptogramPacket(appleResult.getModel().getMerchantIdentifier())
+                    .CardCryptogramPacket(request.getCryptogram())
                     .Currency("RUB")
                     .Description("Покупка сертификата Thelak на " + dbCertificate.getMonths() + " месяцев.")
                     .Email(userInfo.getUserEmail())
                     .IpAddress(httpRequest.getRemoteAddr())
                     .build();
 
-            dbPaymentConfig = ObjectSelect.query(DbPaymentConfig.class)
+            DbPaymentConfig dbPaymentConfig = ObjectSelect.query(DbPaymentConfig.class)
                     .where(DbPaymentConfig.NAME.eq("CRYPTOGRAMM_CHARGE_URL")).selectFirst(objectContext);
 
             ResponseEntity<String> responseEntity = restTemplate.postForEntity(dbPaymentConfig.getValue(), cryptogrammPayRequest, String.class);

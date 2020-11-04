@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ApplePayCertRequest {
 
-    String ValidationUrl;
+    String cryptogram;
 
     Long certificateId;
 
