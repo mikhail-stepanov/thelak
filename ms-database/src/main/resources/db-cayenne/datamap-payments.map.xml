@@ -56,7 +56,7 @@
 	</db-entity>
 	<db-entity name="db_payments_cryptogramm" schema="public">
 		<db-attribute name="amount" type="INTEGER" isMandatory="true"/>
-		<db-attribute name="card_cryptogram" type="VARCHAR" isMandatory="true" length="2048"/>
+		<db-attribute name="card_cryptogram" type="VARCHAR" isMandatory="true" length="1000000"/>
 		<db-attribute name="created_date" type="TIMESTAMP" isMandatory="true"/>
 		<db-attribute name="currency" type="VARCHAR" isMandatory="true" length="32"/>
 		<db-attribute name="deleted_date" type="TIMESTAMP"/>
