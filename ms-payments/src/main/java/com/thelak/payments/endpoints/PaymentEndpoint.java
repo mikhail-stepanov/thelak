@@ -740,7 +740,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
 
         try {
             DbPromo dbPromo = ObjectSelect.query(DbPromo.class)
-                    .where(DbPromo.CODE.eq(code)).selectFirst(objectContext);
+                    .where(DbPromo.CODE.lower().eq(code.toLowerCase())).selectFirst(objectContext);
             try {
                 DbPromoEmail dbPromoEmail = ObjectSelect.query(DbPromoEmail.class)
                         .where(DbPromoEmail.EMAIL_TO_PROMO.eq(dbPromo))
@@ -789,7 +789,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
         }
         try {
             DbIssuedCertificate dbIssuedCertificate = ObjectSelect.query(DbIssuedCertificate.class)
-                    .where(DbIssuedCertificate.UUID.eq(code)).selectFirst(objectContext);
+                    .where(DbIssuedCertificate.UUID.lower().eq(code.toLowerCase())).selectFirst(objectContext);
 
             if (dbIssuedCertificate.isActive()) {
 
