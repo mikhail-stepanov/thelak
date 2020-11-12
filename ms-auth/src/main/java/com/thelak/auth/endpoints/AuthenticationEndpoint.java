@@ -355,10 +355,10 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
             DbUser dbUser = SelectById.query(DbUser.class, userInfo.getUserId()).selectFirst(objectContext);
 
             DbNotification notification = dbUser.getUserToNotification().get(0);
-            notification.setSales(notification.isSales());
-            notification.setRecommendation(notification.isRecommendation());
-            notification.setNews(notification.isNews());
-            notification.setContent(notification.isContent());
+            notification.setSales(notificationModel.getSales());
+            notification.setRecommendation(notificationModel.getRecommendation());
+            notification.setNews(notificationModel.getNews());
+            notification.setContent(notificationModel.getContent());
 
             objectContext.commitChanges();
 
