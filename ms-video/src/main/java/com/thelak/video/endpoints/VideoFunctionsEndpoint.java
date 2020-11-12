@@ -237,7 +237,7 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
 
             List<DbVideoHistory> dbVideoHistories = ObjectSelect.query(DbVideoHistory.class)
                     .where(DbVideoHistory.ID_USER.eq(userInfo.getUserId()))
-                    .orderBy(DbVideoHistory.CREATED_DATE.asc())
+                    .orderBy(DbVideoHistory.CREATED_DATE.desc())
                     .select(objectContext);
 
             List<VideoModel> videos = new ArrayList<>();
