@@ -236,7 +236,9 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
                     .getPrincipal();
 
             List<DbVideoHistory> dbVideoHistories = ObjectSelect.query(DbVideoHistory.class)
-                    .where(DbVideoHistory.ID_USER.eq(userInfo.getUserId())).select(objectContext);
+                    .where(DbVideoHistory.ID_USER.eq(userInfo.getUserId()))
+                    .orderBy(DbVideoHistory.CREATED_DATE.asc())
+                    .select(objectContext);
 
             List<VideoModel> videos = new ArrayList<>();
 
@@ -256,9 +258,9 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
                 }
                 videos.add(buildVideoModel(dbVideo, categoryModel, speakerModel, userInfo, false));
             });
-            videos.sort(VideoEndpoint.Comparators.NEW);
             return videos;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new MsInternalErrorException(e.getMessage());
         }
     }
