@@ -9,7 +9,7 @@ import com.thelak.route.auth.interfaces.IAuthenticationService;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.exceptions.MsInternalErrorException;
 import com.thelak.route.exceptions.MsNotAuthorizedException;
-import com.thelak.route.message.IMessageService;
+import com.thelak.route.exceptions.MsObjectNotFoundException;
 import com.thelak.route.payments.interfaces.IPaymentService;
 import com.thelak.route.payments.models.CardUpdateRequest;
 import com.thelak.route.payments.models.PaymentsConfigModel;
@@ -40,7 +40,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,11 +66,11 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     @Autowired
     private IAuthenticationService authenticationService;
 
-    @Autowired
-    private IMessageService messageService;
-
-    @Value("${user.subscription.queue:#{null}}")
-    private String userSubscriptionQueue;
+//    @Autowired
+//    private IMessageService messageService;
+//
+//    @Value("${user.subscription.queue:#{null}}")
+//    private String userSubscriptionQueue;
 
     RestTemplate restTemplate;
 
@@ -739,46 +738,81 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
             throw new MsNotAuthorizedException();
         }
 
-        DbPromo dbPromo = ObjectSelect.query(DbPromo.class)
-                .where(DbPromo.CODE.eq(code)).selectFirst(objectContext);
         try {
-            DbPromoEmail dbPromoEmail = ObjectSelect.query(DbPromoEmail.class)
-                    .where(DbPromoEmail.EMAIL_TO_PROMO.eq(dbPromo))
-                    .selectFirst(objectContext);
-            if (dbPromoEmail != null) {
-                DbPromoEmail dbPromoEmailcheck = ObjectSelect.query(DbPromoEmail.class)
+            DbPromo dbPromo = ObjectSelect.query(DbPromo.class)
+                    .where(DbPromo.CODE.eq(code)).selectFirst(objectContext);
+            try {
+                DbPromoEmail dbPromoEmail = ObjectSelect.query(DbPromoEmail.class)
                         .where(DbPromoEmail.EMAIL_TO_PROMO.eq(dbPromo))
-                        .and(DbPromoEmail.EMAIL.eq(userInfo.getUserEmail()))
                         .selectFirst(objectContext);
-                if (dbPromoEmailcheck != null) {
-                    authenticationService.setSubscription(SetSubscriptionModel.builder()
-                            .userId(userInfo.getUserId())
-                            .subType("PROMO")
-                            .subscriptionDate(LocalDateTime.now().plusMonths(dbPromo.getMonths())).build());
+                if (dbPromoEmail != null) {
+                    DbPromoEmail dbPromoEmailcheck = ObjectSelect.query(DbPromoEmail.class)
+                            .where(DbPromoEmail.EMAIL_TO_PROMO.eq(dbPromo))
+                            .and(DbPromoEmail.EMAIL.eq(userInfo.getUserEmail()))
+                            .and(DbPromoEmail.ACTIVE.isTrue())
+                            .selectFirst(objectContext);
+                    if (dbPromoEmailcheck != null) {
+                        authenticationService.setSubscription(SetSubscriptionModel.builder()
+                                .userId(userInfo.getUserId())
+                                .subType("PROMO")
+                                .subscriptionDate(LocalDateTime.now().plusMonths(dbPromo.getMonths())).build());
+
+                        dbPromoEmailcheck.setActive(false);
+                        objectContext.commitChanges();
+
+                        return PromoModel.builder()
+                                .success(true)
+                                .months(dbPromo.getMonths())
+                                .description(dbPromo.getDescription())
+                                .build();
+                    }
                     return PromoModel.builder()
-                            .success(true)
+                            .success(false)
                             .months(dbPromo.getMonths())
                             .description(dbPromo.getDescription())
                             .build();
                 }
-                return PromoModel.builder()
-                        .success(false)
-                        .months(dbPromo.getMonths())
-                        .description(dbPromo.getDescription())
-                        .build();
-            }
 
+            } catch (Exception ignored) {
+            }
+            authenticationService.setSubscription(SetSubscriptionModel.builder()
+                    .userId(userInfo.getUserId())
+                    .subType("PROMO")
+                    .subscriptionDate(LocalDateTime.now().plusMonths(dbPromo.getMonths())).build());
+
+            return PromoModel.builder()
+                    .success(true)
+                    .months(dbPromo.getMonths())
+                    .description(dbPromo.getDescription())
+                    .build();
         } catch (Exception ignored) {
         }
-        authenticationService.setSubscription(SetSubscriptionModel.builder()
-                .userId(userInfo.getUserId())
-                .subType("PROMO")
-                .subscriptionDate(LocalDateTime.now().plusMonths(dbPromo.getMonths())).build());
+        try {
+            DbIssuedCertificate dbIssuedCertificate = ObjectSelect.query(DbIssuedCertificate.class)
+                    .where(DbIssuedCertificate.UUID.eq(code)).selectFirst(objectContext);
 
-        return PromoModel.builder()
-                .success(true)
-                .months(dbPromo.getMonths())
-                .description(dbPromo.getDescription())
-                .build();
+            if (dbIssuedCertificate.isActive()) {
+
+                authenticationService.setSubscription(SetSubscriptionModel.builder()
+                        .userId(userInfo.getUserId())
+                        .subscriptionDate(LocalDateTime.now().plusMonths(dbIssuedCertificate.getIssuedToCertificate().getMonths())).build());
+
+                dbIssuedCertificate.setActive(false);
+                objectContext.commitChanges();
+
+                return PromoModel.builder()
+                        .success(true)
+                        .months((int) dbIssuedCertificate.getIssuedToCertificate().getMonths())
+                        .description(dbIssuedCertificate.getDescription())
+                        .build();
+
+            }
+            return PromoModel.builder()
+                    .success(false)
+                    .build();
+        } catch (Exception e) {
+            throw new MsObjectNotFoundException("Can't find certificate or promo: ", code);
+        }
+
     }
 }

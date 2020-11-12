@@ -99,6 +99,7 @@
 		<db-attribute name="months" type="INTEGER" isMandatory="true"/>
 	</db-entity>
 	<db-entity name="db_promo_email" schema="public">
+		<db-attribute name="active" type="BOOLEAN" isMandatory="true"/>
 		<db-attribute name="email" type="VARCHAR" length="1048"/>
 		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="id_promo" type="BIGINT"/>
@@ -192,6 +193,7 @@
 		<obj-attribute name="months" type="int" db-attribute-path="months"/>
 	</obj-entity>
 	<obj-entity name="DbPromoEmail" className="com.thelak.database.entity.DbPromoEmail" dbEntityName="db_promo_email">
+		<obj-attribute name="active" type="boolean" db-attribute-path="active"/>
 		<obj-attribute name="email" type="java.lang.String" db-attribute-path="email"/>
 	</obj-entity>
 	<obj-entity name="DbSubscription" className="com.thelak.database.entity.DbSubscription" dbEntityName="db_subscription">

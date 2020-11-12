@@ -17,8 +17,17 @@ public abstract class _DbPromoEmail extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "id";
 
+    public static final Property<Boolean> ACTIVE = Property.create("active", Boolean.class);
     public static final Property<String> EMAIL = Property.create("email", String.class);
     public static final Property<DbPromo> EMAIL_TO_PROMO = Property.create("emailToPromo", DbPromo.class);
+
+    public void setActive(boolean active) {
+        writeProperty("active", active);
+    }
+	public boolean isActive() {
+        Boolean value = (Boolean)readProperty("active");
+        return (value != null) ? value.booleanValue() : false;
+    }
 
     public void setEmail(String email) {
         writeProperty("email", email);
