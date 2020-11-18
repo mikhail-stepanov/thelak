@@ -27,7 +27,6 @@ public class EmailConfiguration {
 
         mailSender.setUsername("thelak.service@gmail.com");
         mailSender.setPassword("thelak2020");
-        mailSender.setDefaultEncoding("text/html; charset=utf-8");
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");

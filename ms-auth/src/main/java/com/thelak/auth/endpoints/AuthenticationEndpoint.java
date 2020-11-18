@@ -257,6 +257,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
 
             DbPasswordRestore dbPasswordRestore = ObjectSelect.query(DbPasswordRestore.class)
                     .where(DbPasswordRestore.UUID.eq(request.getUuid()))
+                    .orderBy(DbPasswordRestore.CREATED_DATE.desc())
                     .selectFirst(objectContext);
 
             if (!dbPasswordRestore.isStatus()) {
