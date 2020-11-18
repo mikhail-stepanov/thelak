@@ -251,7 +251,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
     }
 
     @Override
-    @RequestMapping(value = AUTH_USER_RESTORE_CONFIRM, method = {RequestMethod.GET})
+    @RequestMapping(value = AUTH_USER_RESTORE_CONFIRM, method = {RequestMethod.POST})
     public Boolean restorePasswordConfirm(@RequestBody RestorePasswordRequest request) throws MicroServiceException {
         try {
 
