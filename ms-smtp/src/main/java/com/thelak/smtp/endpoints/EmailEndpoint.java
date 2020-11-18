@@ -154,7 +154,7 @@ public class EmailEndpoint extends AbstractMicroservice implements IEmailService
     }
 
     @Override
-    @ApiOperation(value = "Send question request by email")
+    @ApiOperation(value = "Send password restore request by email")
     @RequestMapping(value = EMAIL_PASSWORD, method = {RequestMethod.GET})
     public Boolean sendRestorePassword(@RequestParam String to, @RequestParam String link) throws MicroServiceException {
         try {
