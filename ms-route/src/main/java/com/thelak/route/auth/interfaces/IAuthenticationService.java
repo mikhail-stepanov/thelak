@@ -14,6 +14,8 @@ public interface IAuthenticationService {
     String AUTH_LOGIN = "/v1/auth/login";
     String AUTH_REFRESH = "/v1/auth/refresh";
     String AUTH_USER_UPDATE = "/v1/auth/update";
+    String AUTH_USER_RESTORE_REQUEST = "/v1/auth/restore/request";
+    String AUTH_USER_RESTORE_CONFIRM = "/v1/auth/restore/confirm";
     String AUTH_USER_SUBSCRIPTION = "/v1/auth/subscription";
 
     String AUTH_USER_NOTIFICATION_INFO = "/v1/auth/notification/info";
@@ -27,6 +29,10 @@ public interface IAuthenticationService {
     ResponseEntity login(AuthLoginRequest request) throws MicroServiceException;
 
     ResponseEntity refresh() throws MicroServiceException;
+
+    Boolean restorePasswordRequest(String email) throws MicroServiceException;
+
+    Boolean restorePasswordConfirm(RestorePasswordRequest request) throws MicroServiceException;
 
     VueHelpModel updateUser(UpdateUserModel user) throws MicroServiceException;
 

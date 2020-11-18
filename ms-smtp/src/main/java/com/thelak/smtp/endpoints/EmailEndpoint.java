@@ -1,20 +1,21 @@
 package com.thelak.smtp.endpoints;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.tool.xml.XMLWorkerHelper;
 import com.thelak.core.endpoints.AbstractMicroservice;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbSmtpTemplate;
-import com.thelak.database.entity.DbUser;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.smtp.interfaces.IEmailService;
 import com.thelak.route.smtp.models.PartnerRequest;
 import com.thelak.route.smtp.models.QuestionRequest;
 import com.thelak.route.smtp.models.SendEmailRequest;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.SelectById;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +28,10 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import javax.annotation.PostConstruct;
-import javax.mail.Address;
-import javax.mail.Message;
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.nio.charset.StandardCharsets;
 
 @RestController
 @Api(value = "SMTP API", produces = "application/json")
@@ -91,6 +92,16 @@ public class EmailEndpoint extends AbstractMicroservice implements IEmailService
             String htmlBody = thymeleafTemplateEngine.process(smtpTemplate.getContent(), thymeleafContext);
             System.out.println("!!!!!!!!!!!!!!!\n" + htmlBody);
 
+            Document document = new Document();
+            File yourFile = new File("html.pdf");
+            yourFile.createNewFile(); // if file already exists will do nothing
+            PdfWriter writer = PdfWriter.getInstance(document,
+                    new FileOutputStream("html.pdf"));
+            document.open();
+            XMLWorkerHelper.getInstance().parseXHtml(writer, document,
+                    IOUtils.toInputStream(htmlBody, StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+            document.close();
+
             MimeMessage message = emailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, false, "utf-8");
             helper.setTo(to);
@@ -113,6 +124,7 @@ public class EmailEndpoint extends AbstractMicroservice implements IEmailService
             Context thymeleafContext = new Context();
             thymeleafContext.setVariable("link", link);
             String htmlBody = thymeleafTemplateEngine.process(smtpTemplate.getContent(), thymeleafContext);
+            System.out.println("!!!!!!!!!!!!!!!\n" + htmlBody);
 
             MimeMessage message = emailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");
@@ -139,5 +151,23 @@ public class EmailEndpoint extends AbstractMicroservice implements IEmailService
     @RequestMapping(value = EMAIL_QUESTION, method = {RequestMethod.POST})
     public Boolean sendQuestion(QuestionRequest request) throws MicroServiceException {
         return true;
+    }
+
+    @Override
+    @ApiOperation(value = "Send question request by email")
+    @RequestMapping(value = EMAIL_PASSWORD, method = {RequestMethod.GET})
+    public Boolean sendRestorePassword(@RequestParam String to, @RequestParam String link) throws MicroServiceException {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(to);
+            message.setSubject("Thelak. Восстановление Пароля.");
+            message.setText("Уважаемый пользователь Thelak!\n\nМы получили запрос на восстановление пароля.\nДля восстановления перейдите по ссылке: " + link + "\n\n\nС уважением,\nКоманда Thelak");
+            emailSender.send(message);
+
+            return true;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return false;
+        }
     }
 }

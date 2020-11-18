@@ -46,4 +46,13 @@ public class EmailService extends BaseMicroservice implements IEmailService {
     public Boolean sendQuestion(QuestionRequest request) throws MicroServiceException {
         return null;
     }
+
+    @Override
+    public Boolean sendRestorePassword(String to, String link) throws MicroServiceException {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(buildUrl(EMAIL_PASSWORD))
+                .queryParam("to", to)
+                .queryParam("link", link);
+        return retry(() -> restTemplate.getForEntity(builder.toUriString(), Boolean.class, to, link).getBody());
+    }
+
 }

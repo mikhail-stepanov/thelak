@@ -7,12 +7,14 @@ import com.thelak.core.models.UserInfo;
 import com.thelak.core.util.RLUCache;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbNotification;
+import com.thelak.database.entity.DbPasswordRestore;
 import com.thelak.database.entity.DbUser;
 import com.thelak.database.entity.DbUserSession;
 import com.thelak.route.auth.interfaces.IAuthenticationService;
 import com.thelak.route.auth.models.*;
 import com.thelak.route.exceptions.*;
 import com.thelak.route.payments.models.subscription.SetSubscriptionModel;
+import com.thelak.route.smtp.interfaces.IEmailService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -27,18 +29,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @Api(value = "Authorization API", produces = "application/json")
@@ -49,6 +48,9 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
 
     @Autowired
     private ITokenService tokenService;
+
+    @Autowired
+    private IEmailService emailService;
 
     ObjectContext objectContext;
 
@@ -217,6 +219,59 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
             return ResponseEntity.ok()
                     .headers(responseHeaders)
                     .body(null);
+        } catch (ExpiredJwtException e) {
+            throw new MsNotAuthorizedException();
+        }
+    }
+
+    @Override
+    @RequestMapping(value = AUTH_USER_RESTORE_REQUEST, method = {RequestMethod.GET})
+    public Boolean restorePasswordRequest(@RequestParam String email) throws MicroServiceException {
+        try {
+
+            DbUser dbUser = ObjectSelect.query(DbUser.class)
+                    .where(DbUser.EMAIL.eq(email))
+                    .selectFirst(objectContext);
+
+            DbPasswordRestore dbPasswordRestore = objectContext.newObject(DbPasswordRestore.class);
+            dbPasswordRestore.setEmail(email);
+            dbPasswordRestore.setPasswordRestoreToUser(dbUser);
+            dbPasswordRestore.setCreatedDate(LocalDateTime.now());
+            dbPasswordRestore.setStatus(false);
+            dbPasswordRestore.setUuid(UUID.randomUUID().toString());
+
+            objectContext.commitChanges();
+
+            emailService.sendRestorePassword(email, "https://thelak.com/restore/password?uuid=" + dbPasswordRestore.getUuid());
+
+            return true;
+        } catch (ExpiredJwtException e) {
+            throw new MsNotAuthorizedException();
+        }
+    }
+
+    @Override
+    @RequestMapping(value = AUTH_USER_RESTORE_CONFIRM, method = {RequestMethod.GET})
+    public Boolean restorePasswordConfirm(@RequestBody RestorePasswordRequest request) throws MicroServiceException {
+        try {
+
+            DbPasswordRestore dbPasswordRestore = ObjectSelect.query(DbPasswordRestore.class)
+                    .where(DbPasswordRestore.UUID.eq(request.getUuid()))
+                    .selectFirst(objectContext);
+
+            if (!dbPasswordRestore.isStatus()) {
+                dbPasswordRestore.setStatus(true);
+
+                DbUser dbUser = dbPasswordRestore.getPasswordRestoreToUser();
+
+                dbUser.setSalt(PasswordHelper.generateSalt());
+                dbUser.setPassword(PasswordHelper.hashPassword(request.getPassword(), dbUser.getSalt()));
+
+                objectContext.commitChanges();
+
+                return true;
+            }
+            return false;
         } catch (ExpiredJwtException e) {
             throw new MsNotAuthorizedException();
         }

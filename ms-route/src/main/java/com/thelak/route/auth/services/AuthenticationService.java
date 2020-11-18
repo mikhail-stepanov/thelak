@@ -35,6 +35,16 @@ public class AuthenticationService extends BaseMicroservice implements IAuthenti
     }
 
     @Override
+    public Boolean restorePasswordRequest(String email) throws MicroServiceException {
+        return null;
+    }
+
+    @Override
+    public Boolean restorePasswordConfirm(RestorePasswordRequest request) throws MicroServiceException {
+        return null;
+    }
+
+    @Override
     public VueHelpModel updateUser(UpdateUserModel user) throws MicroServiceException {
         return retry(() -> restTemplate.postForEntity(buildUrl(AUTH_USER_UPDATE), user, VueHelpModel.class).getBody());
     }

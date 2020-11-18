@@ -8,6 +8,7 @@ import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.exp.Property;
 
 import com.thelak.database.entity.DbNotification;
+import com.thelak.database.entity.DbPasswordRestore;
 import com.thelak.database.entity.DbUserSession;
 
 /**
@@ -39,6 +40,7 @@ public abstract class _DbUser extends CayenneDataObject {
     public static final Property<String> SUB_TYPE = Property.create("subType", String.class);
     public static final Property<LocalDateTime> SUBSCRIPTION_DATE = Property.create("subscriptionDate", LocalDateTime.class);
     public static final Property<List<DbNotification>> USER_TO_NOTIFICATION = Property.create("userToNotification", List.class);
+    public static final Property<List<DbPasswordRestore>> USER_TO_PASSWORD_RESTORE = Property.create("userToPasswordRestore", List.class);
     public static final Property<List<DbUserSession>> USER_TO_SESSION = Property.create("userToSession", List.class);
 
     public void setBirthday(LocalDate birthday) {
@@ -165,6 +167,18 @@ public abstract class _DbUser extends CayenneDataObject {
     @SuppressWarnings("unchecked")
     public List<DbNotification> getUserToNotification() {
         return (List<DbNotification>)readProperty("userToNotification");
+    }
+
+
+    public void addToUserToPasswordRestore(DbPasswordRestore obj) {
+        addToManyTarget("userToPasswordRestore", obj, true);
+    }
+    public void removeFromUserToPasswordRestore(DbPasswordRestore obj) {
+        removeToManyTarget("userToPasswordRestore", obj, true);
+    }
+    @SuppressWarnings("unchecked")
+    public List<DbPasswordRestore> getUserToPasswordRestore() {
+        return (List<DbPasswordRestore>)readProperty("userToPasswordRestore");
     }
 
 

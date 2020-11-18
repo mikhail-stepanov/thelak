@@ -1,10 +1,7 @@
 package com.thelak.route.smtp.interfaces;
 
 import com.thelak.route.exceptions.MicroServiceException;
-import com.thelak.route.smtp.models.PartnerRequest;
-import com.thelak.route.smtp.models.QuestionRequest;
-import com.thelak.route.smtp.models.SendEmailRequest;
-import com.thelak.route.smtp.models.SendEmailResponse;
+import com.thelak.route.smtp.models.*;
 
 import java.util.Map;
 
@@ -14,6 +11,7 @@ public interface IEmailService {
     String EMAIL_HTML = "/v1/email/html";
     String EMAIL_CERTIFICATE = "/v1/email/cert";
 
+    String EMAIL_PASSWORD = "/v1/email/password";
     String EMAIL_PARTNER_REQUEST = "/v1/email/partner";
     String EMAIL_QUESTION = "/v1/email/question";
 
@@ -26,4 +24,7 @@ public interface IEmailService {
     Boolean sendPartnerRequest(PartnerRequest request) throws MicroServiceException;
 
     Boolean sendQuestion(QuestionRequest request) throws MicroServiceException;
+
+    Boolean sendRestorePassword(String to, String link) throws MicroServiceException;
+
 }
