@@ -32,6 +32,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -242,7 +244,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
 
             objectContext.commitChanges();
 
-            emailService.sendRestorePassword(email, "https://thelak.com/sign/restore/password?uuid=" + dbPasswordRestore.getUuid());
+            emailService.sendRestorePassword(email, URLEncoder.encode("https://thelak.com/sign/restore/password?uuid=" + dbPasswordRestore.getUuid(), StandardCharsets.UTF_8));
 
             return true;
         } catch (ExpiredJwtException e) {
