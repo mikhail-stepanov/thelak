@@ -244,7 +244,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
 
             objectContext.commitChanges();
 
-            emailService.sendRestorePassword(email, "https://thelak.com/sign/restore/password?uuid=" + URLEncoder.encode(dbPasswordRestore.getUuid(), StandardCharsets.UTF_8));
+            emailService.sendRestorePassword(email, dbPasswordRestore.getUuid());
 
             return true;
         } catch (ExpiredJwtException e) {

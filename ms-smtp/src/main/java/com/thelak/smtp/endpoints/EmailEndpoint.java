@@ -31,6 +31,7 @@ import javax.annotation.PostConstruct;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 @RestController
@@ -161,7 +162,7 @@ public class EmailEndpoint extends AbstractMicroservice implements IEmailService
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(to);
             message.setSubject("Thelak. Восстановление Пароля.");
-            message.setText("Уважаемый пользователь Thelak!\n\nМы получили запрос на восстановление пароля.\nДля восстановления перейдите по ссылке: " + link + "\n\n\nС уважением,\nКоманда Thelak");
+            message.setText("Уважаемый пользователь Thelak!\n\nМы получили запрос на восстановление пароля.\nДля восстановления перейдите по ссылке: " + "https://thelak.com/sign/restore/password?uuid=" + URLEncoder.encode(link, StandardCharsets.UTF_8) + "\n\n\nС уважением,\nКоманда Thelak");
             emailSender.send(message);
 
             return true;
