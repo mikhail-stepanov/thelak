@@ -32,8 +32,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -235,18 +233,21 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
                     .where(DbUser.EMAIL.eq(email))
                     .selectFirst(objectContext);
 
-            DbPasswordRestore dbPasswordRestore = objectContext.newObject(DbPasswordRestore.class);
-            dbPasswordRestore.setEmail(email);
-            dbPasswordRestore.setPasswordRestoreToUser(dbUser);
-            dbPasswordRestore.setCreatedDate(LocalDateTime.now());
-            dbPasswordRestore.setStatus(false);
-            dbPasswordRestore.setUuid(UUID.randomUUID().toString());
+            if (dbUser != null) {
+                DbPasswordRestore dbPasswordRestore = objectContext.newObject(DbPasswordRestore.class);
+                dbPasswordRestore.setEmail(email);
+                dbPasswordRestore.setPasswordRestoreToUser(dbUser);
+                dbPasswordRestore.setCreatedDate(LocalDateTime.now());
+                dbPasswordRestore.setStatus(false);
+                dbPasswordRestore.setUuid(UUID.randomUUID().toString());
 
-            objectContext.commitChanges();
+                objectContext.commitChanges();
 
-            emailService.sendRestorePassword(email, dbPasswordRestore.getUuid());
+                emailService.sendRestorePassword(email, dbPasswordRestore.getUuid());
 
-            return true;
+                return true;
+            }
+            return false;
         } catch (ExpiredJwtException e) {
             throw new MsNotAuthorizedException();
         }
