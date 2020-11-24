@@ -19,7 +19,7 @@
 		<db-attribute name="deleted_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="email" type="VARCHAR" isMandatory="true" length="255"/>
 		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="id_user" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="id_user" type="BIGINT"/>
 		<db-attribute name="modified_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="status" type="BOOLEAN" isMandatory="true" length="64"/>
 		<db-attribute name="uuid" type="VARCHAR" isMandatory="true" length="64"/>
@@ -36,10 +36,10 @@
 		<db-attribute name="is_subscribe" type="BOOLEAN"/>
 		<db-attribute name="modified_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="name" type="VARCHAR" isMandatory="true" length="255"/>
-		<db-attribute name="password" type="VARCHAR" isMandatory="true" length="64"/>
+		<db-attribute name="password" type="VARCHAR" length="64"/>
 		<db-attribute name="phone" type="VARCHAR" isMandatory="true" length="64"/>
 		<db-attribute name="renew" type="BOOLEAN"/>
-		<db-attribute name="salt" type="VARCHAR" isMandatory="true" length="64"/>
+		<db-attribute name="salt" type="VARCHAR" length="64"/>
 		<db-attribute name="sub_type" type="VARCHAR" length="64"/>
 		<db-attribute name="subscription_date" type="TIMESTAMP"/>
 	</db-entity>
