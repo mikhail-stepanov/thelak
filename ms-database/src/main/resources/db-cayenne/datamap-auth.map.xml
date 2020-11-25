@@ -32,7 +32,7 @@
 		<db-attribute name="deleted_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="email" type="VARCHAR" isMandatory="true" length="255"/>
 		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="is_admin" type="BOOLEAN" isMandatory="true"/>
+		<db-attribute name="is_admin" type="BOOLEAN"/>
 		<db-attribute name="is_subscribe" type="BOOLEAN"/>
 		<db-attribute name="modified_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="name" type="VARCHAR" isMandatory="true" length="255"/>
