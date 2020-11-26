@@ -14,13 +14,10 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class AuthSignupRequest {
 
-    @NotNull
     String email;
 
-    @NotNull
     String password;
 
-    @NotNull
     String phone;
 
     String name;

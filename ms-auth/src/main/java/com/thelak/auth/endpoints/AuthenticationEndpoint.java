@@ -52,8 +52,6 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
     @Autowired
     private IEmailService emailService;
 
-    ObjectContext objectContext;
-
     protected static final Logger log = LoggerFactory.getLogger(AuthenticationEndpoint.class);
 
     private RLUCache<String, String> tokensCache;
@@ -63,8 +61,6 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
         int ttl = 60_000;
         int max = 10_000;
         tokensCache = new RLUCache<>(ttl, max);
-
-        objectContext = databaseService.getContext();
     }
 
     @Override
@@ -78,7 +74,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
     @RequestMapping(value = AUTH_INFO, method = {RequestMethod.GET})
     public VueHelpModel info() throws MicroServiceException {
         try {
-
+            ObjectContext objectContext = databaseService.getContext();
             UserInfo userInfo = (UserInfo) SecurityContextHolder
                     .getContext()
                     .getAuthentication()
@@ -112,7 +108,8 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
     @ApiOperation(value = "Sign up")
     @RequestMapping(value = AUTH_SIGN_UP, method = {RequestMethod.POST})
     public VueHelpModel signUp(@RequestBody AuthSignupRequest request) throws MicroServiceException, ParseException {
-        if (!checkEmailExists(request.getEmail())) {
+        ObjectContext objectContext = databaseService.getContext();
+        if (!checkEmailExists(request.getEmail()) && request.getPassword() != null) {
 
             DbUser user = objectContext.newObject(DbUser.class);
 
@@ -159,6 +156,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
     @ApiOperation(value = "Login user")
     @RequestMapping(value = AUTH_LOGIN, method = {RequestMethod.POST})
     public ResponseEntity login(@RequestBody AuthLoginRequest request) throws MicroServiceException {
+        ObjectContext objectContext = databaseService.getContext();
         if (checkEmailExists(request.getEmail())) {
 
             DbUser user = ObjectSelect.query(DbUser.class)
@@ -188,9 +186,11 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
                         .headers(responseHeaders)
                         .body(null);
             } else
-                throw new MsNotAuthorizedException();
+                objectContext.rollbackChanges();
+            throw new MsNotAuthorizedException();
         } else
-            throw new MsObjectNotFoundException("Customer with email: ", request.getEmail());
+            objectContext.rollbackChanges();
+        throw new MsObjectNotFoundException("Customer with email: ", request.getEmail());
     }
 
     @Override
@@ -203,6 +203,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
     )
     @RequestMapping(value = AUTH_REFRESH, method = {RequestMethod.GET})
     public ResponseEntity refresh() throws MicroServiceException {
+        ObjectContext objectContext = databaseService.getContext();
         try {
             UserInfo userInfo = (UserInfo) SecurityContextHolder
                     .getContext()
@@ -220,6 +221,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
                     .headers(responseHeaders)
                     .body(null);
         } catch (ExpiredJwtException e) {
+            objectContext.rollbackChanges();
             throw new MsNotAuthorizedException();
         }
     }
@@ -228,7 +230,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
     @RequestMapping(value = AUTH_USER_RESTORE_REQUEST, method = {RequestMethod.GET})
     public Boolean restorePasswordRequest(@RequestParam String email) throws MicroServiceException {
         try {
-
+            ObjectContext objectContext = databaseService.getContext();
             DbUser dbUser = ObjectSelect.query(DbUser.class)
                     .where(DbUser.EMAIL.eq(email))
                     .selectFirst(objectContext);
@@ -257,7 +259,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
     @RequestMapping(value = AUTH_USER_RESTORE_CONFIRM, method = {RequestMethod.POST})
     public Boolean restorePasswordConfirm(@RequestBody RestorePasswordRequest request) throws MicroServiceException {
         try {
-
+            ObjectContext objectContext = databaseService.getContext();
             DbPasswordRestore dbPasswordRestore = ObjectSelect.query(DbPasswordRestore.class)
                     .where(DbPasswordRestore.UUID.eq(request.getUuid()))
                     .orderBy(DbPasswordRestore.CREATED_DATE.desc())
@@ -292,6 +294,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
     @RequestMapping(value = AUTH_USER_UPDATE, method = {RequestMethod.POST})
     public VueHelpModel updateUser(@RequestBody UpdateUserModel user) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
             UserInfo userInfo = (UserInfo) SecurityContextHolder
                     .getContext()
                     .getAuthentication()
@@ -332,8 +335,8 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
     @ApiOperation(value = "Set user subscription")
     @RequestMapping(value = AUTH_USER_SUBSCRIPTION, method = {RequestMethod.POST})
     public VueHelpModel setSubscription(@RequestBody SetSubscriptionModel setSubscriptionModel) throws MicroServiceException {
-
         try {
+            ObjectContext objectContext = databaseService.getContext();
             DbUser dbUser = SelectById.query(DbUser.class, setSubscriptionModel.getUserId()).selectFirst(objectContext);
             dbUser.setSubscriptionDate(setSubscriptionModel.getSubscriptionDate());
             dbUser.setIsSubscribe(true);
@@ -374,6 +377,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
     @RequestMapping(value = AUTH_USER_NOTIFICATION_INFO, method = {RequestMethod.GET})
     public NotificationModel getNotificationInfo() throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
             UserInfo userInfo = (UserInfo) SecurityContextHolder
                     .getContext()
                     .getAuthentication()
@@ -406,6 +410,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
     @RequestMapping(value = AUTH_USER_NOTIFICATION_UPDATE, method = {RequestMethod.POST})
     public NotificationModel updateNotificationInfo(@RequestBody NotificationModel notificationModel) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
             UserInfo userInfo = (UserInfo) SecurityContextHolder
                     .getContext()
                     .getAuthentication()
@@ -436,6 +441,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
 
     private boolean checkEmailExists(String email) {
         try {
+            ObjectContext objectContext = databaseService.getContext();
             DbUser user = ObjectSelect.query(DbUser.class)
                     .where(DbUser.EMAIL.eq(email))
                     .selectFirst(objectContext);
