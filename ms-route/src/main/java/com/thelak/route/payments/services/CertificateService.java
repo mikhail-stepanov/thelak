@@ -4,6 +4,7 @@ import com.thelak.route.common.services.BaseMicroservice;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.payments.interfaces.ICertificateService;
 import com.thelak.route.payments.models.certificate.CertificateModel;
+import com.thelak.route.payments.models.certificate.CreateCertificateRequest;
 import com.thelak.route.payments.models.certificate.IssuedCertificateModel;
 import org.springframework.web.client.RestTemplate;
 
@@ -24,6 +25,21 @@ public class CertificateService extends BaseMicroservice implements ICertificate
     @Override
     public List<CertificateModel> list() throws MicroServiceException {
         return retry(() -> restTemplate.getForEntity(buildUrl(CERTIFICATE_LIST), List.class).getBody());
+    }
+
+    @Override
+    public CertificateModel create(CreateCertificateRequest request) throws MicroServiceException {
+        return null;
+    }
+
+    @Override
+    public CertificateModel update(CertificateModel request) throws MicroServiceException {
+        return null;
+    }
+
+    @Override
+    public Boolean delete(Long id) throws MicroServiceException {
+        return null;
     }
 
     @Override

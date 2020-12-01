@@ -11,6 +11,7 @@ import com.thelak.route.exceptions.MsBadRequestException;
 import com.thelak.route.exceptions.MsInternalErrorException;
 import com.thelak.route.payments.interfaces.ICertificateService;
 import com.thelak.route.payments.models.certificate.CertificateModel;
+import com.thelak.route.payments.models.certificate.CreateCertificateRequest;
 import com.thelak.route.payments.models.certificate.IssuedCertificateModel;
 import com.thelak.route.payments.models.subscription.SetSubscriptionModel;
 import io.swagger.annotations.Api;
@@ -83,6 +84,27 @@ public class CertificateEndpoint extends AbstractMicroservice implements ICertif
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
         }
+    }
+
+    @Override
+    @ApiOperation(value = "Create Certificate")
+    @RequestMapping(value = CERTIFICATE_CREATE, method = {RequestMethod.POST})
+    public CertificateModel create(CreateCertificateRequest request) throws MicroServiceException {
+        return null;
+    }
+
+    @Override
+    @ApiOperation(value = "Update Certificate")
+    @RequestMapping(value = CERTIFICATE_UPDATE, method = {RequestMethod.PUT})
+    public CertificateModel update(CertificateModel request) throws MicroServiceException {
+        return null;
+    }
+
+    @Override
+    @ApiOperation(value = "Delete Certificate")
+    @RequestMapping(value = CERTIFICATE_DELETE, method = {RequestMethod.DELETE})
+    public Boolean delete(Long id) throws MicroServiceException {
+        return null;
     }
 
     @Override
