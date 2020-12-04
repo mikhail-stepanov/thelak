@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="article@84.201.186.50" uuid="dc04ab64-6116-4d5e-b9d5-8ef0d77101e1">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://84.201.186.50:5432/article</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="auth@84.201.186.50" uuid="39a49523-f92a-4ed6-9e6f-0118a51a3c50">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://84.201.186.50:5432/auth</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="category@84.201.186.50" uuid="853906e8-2c6e-404d-b28f-94112ec1c12c">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://84.201.186.50:5432/category</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="event@84.201.186.50" uuid="6cb5ce28-b351-4643-87ed-5e4dc9a7d1d7">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://84.201.186.50:5432/event</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="payments@84.201.186.50" uuid="1b860af5-00eb-4cc4-8567-10f75218a440">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://84.201.186.50:5432/payments</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="promo@84.201.186.50" uuid="3634e472-254d-4493-b913-9c8f263eebf6">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://84.201.186.50:5432/promo</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="smtp@84.201.186.50" uuid="fe81a6f4-42f1-44f2-84ca-fdc3baee8a5d">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://84.201.186.50:5432/smtp</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="speaker@84.201.186.50" uuid="014e5d81-249c-4158-9f62-748d5c650026">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://84.201.186.50:5432/speaker</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="thelak@84.201.186.50" uuid="04df6b36-5c3f-4557-a20f-cf9402ec418a">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://84.201.186.50:5432/postgres</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="video@84.201.186.50" uuid="85a6bf1f-ba1a-443d-a940-2d1706206e7d">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://84.201.186.50:5432/video</jdbc-url>
+    </data-source>
+  </component>
+</project>
