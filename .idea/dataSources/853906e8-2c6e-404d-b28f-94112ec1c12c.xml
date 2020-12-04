@@ -1421,7 +1421,7 @@ false posixrules
     <database id="4" parent="1" name="category">
       <ObjectId>17096</ObjectId>
       <Owner>category_user</Owner>
-      <IntrospectionStateNumber>736362</IntrospectionStateNumber>
+      <IntrospectionStateNumber>1550181</IntrospectionStateNumber>
       <Current>1</Current>
     </database>
     <database id="5" parent="1" name="event">
@@ -1538,7 +1538,7 @@ false posixrules
       <Comment>standard public schema</Comment>
       <StateNumber>275</StateNumber>
       <Owner>postgres</Owner>
-      <IntrospectionStateNumber>736363</IntrospectionStateNumber>
+      <IntrospectionStateNumber>1550182</IntrospectionStateNumber>
       <Current>1</Current>
     </schema>
     <access-method id="33" parent="4" name="heap">

@@ -1450,7 +1450,7 @@ false posixrules
     <database id="11" parent="1" name="video">
       <ObjectId>16442</ObjectId>
       <Owner>video_user</Owner>
-      <IntrospectionStateNumber>735308</IntrospectionStateNumber>
+      <IntrospectionStateNumber>1550205</IntrospectionStateNumber>
       <Current>1</Current>
     </database>
     <role id="12" parent="1" name="article_user">
@@ -1538,7 +1538,7 @@ false posixrules
       <Comment>standard public schema</Comment>
       <StateNumber>275</StateNumber>
       <Owner>postgres</Owner>
-      <IntrospectionStateNumber>735309</IntrospectionStateNumber>
+      <IntrospectionStateNumber>1550206</IntrospectionStateNumber>
       <Current>1</Current>
     </schema>
     <access-method id="33" parent="11" name="heap">

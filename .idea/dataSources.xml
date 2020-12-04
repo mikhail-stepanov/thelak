@@ -31,12 +31,6 @@
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
       <jdbc-url>jdbc:postgresql://84.201.186.50:5432/payments</jdbc-url>
     </data-source>
-    <data-source source="LOCAL" name="promo@84.201.186.50" uuid="3634e472-254d-4493-b913-9c8f263eebf6">
-      <driver-ref>postgresql</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://84.201.186.50:5432/promo</jdbc-url>
-    </data-source>
     <data-source source="LOCAL" name="smtp@84.201.186.50" uuid="fe81a6f4-42f1-44f2-84ca-fdc3baee8a5d">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>

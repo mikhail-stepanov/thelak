@@ -1639,6 +1639,7 @@ false posixrules
     </table>
     <table id="50" parent="32" name="db_password_restore">
       <ObjectId>18630</ObjectId>
+      <Outdated>1</Outdated>
       <Owner>auth_user</Owner>
       <StateNumber>130306</StateNumber>
     </table>

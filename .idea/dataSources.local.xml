@@ -78,21 +78,6 @@
         </introspection-scope>
       </schema-mapping>
     </data-source>
-    <data-source name="promo@84.201.186.50" uuid="3634e472-254d-4493-b913-9c8f263eebf6">
-      <database-info product="PostgreSQL" version="12.3 (Ubuntu 12.3-1.pgdg18.04+1)" jdbc-version="4.2" driver-name="PostgreSQL JDBC Driver" driver-version="42.2.5" dbms="POSTGRES" exact-version="12.3" exact-driver-version="42.2">
-        <identifier-quote-string>&quot;</identifier-quote-string>
-      </database-info>
-      <case-sensitivity plain-identifiers="lower" quoted-identifiers="exact" />
-      <secret-storage>master_key</secret-storage>
-      <user-name>promo_user</user-name>
-      <schema-mapping>
-        <introspection-scope>
-          <node kind="database" qname="promo">
-            <node kind="schema" qname="public" />
-          </node>
-        </introspection-scope>
-      </schema-mapping>
-    </data-source>
     <data-source name="smtp@84.201.186.50" uuid="fe81a6f4-42f1-44f2-84ca-fdc3baee8a5d">
       <database-info product="PostgreSQL" version="12.3 (Ubuntu 12.3-1.pgdg18.04+1)" jdbc-version="4.2" driver-name="PostgreSQL JDBC Driver" driver-version="42.2.5" dbms="POSTGRES" exact-version="12.3" exact-driver-version="42.2">
         <identifier-quote-string>&quot;</identifier-quote-string>
