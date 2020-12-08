@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap https://cayenne.apache.org/schema/9/modelMap.xsd"
-	 project-version="9">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
 	<property name="defaultPackage" value="com.thelak.database.entity"/>
 	<property name="defaultSchema" value="public"/>
 	<property name="quoteSqlIdentifiers" value="true"/>
@@ -26,7 +26,7 @@
 		<db-attribute name="playground" type="VARCHAR" length="255"/>
 		<db-attribute name="poster_url" type="VARCHAR" length="2048"/>
 		<db-attribute name="rating" type="INTEGER"/>
-		<db-attribute name="speaker" type="VARCHAR" length="64"/>
+		<db-attribute name="speaker" type="VARCHAR" length="10000"/>
 		<db-attribute name="speaker_information" type="VARCHAR" length="2048"/>
 		<db-attribute name="title" type="VARCHAR" isMandatory="true" length="255"/>
 		<db-attribute name="view" type="INTEGER"/>
@@ -146,19 +146,19 @@
 	<db-relationship name="videoToView" source="db_video" target="db_video_views" toMany="true">
 		<db-attribute-pair source="id" target="id_video"/>
 	</db-relationship>
-	<db-relationship name="favoriteToVideo" source="db_video_favorites" target="db_video" toMany="false">
+	<db-relationship name="favoriteToVideo" source="db_video_favorites" target="db_video">
 		<db-attribute-pair source="id_video" target="id"/>
 	</db-relationship>
-	<db-relationship name="historyToVideo" source="db_video_history" target="db_video" toMany="false">
+	<db-relationship name="historyToVideo" source="db_video_history" target="db_video">
 		<db-attribute-pair source="id_video" target="id"/>
 	</db-relationship>
-	<db-relationship name="ratingToVideo" source="db_video_rating" target="db_video" toMany="false">
+	<db-relationship name="ratingToVideo" source="db_video_rating" target="db_video">
 		<db-attribute-pair source="id_video" target="id"/>
 	</db-relationship>
-	<db-relationship name="timecodeToVideo" source="db_video_timecode" target="db_video" toMany="false">
+	<db-relationship name="timecodeToVideo" source="db_video_timecode" target="db_video">
 		<db-attribute-pair source="id_video" target="id"/>
 	</db-relationship>
-	<db-relationship name="viewToVideo" source="db_video_views" target="db_video" toMany="false">
+	<db-relationship name="viewToVideo" source="db_video_views" target="db_video">
 		<db-attribute-pair source="id_video" target="id"/>
 	</db-relationship>
 	<obj-relationship name="videoToFavorite" source="DbVideo" target="DbVideoFavorites" deleteRule="Deny" db-relationship-path="videoToFavorite"/>
