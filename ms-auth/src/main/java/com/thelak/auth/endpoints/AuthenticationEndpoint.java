@@ -443,7 +443,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
         try {
             ObjectContext objectContext = databaseService.getContext();
             DbUser user = ObjectSelect.query(DbUser.class)
-                    .where(DbUser.EMAIL.eq(email))
+                    .where(DbUser.EMAIL.lower().eq(email.toLowerCase()))
                     .selectFirst(objectContext);
 
             return user != null;
