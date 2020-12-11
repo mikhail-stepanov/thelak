@@ -160,7 +160,7 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
         if (checkEmailExists(request.getEmail())) {
 
             DbUser user = ObjectSelect.query(DbUser.class)
-                    .where(DbUser.EMAIL.eq(request.getEmail()))
+                    .where(DbUser.EMAIL.lower().eq(request.getEmail().toLowerCase()))
                     .selectFirst(objectContext);
 
             if (user.getPassword().equals(PasswordHelper.hashPassword(request.getPassword(), user.getSalt()))) {
