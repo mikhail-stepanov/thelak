@@ -1,6 +1,6 @@
 package com.thelak.article.endpoints;
 
-import com.thelak.core.endpoints.AbstractMicroservice;
+import com.thelak.core.endpoints.MicroserviceAdvice;
 import com.thelak.core.models.UserInfo;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbArticle;
@@ -27,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -36,7 +35,7 @@ import static com.thelak.article.services.ArticleHelper.countView;
 
 @RestController
 @Api(value = "Article API", produces = "application/json")
-public class ArticleEndpoint extends AbstractMicroservice implements IArticleService {
+public class ArticleEndpoint extends MicroserviceAdvice implements IArticleService {
 
     @Autowired
     private DatabaseService databaseService;
@@ -47,20 +46,13 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
     @Autowired
     private ICategoryContentService categoryContentService;
 
-    ObjectContext objectContext;
-
-    @PostConstruct
-    private void initialize() {
-        objectContext = databaseService.getContext();
-    }
-
     @Override
     @ApiOperation(value = "Get article by id")
     @RequestMapping(value = ARTICLE_GET, method = {RequestMethod.GET})
     public ArticleModel get(@RequestParam Long id) throws MicroServiceException {
         try {
             long userId;
-            UserInfo userInfo = null;
+            UserInfo userInfo;
             try {
                 userInfo = (UserInfo) SecurityContextHolder
                         .getContext()
@@ -70,6 +62,8 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
             } catch (Exception e) {
                 userId = -1;
             }
+
+            ObjectContext objectContext = databaseService.getContext();
 
             DbArticle dbArticle = SelectById.query(DbArticle.class, id).selectFirst(objectContext);
 
@@ -100,6 +94,8 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
     @RequestMapping(value = ARTICLE_GET_IDS, method = {RequestMethod.GET})
     public List<ArticleModel> getByIds(@RequestParam List<Long> ids) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             List<DbArticle> dbArticles;
             dbArticles = ObjectSelect.query(DbArticle.class).
                     where(ExpressionFactory.inDbExp(DbArticle.ID_PK_COLUMN, ids))
@@ -145,6 +141,7 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
                                    @RequestParam(required = false) Integer size,
                                    @RequestParam(required = false) ArticleSortEnum sort, @RequestParam(required = false) ArticleSortTypeEnum sortType) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
 
             List<DbArticle> dbArticles;
             if (page == null || size == null)
@@ -214,6 +211,8 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
                                      @RequestParam(required = false) Integer size) throws MicroServiceException {
         try {
 
+            ObjectContext objectContext = databaseService.getContext();
+
             List<DbArticle> dbArticles;
             if (page == null || size == null)
                 dbArticles = ObjectSelect.query(DbArticle.class).
@@ -261,6 +260,7 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
     @RequestMapping(value = ARTICLE_CREATE, method = {RequestMethod.POST})
     public ArticleModel create(@RequestBody ArticleCreateModel request) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
 
             DbArticle dbArticle = objectContext.newObject(DbArticle.class);
             dbArticle.setTitle(request.getTitle());
@@ -297,6 +297,8 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
     @RequestMapping(value = ARTICLE_UPDATE, method = {RequestMethod.PUT})
     public ArticleModel update(@RequestBody ArticleModel request) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             DbArticle dbArticle = SelectById.query(DbArticle.class, request.getId()).selectFirst(objectContext);
 
             dbArticle.setTitle(Optional.ofNullable(request.getTitle()).orElse(dbArticle.getTitle()));
@@ -334,6 +336,8 @@ public class ArticleEndpoint extends AbstractMicroservice implements IArticleSer
     @RequestMapping(value = ARTICLE_DELETE, method = {RequestMethod.DELETE})
     public Boolean delete(@RequestParam Long id) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             DbArticle dbArticle = SelectById.query(DbArticle.class, id).selectFirst(objectContext);
             dbArticle.setDeletedDate(LocalDateTime.now());
 

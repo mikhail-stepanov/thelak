@@ -24,9 +24,6 @@ public class StrongPkGenerator extends PostgresPkGenerator {
 
     @Override
     protected String createSequenceString(DbEntity ent) {
-        // note that PostgreSQL 7.4 and newer supports INCREMENT BY and START WITH
-        // however 7.3 doesn't like BY and WITH, so using older more neutral
-        // syntax that works with all tested versions.
         return "CREATE SEQUENCE IF NOT EXISTS" + sequenceName(ent) + " INCREMENT 1 START " + pkStartValue;
     }
 

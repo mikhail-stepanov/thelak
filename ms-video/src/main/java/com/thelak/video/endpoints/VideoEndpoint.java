@@ -1,6 +1,6 @@
 package com.thelak.video.endpoints;
 
-import com.thelak.core.endpoints.AbstractMicroservice;
+import com.thelak.core.endpoints.MicroserviceAdvice;
 import com.thelak.core.models.UserInfo;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbVideo;
@@ -29,16 +29,12 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,7 +43,7 @@ import static com.thelak.video.services.VideoHelper.countView;
 
 @RestController
 @Api(value = "Video API", produces = "application/json")
-public class VideoEndpoint extends AbstractMicroservice implements IVideoService {
+public class VideoEndpoint extends MicroserviceAdvice implements IVideoService {
 
     @Autowired
     private DatabaseService databaseService;
@@ -64,20 +60,13 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     @Autowired
     private ICategoryService categoryService;
 
-    ObjectContext objectContext;
-
-    protected static final Logger log = LoggerFactory.getLogger(VideoEndpoint.class);
-
-    @PostConstruct
-    private void initialize() {
-        objectContext = databaseService.getContext();
-    }
-
     @Override
     @ApiOperation(value = "Get video by id")
     @RequestMapping(value = VIDEO_GET, method = {RequestMethod.GET})
     public VideoModel get(@RequestParam Long id) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             long userId;
             UserInfo userInfo = null;
             try {
@@ -107,7 +96,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
 
             List<CategoryModel> categoryModel = categoryService.getByVideo(id);
 
-            SpeakerModel speakerModel = speakerService.getByVideo(id);
+            List<SpeakerModel> speakerModel = speakerService.getByVideo(id);
 
             return buildVideoModel(dbVideo, categoryModel, speakerModel, userInfo, true);
 
@@ -121,6 +110,8 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     @RequestMapping(value = VIDEO_GET_IDS, method = {RequestMethod.GET})
     public List<VideoModel> getByIds(@RequestParam List<Long> ids) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             UserInfo userInfo = null;
             try {
                 userInfo = (UserInfo) SecurityContextHolder
@@ -146,7 +137,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                 } catch (MicroServiceException e) {
                     log.error(e.staticMessage());
                 }
-                SpeakerModel speakerModel = null;
+                List<SpeakerModel> speakerModel = null;
                 try {
                     speakerModel = speakerService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
                 } catch (MicroServiceException e) {
@@ -203,6 +194,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                                  @RequestParam(required = false) List<String> playgroundFilter, @RequestParam(required = false) List<String> languageFilter,
                                  @RequestParam(required = false) List<Long> categoryFilter, @RequestParam(required = false) List<Long> speakerFilter) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
 
             UserInfo userInfo = null;
             try {
@@ -367,7 +359,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                     } catch (MicroServiceException e) {
                         log.error(e.staticMessage());
                     }
-                    SpeakerModel speakerModel = null;
+                    List<SpeakerModel> speakerModel = null;
                     try {
                         speakerModel = speakerService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
                     } catch (MicroServiceException e) {
@@ -397,6 +389,8 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     @RequestMapping(value = VIDEO_SEARCH, method = {RequestMethod.GET})
     public List<VideoModel> search(@RequestParam String search, @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             UserInfo userInfo = null;
             try {
                 userInfo = (UserInfo) SecurityContextHolder
@@ -441,7 +435,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                 } catch (MicroServiceException e) {
                     log.error(e.staticMessage());
                 }
-                SpeakerModel speakerModel = null;
+                List<SpeakerModel> speakerModel = null;
                 try {
                     speakerModel = speakerService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
                 } catch (MicroServiceException e) {
@@ -461,6 +455,8 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     @RequestMapping(value = VIDEO_CREATE, method = {RequestMethod.POST})
     public VideoModel create(@RequestBody VideoCreateRequest request) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             UserInfo userInfo = null;
             try {
                 userInfo = (UserInfo) SecurityContextHolder
@@ -510,7 +506,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
 
             List<CategoryModel> categoryModel = categoryService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
 
-            SpeakerModel speakerModel = speakerService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
+            List<SpeakerModel> speakerModel = speakerService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
 
             return buildVideoModel(dbVideo, categoryModel, speakerModel, userInfo, true);
         } catch (Exception e) {
@@ -523,6 +519,8 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     @RequestMapping(value = VIDEO_UPDATE, method = {RequestMethod.PUT})
     public VideoModel update(@RequestBody VideoModel request) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             UserInfo userInfo = null;
             try {
                 userInfo = (UserInfo) SecurityContextHolder
@@ -562,9 +560,8 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
             dbVideo.setModifiedDate(LocalDateTime.now());
 
             objectContext.commitChanges();
-
-            categoryContentService.videoToCategoryDelete((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
-            if (request.getCategory() != null)
+            if (request.getCategory() != null) {
+                categoryContentService.videoToCategoryDelete((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
                 request.getCategory().forEach(categoryModel -> {
                     try {
                         categoryContentService.videoToCategoryAdd((Long) dbVideo.getObjectId().getIdSnapshot().get("id"),
@@ -573,10 +570,10 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                         e.printStackTrace();
                     }
                 });
-
+            }
             List<CategoryModel> categoryModels = categoryService.getByVideo(request.getId());
 
-            SpeakerModel speakerModel = speakerService.getByVideo(request.getId());
+            List<SpeakerModel> speakerModel = speakerService.getByVideo(request.getId());
 
             return buildVideoModel(dbVideo, categoryModels, speakerModel, userInfo, true);
         } catch (Exception e) {
@@ -589,6 +586,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     @RequestMapping(value = VIDEO_DELETE, method = {RequestMethod.DELETE})
     public Boolean delete(@RequestParam Long id) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
 
             DbVideo dbVideo = SelectById.query(DbVideo.class, id).selectFirst(objectContext);
 
@@ -606,6 +604,7 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
     @ApiOperation(value = "Get video filters")
     @RequestMapping(value = VIDEO_FILTER_GET, method = {RequestMethod.GET})
     public VideoFilterModel getFilters() throws MicroServiceException {
+        ObjectContext objectContext = databaseService.getContext();
 
         List<String> countries = ObjectSelect.columnQuery(DbVideo.class, DbVideo.COUNTRY).distinct().select(objectContext);
         List<String> playgrounds = ObjectSelect.columnQuery(DbVideo.class, DbVideo.PLAYGROUND).distinct().select(objectContext);
@@ -618,9 +617,5 @@ public class VideoEndpoint extends AbstractMicroservice implements IVideoService
                 .languages(languages)
                 .years(years)
                 .build();
-    }
-
-    public static class Comparators {
-        public static final Comparator<VideoModel> NEW = Comparator.comparing(VideoModel::getCreatedDate);
     }
 }

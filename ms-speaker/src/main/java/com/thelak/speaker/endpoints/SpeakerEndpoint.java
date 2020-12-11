@@ -1,6 +1,6 @@
 package com.thelak.speaker.endpoints;
 
-import com.thelak.core.endpoints.AbstractMicroservice;
+import com.thelak.core.endpoints.MicroserviceAdvice;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.*;
 import com.thelak.route.exceptions.MicroServiceException;
@@ -20,7 +20,6 @@ import org.apache.cayenne.query.SelectById;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,28 +29,21 @@ import static com.thelak.speaker.services.SpeakerHelper.buildSpeakerModel;
 
 @RestController
 @Api(value = "Speaker API", produces = "application/json")
-public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerService {
+public class SpeakerEndpoint extends MicroserviceAdvice implements ISpeakerService {
 
     @Autowired
     private DatabaseService databaseService;
-
-    ObjectContext objectContext;
-
-    @PostConstruct
-    private void initialize() {
-        objectContext = databaseService.getContext();
-    }
 
     @Override
     @ApiOperation(value = "Get speaker by id")
     @RequestMapping(value = SPEAKER_GET, method = {RequestMethod.GET})
     public SpeakerModel get(@RequestParam Long id) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
 
             DbSpeaker dbSpeaker = SelectById.query(DbSpeaker.class, id).selectFirst(objectContext);
-            if (dbSpeaker.getDeletedDate()!=null) return null;
+            if (dbSpeaker.getDeletedDate() != null) return null;
             return buildSpeakerModel(dbSpeaker);
-
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
         }
@@ -62,6 +54,8 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
     @RequestMapping(value = SPEAKER_GET_IDS, method = {RequestMethod.GET})
     public List<SpeakerModel> getByIds(@RequestParam List<Long> ids) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             List<DbSpeaker> dbSpeakers;
             dbSpeakers = ObjectSelect.query(DbSpeaker.class).
                     where(ExpressionFactory.inDbExp(DbVideo.ID_PK_COLUMN, ids))
@@ -83,14 +77,20 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
     @Override
     @ApiOperation(value = "Get speaker by videoId")
     @RequestMapping(value = SPEAKER_GET_VIDEO, method = {RequestMethod.GET})
-    public SpeakerModel getByVideo(@RequestParam Long videoId) throws MicroServiceException {
+    public List<SpeakerModel> getByVideo(@RequestParam Long videoId) throws MicroServiceException {
         try {
-            DbSpeakerVideos dbSpeakerVideos = ObjectSelect.query(DbSpeakerVideos.class)
+            ObjectContext objectContext = databaseService.getContext();
+
+            List<DbSpeakerVideos> dbSpeakerVideos = ObjectSelect.query(DbSpeakerVideos.class)
                     .where(DbSpeakerVideos.ID_VIDEO.eq(videoId))
-                    .selectFirst(objectContext);
+                    .select(objectContext);
 
-            return buildSpeakerModel(dbSpeakerVideos.getVideoToSpeaker());
+            List<SpeakerModel> speakerModels = new ArrayList<>();
+            dbSpeakerVideos.forEach(speakerVideos -> {
+                speakerModels.add(buildSpeakerModel(speakerVideos.getVideoToSpeaker()));
+            });
 
+            return speakerModels;
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
         }
@@ -99,14 +99,20 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
     @Override
     @ApiOperation(value = "Get speaker by articleId")
     @RequestMapping(value = SPEAKER_GET_ARTICLE, method = {RequestMethod.GET})
-    public SpeakerModel getByArticle(@RequestParam Long articleId) throws MicroServiceException {
+    public List<SpeakerModel> getByArticle(@RequestParam Long articleId) throws MicroServiceException {
         try {
-            DbSpeakerArticles speakerArticles = ObjectSelect.query(DbSpeakerArticles.class)
+            ObjectContext objectContext = databaseService.getContext();
+
+            List<DbSpeakerArticles> dbSpeakerVideos = ObjectSelect.query(DbSpeakerArticles.class)
                     .where(DbSpeakerArticles.ID_ARTICLE.eq(articleId))
-                    .selectFirst(objectContext);
+                    .select(objectContext);
 
-            return buildSpeakerModel(speakerArticles.getArticleToSpeaker());
+            List<SpeakerModel> speakerModels = new ArrayList<>();
+            dbSpeakerVideos.forEach(speakerArticles -> {
+                speakerModels.add(buildSpeakerModel(speakerArticles.getArticleToSpeaker()));
+            });
 
+            return speakerModels;
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
         }
@@ -115,13 +121,20 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
     @Override
     @ApiOperation(value = "Get speaker by eventId")
     @RequestMapping(value = SPEAKER_GET_EVENT, method = {RequestMethod.GET})
-    public SpeakerModel getByEvent(@RequestParam Long eventId) throws MicroServiceException {
+    public List<SpeakerModel> getByEvent(@RequestParam Long eventId) throws MicroServiceException {
         try {
-            DbSpeakerEvents dbSpeakerEvents = ObjectSelect.query(DbSpeakerEvents.class)
-                    .where(DbSpeakerEvents.ID_EVENT.eq(eventId)).selectFirst(objectContext);
+            ObjectContext objectContext = databaseService.getContext();
 
-            return buildSpeakerModel(dbSpeakerEvents.getEventToSpeaker());
+            List<DbSpeakerEvents> dbSpeakerVideos = ObjectSelect.query(DbSpeakerEvents.class)
+                    .where(DbSpeakerEvents.ID_EVENT.eq(eventId))
+                    .select(objectContext);
 
+            List<SpeakerModel> speakerModels = new ArrayList<>();
+            dbSpeakerVideos.forEach(speakerEvents -> {
+                speakerModels.add(buildSpeakerModel(speakerEvents.getEventToSpeaker()));
+            });
+
+            return speakerModels;
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
         }
@@ -144,6 +157,8 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
                                    @RequestParam(required = false) Integer size,
                                    @RequestParam(required = false) List<String> countryFilter) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             final Expression countryFilterExpression;
             if (countryFilter != null)
                 countryFilterExpression = DbSpeaker.COUNTRY.in(countryFilter);
@@ -196,6 +211,7 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
                                      @RequestParam(required = false) Integer page,
                                      @RequestParam(required = false) Integer size) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
 
             List<DbSpeaker> dbSpeakers;
             if (page == null || size == null)
@@ -237,6 +253,7 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
     @RequestMapping(value = SPEAKER_CREATE, method = {RequestMethod.POST})
     public SpeakerModel create(@RequestBody SpeakerCreateRequest request) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
 
             DbSpeaker dbSpeaker = objectContext.newObject(DbSpeaker.class);
             dbSpeaker.setName(request.getName());
@@ -260,6 +277,7 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
     @RequestMapping(value = SPEAKER_UPDATE, method = {RequestMethod.PUT})
     public SpeakerModel update(@RequestBody SpeakerModel request) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
 
             DbSpeaker dbSpeaker = SelectById.query(DbSpeaker.class, request.getId()).selectFirst(objectContext);
 
@@ -273,7 +291,6 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
             objectContext.commitChanges();
 
             return buildSpeakerModel(dbSpeaker);
-
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
         }
@@ -284,6 +301,8 @@ public class SpeakerEndpoint extends AbstractMicroservice implements ISpeakerSer
     @RequestMapping(value = SPEAKER_DELETE, method = {RequestMethod.DELETE})
     public Boolean delete(@RequestParam Long id) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             DbSpeaker dbSpeaker = SelectById.query(DbSpeaker.class, id).selectFirst(objectContext);
 
             dbSpeaker.setDeletedDate(LocalDateTime.now());

@@ -1,10 +1,9 @@
 package com.thelak.auth.endpoints;
 
 import com.thelak.auth.util.PasswordHelper;
-import com.thelak.core.endpoints.AbstractMicroservice;
+import com.thelak.core.endpoints.MicroserviceAdvice;
 import com.thelak.core.interfaces.ITokenService;
 import com.thelak.core.models.UserInfo;
-import com.thelak.core.util.RLUCache;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbNotification;
 import com.thelak.database.entity.DbPasswordRestore;
@@ -23,15 +22,12 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -41,7 +37,7 @@ import java.util.UUID;
 
 @RestController
 @Api(value = "Authorization API", produces = "application/json")
-public class AuthenticationEndpoint extends AbstractMicroservice implements IAuthenticationService {
+public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthenticationService {
 
     @Autowired
     private DatabaseService databaseService;
@@ -51,17 +47,6 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
 
     @Autowired
     private IEmailService emailService;
-
-    protected static final Logger log = LoggerFactory.getLogger(AuthenticationEndpoint.class);
-
-    private RLUCache<String, String> tokensCache;
-
-    @PostConstruct
-    private void initialize() {
-        int ttl = 60_000;
-        int max = 10_000;
-        tokensCache = new RLUCache<>(ttl, max);
-    }
 
     @Override
     @ApiOperation(value = "Get user info by token")

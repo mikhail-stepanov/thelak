@@ -23,11 +23,11 @@ public interface ISpeakerService {
 
     List<SpeakerModel> getByIds(List<Long> ids) throws MicroServiceException;
 
-    SpeakerModel getByVideo(Long videoId) throws MicroServiceException;
+    List<SpeakerModel> getByVideo(Long videoId) throws MicroServiceException;
 
-    SpeakerModel getByArticle(Long articleId) throws MicroServiceException;
+    List<SpeakerModel> getByArticle(Long articleId) throws MicroServiceException;
 
-    SpeakerModel getByEvent(Long eventId) throws MicroServiceException;
+    List<SpeakerModel> getByEvent(Long eventId) throws MicroServiceException;
 
     List<SpeakerModel> list(Integer page, Integer size,
                             List<String> countryFilter) throws MicroServiceException;

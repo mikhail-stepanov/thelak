@@ -7,7 +7,6 @@ import java.io.IOException;
 public class HttpServletRequestFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-
     }
 
     @Override
@@ -18,6 +17,5 @@ public class HttpServletRequestFilter implements Filter {
 
     @Override
     public void destroy() {
-
     }
 }

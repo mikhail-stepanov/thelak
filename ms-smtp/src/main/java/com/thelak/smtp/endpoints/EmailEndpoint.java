@@ -3,7 +3,7 @@ package com.thelak.smtp.endpoints;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
-import com.thelak.core.endpoints.AbstractMicroservice;
+import com.thelak.core.endpoints.MicroserviceAdvice;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbSmtpTemplate;
 import com.thelak.route.exceptions.MicroServiceException;
@@ -16,8 +16,6 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.SelectById;
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mail.SimpleMailMessage;
@@ -27,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
-import javax.annotation.PostConstruct;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -36,7 +33,7 @@ import java.nio.charset.StandardCharsets;
 
 @RestController
 @Api(value = "SMTP API", produces = "application/json")
-public class EmailEndpoint extends AbstractMicroservice implements IEmailService {
+public class EmailEndpoint extends MicroserviceAdvice implements IEmailService {
 
     @Qualifier("getJavaMailSender")
     @Autowired
@@ -51,19 +48,11 @@ public class EmailEndpoint extends AbstractMicroservice implements IEmailService
     @Autowired
     DatabaseService databaseService;
 
-    ObjectContext objectContext;
-
-    protected static final Logger log = LoggerFactory.getLogger(EmailEndpoint.class);
-
-    @PostConstruct
-    public void init() {
-        objectContext = databaseService.getContext();
-    }
-
     @Override
     @RequestMapping(value = EMAIL_SIMPLE, method = {RequestMethod.POST})
     public Boolean sendMessage(@RequestBody SendEmailRequest request) {
         try {
+            ObjectContext objectContext = databaseService.getContext();
 
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(request.getEmail());
@@ -83,6 +72,8 @@ public class EmailEndpoint extends AbstractMicroservice implements IEmailService
     public Boolean sendCert(@RequestParam String to, @RequestParam Long templateId,
                             @RequestParam String promo, @RequestParam String fio, @RequestParam String description) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             DbSmtpTemplate smtpTemplate = SelectById.query(DbSmtpTemplate.class, templateId).selectFirst(objectContext);
 
             Context thymeleafContext = new Context();
@@ -91,11 +82,10 @@ public class EmailEndpoint extends AbstractMicroservice implements IEmailService
             thymeleafContext.setVariable("description", description);
 
             String htmlBody = thymeleafTemplateEngine.process(smtpTemplate.getContent(), thymeleafContext);
-            System.out.println("!!!!!!!!!!!!!!!\n" + htmlBody);
 
             Document document = new Document();
             File yourFile = new File("html.pdf");
-            yourFile.createNewFile(); // if file already exists will do nothing
+            yourFile.createNewFile();
             PdfWriter writer = PdfWriter.getInstance(document,
                     new FileOutputStream("html.pdf"));
             document.open();
@@ -120,12 +110,13 @@ public class EmailEndpoint extends AbstractMicroservice implements IEmailService
     @RequestMapping(value = EMAIL_HTML, method = {RequestMethod.GET})
     public Boolean sendHtmlMessage(@RequestParam String to, @RequestParam String subject, @RequestParam String link, @RequestParam Long templateId) {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             DbSmtpTemplate smtpTemplate = SelectById.query(DbSmtpTemplate.class, templateId).selectFirst(objectContext);
 
             Context thymeleafContext = new Context();
             thymeleafContext.setVariable("link", link);
             String htmlBody = thymeleafTemplateEngine.process(smtpTemplate.getContent(), thymeleafContext);
-            System.out.println("!!!!!!!!!!!!!!!\n" + htmlBody);
 
             MimeMessage message = emailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");

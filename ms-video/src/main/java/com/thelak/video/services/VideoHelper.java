@@ -69,7 +69,7 @@ public class VideoHelper {
         }
     }
 
-    public static VideoModel buildVideoModel(DbVideo dbVideo, List<CategoryModel> categoryModel, SpeakerModel speakerModel, UserInfo userInfo, boolean fullData) {
+    public static VideoModel buildVideoModel(DbVideo dbVideo, List<CategoryModel> categoryModel, List<SpeakerModel> speakerModel, UserInfo userInfo, boolean fullData) {
         return VideoModel.builder()
                 .id((Long) dbVideo.getObjectId().getIdSnapshot().get("id"))
                 .title(dbVideo.getTitle())
@@ -79,7 +79,7 @@ public class VideoHelper {
                 .language(fullData ? dbVideo.getLanguage() : null)
                 .category(categoryModel)
                 .duration(dbVideo.getDuration())
-                .speaker(fullData ? Arrays.asList(speakerModel) : null)
+                .speaker(speakerModel)
                 .playground(fullData ? dbVideo.getPlayground() : null)
                 .sources(fullData ? createSources(dbVideo, userInfo) : null)
                 .rating(dbVideo.getRating())

@@ -1,15 +1,11 @@
 package com.thelak.payments.services;
 
-import com.thelak.database.entity.DbCertificate;
-import com.thelak.database.entity.DbOptionCertificate;
-import com.thelak.database.entity.DbOptionSubscription;
-import com.thelak.database.entity.DbSubscription;
+import com.thelak.database.entity.*;
 import com.thelak.route.payments.models.certificate.CertificateModel;
+import com.thelak.route.payments.models.promo.PromoCodeModel;
 import com.thelak.route.payments.models.subscription.SubscriptionModel;
-import com.thelak.route.video.models.VideoModel;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class PaymentsHelper {
@@ -50,6 +46,22 @@ public class PaymentsHelper {
                 .priceStr(dbCertificate.getPriceStr())
                 .priceStr2(dbCertificate.getPriceStr2())
                 .description(dbCertificate.getDescription())
+                .build();
+    }
+
+    public static PromoCodeModel buildPromoModel(DbPromo dbPromo){
+        List<String> list = new ArrayList<>();
+        dbPromo.getPromoToEmail().forEach(dbPromoEmail -> {
+            list.add(dbPromoEmail.getEmail());
+        });
+
+        return PromoCodeModel.builder()
+                .id((Long) dbPromo.getObjectId().getIdSnapshot().get("id"))
+                .active(dbPromo.isActive())
+                .code(dbPromo.getCode())
+                .description(dbPromo.getDescription())
+                .months(dbPromo.getMonths())
+                .emails(list)
                 .build();
     }
 }

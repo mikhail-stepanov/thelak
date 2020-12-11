@@ -1,6 +1,6 @@
 package com.thelak.video.endpoints;
 
-import com.thelak.core.endpoints.AbstractMicroservice;
+import com.thelak.core.endpoints.MicroserviceAdvice;
 import com.thelak.core.models.UserInfo;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.*;
@@ -20,13 +20,13 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +36,7 @@ import static com.thelak.video.services.VideoHelper.buildVideoModel;
 
 @RestController
 @Api(value = "Video functions API", produces = "application/json")
-public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVideoFunctionsService {
+public class VideoFunctionsEndpoint extends MicroserviceAdvice implements IVideoFunctionsService {
 
     @Autowired
     private DatabaseService databaseService;
@@ -46,15 +46,6 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
 
     @Autowired
     private ISpeakerService speakerService;
-
-    ObjectContext objectContext;
-
-    protected static final Logger log = LoggerFactory.getLogger(VideoFunctionsEndpoint.class);
-
-    @PostConstruct
-    private void initialize() {
-        objectContext = databaseService.getContext();
-    }
 
     @Override
     @ApiOperation(value = "Add video to favorite")
@@ -66,6 +57,8 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     )
     @RequestMapping(value = VIDEO_FAVORITES_ADD, method = {RequestMethod.POST})
     public Boolean addFavorites(@RequestParam Long videoId) throws MicroServiceException {
+        ObjectContext objectContext = databaseService.getContext();
+
         UserInfo userInfo = (UserInfo) SecurityContextHolder
                 .getContext()
                 .getAuthentication()
@@ -100,6 +93,8 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     @RequestMapping(value = VIDEO_FAVORITES_LIST, method = {RequestMethod.GET})
     public List<VideoModel> listFavorites() throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             UserInfo userInfo = (UserInfo) SecurityContextHolder
                     .getContext()
                     .getAuthentication()
@@ -118,7 +113,7 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
                 } catch (MicroServiceException e) {
                     log.error(e.staticMessage());
                 }
-                SpeakerModel speakerModel = null;
+                List<SpeakerModel> speakerModel = null;
                 try {
                     speakerModel = speakerService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
                 } catch (MicroServiceException e) {
@@ -143,6 +138,8 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     )
     @RequestMapping(value = VIDEO_FAVORITES_CHECK, method = {RequestMethod.GET})
     public Boolean checkFavorites(@RequestParam Long videoId) throws MicroServiceException {
+        ObjectContext objectContext = databaseService.getContext();
+
         UserInfo userInfo = (UserInfo) SecurityContextHolder
                 .getContext()
                 .getAuthentication()
@@ -163,6 +160,7 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     )
     @RequestMapping(value = VIDEO_FAVORITES_DELETE, method = {RequestMethod.DELETE})
     public Boolean deleteFavorites(@RequestParam Long videoId) throws MicroServiceException {
+        ObjectContext objectContext = databaseService.getContext();
 
         UserInfo userInfo = (UserInfo) SecurityContextHolder
                 .getContext()
@@ -193,6 +191,7 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     )
     @RequestMapping(value = VIDEO_HISTORY_ADD, method = {RequestMethod.POST})
     public Boolean addHistory(@RequestParam Long videoId) throws MicroServiceException {
+        ObjectContext objectContext = databaseService.getContext();
 
         UserInfo userInfo = (UserInfo) SecurityContextHolder
                 .getContext()
@@ -230,6 +229,8 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     @RequestMapping(value = VIDEO_HISTORY_LIST, method = {RequestMethod.GET})
     public List<VideoModel> listHistory() throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             UserInfo userInfo = (UserInfo) SecurityContextHolder
                     .getContext()
                     .getAuthentication()
@@ -250,7 +251,7 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
                 } catch (MicroServiceException e) {
                     log.error(e.staticMessage());
                 }
-                SpeakerModel speakerModel = null;
+                List<SpeakerModel> speakerModel = null;
                 try {
                     speakerModel = speakerService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
                 } catch (MicroServiceException e) {
@@ -275,6 +276,8 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     )
     @RequestMapping(value = VIDEO_HISTORY_DELETE, method = {RequestMethod.DELETE})
     public Boolean deleteHistory(@RequestParam Long videoId) throws MicroServiceException {
+        ObjectContext objectContext = databaseService.getContext();
+
         UserInfo userInfo = (UserInfo) SecurityContextHolder
                 .getContext()
                 .getAuthentication()
@@ -303,6 +306,8 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     @RequestMapping(value = VIDEO_TIMECODE_ADD, method = {RequestMethod.POST})
     public Boolean addTimeCode(@RequestParam Long videoId, @RequestParam String timecode) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             UserInfo userInfo = (UserInfo) SecurityContextHolder
                     .getContext()
                     .getAuthentication()
@@ -343,6 +348,8 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     @RequestMapping(value = VIDEO_TIMECODE_GET, method = {RequestMethod.GET})
     public String getTimeCode(@RequestParam Long videoId) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             UserInfo userInfo = (UserInfo) SecurityContextHolder
                     .getContext()
                     .getAuthentication()
@@ -372,6 +379,8 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     )
     @RequestMapping(value = VIDEO_RATING_ADD, method = {RequestMethod.POST})
     public Boolean addRating(@RequestParam Long videoId, @RequestParam Integer score) throws MicroServiceException {
+        ObjectContext objectContext = databaseService.getContext();
+
         UserInfo userInfo = (UserInfo) SecurityContextHolder
                 .getContext()
                 .getAuthentication()
@@ -405,6 +414,8 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     )
     @RequestMapping(value = VIDEO_RATING_DELETE, method = {RequestMethod.DELETE})
     public Boolean deleteRating(@RequestParam Long videoId) throws MicroServiceException {
+        ObjectContext objectContext = databaseService.getContext();
+
         UserInfo userInfo = (UserInfo) SecurityContextHolder
                 .getContext()
                 .getAuthentication()
@@ -436,6 +447,8 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
     )
     @RequestMapping(value = VIDEO_RATING_CHECK, method = {RequestMethod.GET})
     public Boolean checkRating(@RequestParam Long videoId) throws MicroServiceException {
+        ObjectContext objectContext = databaseService.getContext();
+
         UserInfo userInfo = (UserInfo) SecurityContextHolder
                 .getContext()
                 .getAuthentication()
@@ -448,6 +461,8 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
 
     private boolean checkInFavorites(DbVideo video, Long userId) {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             DbVideoFavorites favorites = ObjectSelect.query(DbVideoFavorites.class)
                     .where(DbVideoFavorites.ID_USER.eq(userId))
                     .and(DbVideoFavorites.FAVORITE_TO_VIDEO.eq(video))
@@ -462,6 +477,8 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
 
     private boolean checkIsRate(DbVideo video, Long userId) {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             DbVideoRating rating = ObjectSelect.query(DbVideoRating.class)
                     .where(DbVideoRating.ID_USER.eq(userId))
                     .and(DbVideoRating.RATING_TO_VIDEO.eq(video))
@@ -476,6 +493,8 @@ public class VideoFunctionsEndpoint extends AbstractMicroservice implements IVid
 
     private boolean checkInHistory(DbVideo video, Long userId) {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             DbVideoHistory history = ObjectSelect.query(DbVideoHistory.class)
                     .where(DbVideoHistory.ID_USER.eq(userId))
                     .and(DbVideoHistory.HISTORY_TO_VIDEO.eq(video))

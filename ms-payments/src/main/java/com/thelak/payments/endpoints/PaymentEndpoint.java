@@ -1,7 +1,7 @@
 package com.thelak.payments.endpoints;
 
 import com.google.gson.Gson;
-import com.thelak.core.endpoints.AbstractMicroservice;
+import com.thelak.core.endpoints.MicroserviceAdvice;
 import com.thelak.core.models.UserInfo;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.*;
@@ -10,6 +10,7 @@ import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.exceptions.MsInternalErrorException;
 import com.thelak.route.exceptions.MsNotAuthorizedException;
 import com.thelak.route.exceptions.MsObjectNotFoundException;
+import com.thelak.route.message.IMessageService;
 import com.thelak.route.payments.interfaces.IPaymentService;
 import com.thelak.route.payments.models.CardUpdateRequest;
 import com.thelak.route.payments.models.PaymentsConfigModel;
@@ -40,6 +41,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,7 +60,7 @@ import static com.thelak.payments.services.PaymentsHelper.buildCertificateModel;
 
 @RestController
 @Api(value = "Payment API", produces = "application/json")
-public class PaymentEndpoint extends AbstractMicroservice implements IPaymentService {
+public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentService {
 
     @Autowired
     private DatabaseService databaseService;
@@ -66,21 +68,19 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     @Autowired
     private IAuthenticationService authenticationService;
 
-//    @Autowired
-//    private IMessageService messageService;
-//
-//    @Value("${user.subscription.queue:#{null}}")
-//    private String userSubscriptionQueue;
+    @Autowired
+    private IMessageService messageService;
+
+    @Value("${user.subscription.queue:#{null}}")
+    private String userSubscriptionQueue;
 
     RestTemplate restTemplate;
-
-    ObjectContext objectContext;
 
     Gson gson;
 
     @PostConstruct
     private void initialize() {
-        objectContext = databaseService.getContext();
+        ObjectContext objectContext = databaseService.getContext();
         DbPaymentConfig username = ObjectSelect.query(DbPaymentConfig.class)
                 .where(DbPaymentConfig.NAME.eq("PUBLIC_ID")).selectFirst(objectContext);
         DbPaymentConfig password = ObjectSelect.query(DbPaymentConfig.class)
@@ -104,6 +104,8 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     @RequestMapping(value = PAYMENTS_CERT_REQ, method = {RequestMethod.POST})
     public CryptogrammPayResponse buyCertificateRequest(BuyCertificateRequest buyCertificateRequest, HttpServletRequest request) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             UserInfo userInfo = null;
             try {
                 userInfo = (UserInfo) SecurityContextHolder
@@ -175,6 +177,8 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     @RequestMapping(value = PAYMENTS_CERT_CONFIRM, method = {RequestMethod.GET})
     public BuyCertificateResponse buyCertificateConfirm(@RequestParam String MD) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             UserInfo userInfo = null;
             try {
                 userInfo = (UserInfo) SecurityContextHolder
@@ -248,6 +252,8 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     @RequestMapping(value = PAYMENTS_SUB_CONFIRM, method = {RequestMethod.GET})
     public SecureResponse buySubscriptionConfirm(@RequestParam String MD) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             UserInfo userInfo = null;
             try {
                 userInfo = (UserInfo) SecurityContextHolder
@@ -279,10 +285,11 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                 objectContext.commitChanges();
 
                 DbSubscription subscription = dbPaymentsCryptogramm.getCryptogrammToSubscription();
-//                messageService.publish(userSubscriptionQueue, SetSubscriptionModel.builder()
-//                        .userId(userInfo.getUserId())
-//                        .subscriptionDate(LocalDateTime.now().plusMonths(subscription.getMonths())).build());
-//
+                messageService.publish(userSubscriptionQueue, SetSubscriptionModel.builder()
+                        .userId(userInfo.getUserId())
+                        .subType("SUBSCRIPTION")
+                        .subscriptionDate(LocalDateTime.now().plusMonths(subscription.getMonths())).build());
+
                 authenticationService.setSubscription(SetSubscriptionModel.builder()
                         .userId(userInfo.getUserId())
                         .subType("SUBSCRIPTION")
@@ -342,6 +349,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     @ApiOperation(value = "Start Apple Pay session")
     @RequestMapping(value = PAYMENTS_APPLE, method = {RequestMethod.POST})
     public ResponseEntity<String> applePayStartSession(@RequestBody ApplePayStartSessionRequest request) {
+        ObjectContext objectContext = databaseService.getContext();
 
         AppleValidationRequest appleValidationRequest = AppleValidationRequest.builder()
                 .ValidationUrl(request.getValidationUrl())
@@ -364,7 +372,9 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     @RequestMapping(value = PAYMENTS_SUB_APPLE, method = {RequestMethod.POST})
     public CryptogrammPayResponse buySubscriptionApplePay(@RequestBody ApplePaySubRequest request, HttpServletRequest httpRequest) throws MicroServiceException {
         try {
-            UserInfo userInfo = null;
+            ObjectContext objectContext = databaseService.getContext();
+
+            UserInfo userInfo;
             try {
                 userInfo = (UserInfo) SecurityContextHolder
                         .getContext()
@@ -413,10 +423,11 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                 objectContext.commitChanges();
 
                 DbSubscription subscription = dbPaymentsCryptogramm.getCryptogrammToSubscription();
-//                messageService.publish(userSubscriptionQueue, SetSubscriptionModel.builder()
-//                        .userId(userInfo.getUserId())
-//                        .subscriptionDate(LocalDateTime.now().plusMonths(subscription.getMonths())).build());
-//
+                messageService.publish(userSubscriptionQueue, SetSubscriptionModel.builder()
+                        .userId(userInfo.getUserId())
+                        .subType("SUBSCRIPTION")
+                        .subscriptionDate(LocalDateTime.now().plusMonths(subscription.getMonths())).build());
+
                 authenticationService.setSubscription(SetSubscriptionModel.builder()
                         .userId(userInfo.getUserId())
                         .subType("SUBSCRIPTION")
@@ -482,7 +493,9 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     @RequestMapping(value = PAYMENTS_CERT_APPLE, method = {RequestMethod.POST})
     public BuyCertificateResponse buyCertificateApplePay(@RequestBody ApplePayCertRequest request, HttpServletRequest httpRequest) throws MicroServiceException {
         try {
-            UserInfo userInfo = null;
+            ObjectContext objectContext = databaseService.getContext();
+
+            UserInfo userInfo;
             try {
                 userInfo = (UserInfo) SecurityContextHolder
                         .getContext()
@@ -576,6 +589,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     @ApiOperation(value = "Redirect before confirm")
     @RequestMapping(value = PAYMENTS_REDIRECT, method = {RequestMethod.POST})
     public ModelAndView redirectBeforeConfirm(@RequestParam String MD, @RequestParam String PaRes, HttpServletRequest request) throws MicroServiceException {
+        ObjectContext objectContext = databaseService.getContext();
         DbPaymentsCryptogramm dbPaymentsCryptogramm = ObjectSelect.query(DbPaymentsCryptogramm.class)
                 .where(DbPaymentsCryptogramm.TRANSACTION_ID.eq(Long.valueOf(MD)))
                 .selectFirst(objectContext);
@@ -605,7 +619,8 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     @RequestMapping(value = PAYMENTS_SUB_REQ, method = {RequestMethod.POST})
     public CryptogrammPayResponse buySubscriptionRequest(BuySubscriptionRequest buySubscriptionRequest, HttpServletRequest request) throws MicroServiceException {
         try {
-            UserInfo userInfo = null;
+            ObjectContext objectContext = databaseService.getContext();
+            UserInfo userInfo;
             try {
                 userInfo = (UserInfo) SecurityContextHolder
                         .getContext()
@@ -677,7 +692,8 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     )
     @RequestMapping(value = PAYMENTS_SUB_CANCEL, method = {RequestMethod.GET})
     public Boolean cancelSubscription() throws MicroServiceException {
-        UserInfo userInfo = null;
+        ObjectContext objectContext = databaseService.getContext();
+        UserInfo userInfo;
         try {
             userInfo = (UserInfo) SecurityContextHolder
                     .getContext()
@@ -708,6 +724,7 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     @ApiOperation(value = "Get cloudpayments public_id")
     @RequestMapping(value = PAYMENTS_CONFIG, method = {RequestMethod.GET})
     public PaymentsConfigModel getConfig() throws MicroServiceException {
+        ObjectContext objectContext = databaseService.getContext();
         DbPaymentConfig dbPaymentConfig = ObjectSelect.query(DbPaymentConfig.class)
                 .where(DbPaymentConfig.NAME.eq("PUBLIC_ID")).selectFirst(objectContext);
 
@@ -727,8 +744,9 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
     )
     @RequestMapping(value = PAYMENTS_PROMO_ENTER, method = {RequestMethod.POST})
     public PromoModel enterPromo(@RequestParam String code) throws MicroServiceException {
+        ObjectContext objectContext = databaseService.getContext();
 
-        UserInfo userInfo = null;
+        UserInfo userInfo;
         try {
             userInfo = (UserInfo) SecurityContextHolder
                     .getContext()
@@ -752,6 +770,11 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
                             .and(DbPromoEmail.ACTIVE.isTrue())
                             .selectFirst(objectContext);
                     if (dbPromoEmailcheck != null) {
+                        messageService.publish(userSubscriptionQueue, SetSubscriptionModel.builder()
+                                .userId(userInfo.getUserId())
+                                .subType("PROMO")
+                                .subscriptionDate(LocalDateTime.now().plusMonths(dbPromo.getMonths())).build());
+
                         authenticationService.setSubscription(SetSubscriptionModel.builder()
                                 .userId(userInfo.getUserId())
                                 .subType("PROMO")
@@ -775,6 +798,10 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
 
             } catch (Exception ignored) {
             }
+            messageService.publish(userSubscriptionQueue, SetSubscriptionModel.builder()
+                    .userId(userInfo.getUserId())
+                    .subType("PROMO")
+                    .subscriptionDate(LocalDateTime.now().plusMonths(dbPromo.getMonths())).build());
             authenticationService.setSubscription(SetSubscriptionModel.builder()
                     .userId(userInfo.getUserId())
                     .subType("PROMO")
@@ -793,8 +820,14 @@ public class PaymentEndpoint extends AbstractMicroservice implements IPaymentSer
 
             if (dbIssuedCertificate.isActive()) {
 
+                messageService.publish(userSubscriptionQueue, SetSubscriptionModel.builder()
+                        .userId(userInfo.getUserId())
+                        .subType("CERTIFICATE")
+                        .subscriptionDate(LocalDateTime.now().plusMonths(dbIssuedCertificate.getIssuedToCertificate().getMonths())).build());
+
                 authenticationService.setSubscription(SetSubscriptionModel.builder()
                         .userId(userInfo.getUserId())
+                        .subType("CERTIFICATE")
                         .subscriptionDate(LocalDateTime.now().plusMonths(dbIssuedCertificate.getIssuedToCertificate().getMonths())).build());
 
                 dbIssuedCertificate.setActive(false);

@@ -55,7 +55,6 @@
         <module>ms-core</module>
         <module>ms-database</module>
         <module>ms-auth</module>
-        <module>ms-admin</module>
         <module>ms-article</module>
         <module>ms-payments</module>
         <module>ms-category</module>

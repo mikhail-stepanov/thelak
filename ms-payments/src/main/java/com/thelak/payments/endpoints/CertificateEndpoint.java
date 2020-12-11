@@ -1,6 +1,6 @@
 package com.thelak.payments.endpoints;
 
-import com.thelak.core.endpoints.AbstractMicroservice;
+import com.thelak.core.endpoints.MicroserviceAdvice;
 import com.thelak.core.models.UserInfo;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbCertificate;
@@ -25,17 +25,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.thelak.payments.services.PaymentsHelper.buildCertificateModel;
 
 @RestController
 @Api(value = "Certificate API", produces = "application/json")
-public class CertificateEndpoint extends AbstractMicroservice implements ICertificateService {
+public class CertificateEndpoint extends MicroserviceAdvice implements ICertificateService {
 
     @Autowired
     private DatabaseService databaseService;
@@ -43,22 +43,16 @@ public class CertificateEndpoint extends AbstractMicroservice implements ICertif
     @Autowired
     private IAuthenticationService authenticationService;
 
-    ObjectContext objectContext;
-
-    @PostConstruct
-    private void initialize() {
-        objectContext = databaseService.getContext();
-    }
-
     @Override
     @ApiOperation(value = "Get certificate by id")
     @RequestMapping(value = CERTIFICATE_GET, method = {RequestMethod.GET})
     public CertificateModel get(@RequestParam Long id) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             DbCertificate dbCertificate = SelectById.query(DbCertificate.class, id).selectFirst(objectContext);
 
             return buildCertificateModel(dbCertificate);
-
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
         }
@@ -68,8 +62,9 @@ public class CertificateEndpoint extends AbstractMicroservice implements ICertif
     @ApiOperation(value = "Get list of certificate")
     @RequestMapping(value = CERTIFICATE_LIST, method = {RequestMethod.GET})
     public List<CertificateModel> list() throws MicroServiceException {
-
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             List<DbCertificate> dbCertificates = ObjectSelect.query(DbCertificate.class)
                     .orderBy(DbCertificate.MONTHS.asc())
                     .select(objectContext);
@@ -89,29 +84,83 @@ public class CertificateEndpoint extends AbstractMicroservice implements ICertif
     @Override
     @ApiOperation(value = "Create Certificate")
     @RequestMapping(value = CERTIFICATE_CREATE, method = {RequestMethod.POST})
-    public CertificateModel create(CreateCertificateRequest request) throws MicroServiceException {
-        return null;
+    public CertificateModel create(@RequestBody CreateCertificateRequest request) throws MicroServiceException {
+        try {
+            ObjectContext objectContext = databaseService.getContext();
+
+            DbCertificate dbCertificate = objectContext.newObject(DbCertificate.class);
+            dbCertificate.setName(request.getName());
+            dbCertificate.setPriceStr(request.getPriceStr());
+            dbCertificate.setPriceStr2(request.getPriceStr2());
+            dbCertificate.setPrice(request.getPrice());
+            dbCertificate.setCover(request.getCover());
+            dbCertificate.setMonths(request.getMonths());
+            dbCertificate.setDescription(request.getDescription());
+            dbCertificate.setLength(request.getLength());
+            dbCertificate.setCreatedDate(LocalDateTime.now());
+
+            objectContext.commitChanges();
+
+            return buildCertificateModel(dbCertificate);
+        } catch (Exception e) {
+            throw new MsInternalErrorException(e.getMessage());
+        }
     }
 
     @Override
     @ApiOperation(value = "Update Certificate")
     @RequestMapping(value = CERTIFICATE_UPDATE, method = {RequestMethod.PUT})
-    public CertificateModel update(CertificateModel request) throws MicroServiceException {
-        return null;
+    public CertificateModel update(@RequestBody CertificateModel request) throws MicroServiceException {
+        try {
+            ObjectContext objectContext = databaseService.getContext();
+
+            DbCertificate dbCertificate = SelectById.query(DbCertificate.class, request.getId())
+                    .selectFirst(objectContext);
+
+            dbCertificate.setName(Optional.ofNullable(request.getName()).orElse(dbCertificate.getName()));
+            dbCertificate.setPriceStr(Optional.ofNullable(request.getPriceStr()).orElse(dbCertificate.getPriceStr()));
+            dbCertificate.setPriceStr2(Optional.ofNullable(request.getPriceStr2()).orElse(dbCertificate.getPriceStr2()));
+            dbCertificate.setPrice(Optional.ofNullable(request.getPrice()).orElse(dbCertificate.getPrice()));
+            dbCertificate.setCover(Optional.ofNullable(request.getCover()).orElse(dbCertificate.getCover()));
+            dbCertificate.setMonths(Optional.ofNullable(request.getMonths()).orElse(dbCertificate.getMonths()));
+            dbCertificate.setDescription(Optional.ofNullable(request.getDescription()).orElse(dbCertificate.getDescription()));
+            dbCertificate.setLength(Optional.ofNullable(request.getLength()).orElse(dbCertificate.getLength()));
+            dbCertificate.setModifiedDate(LocalDateTime.now());
+
+            objectContext.commitChanges();
+
+            return buildCertificateModel(dbCertificate);
+        } catch (Exception e) {
+            throw new MicroServiceException(e.getMessage());
+        }
     }
 
     @Override
     @ApiOperation(value = "Delete Certificate")
     @RequestMapping(value = CERTIFICATE_DELETE, method = {RequestMethod.DELETE})
-    public Boolean delete(Long id) throws MicroServiceException {
-        return null;
+    public Boolean delete(@RequestParam Long id) throws MicroServiceException {
+        try {
+            ObjectContext objectContext = databaseService.getContext();
+
+            DbCertificate dbCertificate = SelectById.query(DbCertificate.class, id).selectFirst(objectContext);
+
+            dbCertificate.setDeletedDate(LocalDateTime.now());
+
+            objectContext.commitChanges();
+
+            return true;
+        } catch (Exception e) {
+            throw new MsInternalErrorException(e.getMessage());
+        }
     }
 
     @Override
     @ApiOperation(value = "Generate certificate")
     @RequestMapping(value = CERTIFICATE_GENERATE, method = {RequestMethod.POST})
-    public IssuedCertificateModel generate(Long certificateId) throws MicroServiceException {
+    public IssuedCertificateModel generate(@RequestParam Long certificateId) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             DbCertificate dbCertificate = SelectById.query(DbCertificate.class, certificateId)
                     .selectFirst(objectContext);
 
@@ -148,6 +197,8 @@ public class CertificateEndpoint extends AbstractMicroservice implements ICertif
     @RequestMapping(value = CERTIFICATE_ACTIVATE, method = {RequestMethod.GET})
     public Boolean activate(String uuid) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             DbIssuedCertificate dbIssuedCertificate = ObjectSelect.query(DbIssuedCertificate.class)
                     .where(DbIssuedCertificate.UUID.eq(uuid)).selectFirst(objectContext);
 
@@ -163,7 +214,6 @@ public class CertificateEndpoint extends AbstractMicroservice implements ICertif
 
                 return true;
             } else throw new MsBadRequestException("Certificate has expired");
-
         } catch (Exception e) {
             e.printStackTrace();
             throw new MsInternalErrorException(e.getMessage());

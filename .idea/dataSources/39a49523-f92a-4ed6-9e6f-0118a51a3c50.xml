@@ -1417,7 +1417,7 @@ false posixrules
     <database id="3" parent="1" name="auth">
       <ObjectId>16385</ObjectId>
       <Owner>auth_user</Owner>
-      <IntrospectionStateNumber>1535550</IntrospectionStateNumber>
+      <IntrospectionStateNumber>1694107</IntrospectionStateNumber>
       <Current>1</Current>
     </database>
     <database id="4" parent="1" name="category">
@@ -1538,7 +1538,7 @@ false posixrules
       <Comment>standard public schema</Comment>
       <StateNumber>275</StateNumber>
       <Owner>postgres</Owner>
-      <IntrospectionStateNumber>1535551</IntrospectionStateNumber>
+      <IntrospectionStateNumber>1694108</IntrospectionStateNumber>
       <Current>1</Current>
     </schema>
     <access-method id="33" parent="3" name="heap">
@@ -1635,19 +1635,17 @@ false posixrules
     <table id="49" parent="32" name="db_notification">
       <ObjectId>18333</ObjectId>
       <Owner>auth_user</Owner>
-      <StateNumber>5212</StateNumber>
+      <StateNumber>1536440</StateNumber>
     </table>
     <table id="50" parent="32" name="db_password_restore">
       <ObjectId>18630</ObjectId>
-      <Outdated>1</Outdated>
       <Owner>auth_user</Owner>
-      <StateNumber>130306</StateNumber>
+      <StateNumber>1536440</StateNumber>
     </table>
     <table id="51" parent="32" name="db_user">
       <ObjectId>16408</ObjectId>
-      <Outdated>1</Outdated>
       <Owner>auth_user</Owner>
-      <StateNumber>5569</StateNumber>
+      <StateNumber>1536440</StateNumber>
     </table>
     <table id="52" parent="32" name="db_user_session">
       <ObjectId>16433</ObjectId>
@@ -1694,7 +1692,7 @@ false posixrules
     </column>
     <index id="59" parent="49" name="db_notification_pkey">
       <ObjectId>18336</ObjectId>
-      <StateNumber>5206</StateNumber>
+      <StateNumber>1536440</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
@@ -1772,7 +1770,7 @@ false posixrules
     </column>
     <index id="70" parent="50" name="db_password_restore_pkey">
       <ObjectId>18633</ObjectId>
-      <StateNumber>130303</StateNumber>
+      <StateNumber>1536440</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
@@ -1908,7 +1906,7 @@ false posixrules
     </column>
     <index id="90" parent="51" name="db_user_pkey">
       <ObjectId>16414</ObjectId>
-      <StateNumber>528</StateNumber>
+      <StateNumber>1536440</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>

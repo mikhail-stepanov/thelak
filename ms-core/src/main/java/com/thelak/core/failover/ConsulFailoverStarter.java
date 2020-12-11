@@ -95,7 +95,6 @@ public class ConsulFailoverStarter {
                 Thread.sleep(500);
 
                 lock.lock();
-                //ставим лок
                 if (!distrDistirbutedLock.lock(true)) {
                     continue;
                 }
@@ -103,7 +102,6 @@ public class ConsulFailoverStarter {
                 String key = String.format("/configuration/%s/data", applicationName);
                 Response<GetValue> kvValue = consulClient.getKVValue(key, QueryParams.DEFAULT);
                 String leaderNodeName = getLeaderFromProperties(kvValue.getValue().getValue());
-
 
                 String myNodeName = consulClient.getAgentSelf().getValue().getConfig().getNodeName();
 

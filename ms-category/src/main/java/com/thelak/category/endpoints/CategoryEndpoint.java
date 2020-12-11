@@ -1,6 +1,6 @@
 package com.thelak.category.endpoints;
 
-import com.thelak.core.endpoints.AbstractMicroservice;
+import com.thelak.core.endpoints.MicroserviceAdvice;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbCategory;
 import com.thelak.database.entity.DbCategoryArticles;
@@ -19,7 +19,6 @@ import org.apache.cayenne.query.SelectById;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,27 +27,21 @@ import static com.thelak.category.services.CategoryHelper.buildCategoryModel;
 
 @RestController
 @Api(value = "Category API", produces = "application/json")
-public class CategoryEndpoint extends AbstractMicroservice implements ICategoryService {
+public class CategoryEndpoint extends MicroserviceAdvice implements ICategoryService {
 
     @Autowired
     private DatabaseService databaseService;
-
-    ObjectContext objectContext;
-
-    @PostConstruct
-    private void initialize() {
-        objectContext = databaseService.getContext();
-    }
 
     @Override
     @ApiOperation(value = "Get category by id")
     @RequestMapping(value = CATEGORY_GET, method = {RequestMethod.GET})
     public CategoryModel get(@RequestParam Long id) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             DbCategory dbCategory = SelectById.query(DbCategory.class, id).selectFirst(objectContext);
 
             return buildCategoryModel(dbCategory);
-
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
         }
@@ -59,6 +52,8 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
     @RequestMapping(value = CATEGORY_GET_VIDEO, method = {RequestMethod.GET})
     public List<CategoryModel> getByVideo(@RequestParam Long videoId) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             List<DbCategoryVideos> dbCategoryVideos = ObjectSelect.query(DbCategoryVideos.class)
                     .where(DbCategoryVideos.ID_VIDEO.eq(videoId)).select(objectContext);
 
@@ -79,6 +74,8 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
     @RequestMapping(value = CATEGORY_GET_ARTICLE, method = {RequestMethod.GET})
     public List<CategoryModel> getByArticle(@RequestParam Long articleId) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             List<DbCategoryArticles> categoryArticles = ObjectSelect.query(DbCategoryArticles.class)
                     .where(DbCategoryArticles.ID_ARTICLE.eq(articleId)).select(objectContext);
 
@@ -98,6 +95,8 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
     @RequestMapping(value = CATEGORY_GET_EVENT, method = {RequestMethod.GET})
     public List<CategoryModel> getByEvent(@RequestParam Long eventId) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             List<DbCategoryEvents> dbCategoryEvents = ObjectSelect.query(DbCategoryEvents.class)
                     .where(DbCategoryEvents.ID_EVENT.eq(eventId)).select(objectContext);
 
@@ -117,6 +116,8 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
     @RequestMapping(value = CATEGORY_LIST, method = {RequestMethod.GET})
     public List<CategoryModel> list() throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             List<DbCategory> dbCategories;
             dbCategories = ObjectSelect.query(DbCategory.class).
                     where(DbCategory.DELETED_DATE.isNull())
@@ -139,6 +140,7 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
     @RequestMapping(value = CATEGORY_SEARCH, method = {RequestMethod.GET})
     public List<CategoryModel> search(@RequestParam String search) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
 
             List<DbCategory> dbCategories;
             dbCategories = ObjectSelect.query(DbCategory.class).
@@ -163,6 +165,8 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
     @RequestMapping(value = CATEGORY_CREATE, method = {RequestMethod.POST})
     public CategoryModel create(@RequestBody CategoryCreateModel request) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             DbCategory dbCategory = objectContext.newObject(DbCategory.class);
             dbCategory.setTitle(request.getTitle());
             dbCategory.setCoverUrl(request.getImageUrl());
@@ -171,7 +175,6 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
             objectContext.commitChanges();
 
             return buildCategoryModel(dbCategory);
-
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
         }
@@ -182,6 +185,7 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
     @RequestMapping(value = CATEGORY_UPDATE, method = {RequestMethod.PUT})
     public CategoryModel update(@RequestBody CategoryModel request) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
 
             DbCategory dbCategory = SelectById.query(DbCategory.class, request.getId()).selectFirst(objectContext);
 
@@ -192,7 +196,6 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
             objectContext.commitChanges();
 
             return buildCategoryModel(dbCategory);
-
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
         }
@@ -203,6 +206,8 @@ public class CategoryEndpoint extends AbstractMicroservice implements ICategoryS
     @RequestMapping(value = CATEGORY_DELETE, method = {RequestMethod.DELETE})
     public Boolean delete(@RequestParam Long id) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             DbCategory dbCategory = SelectById.query(DbCategory.class, id).selectFirst(objectContext);
 
             dbCategory.setDeletedDate(LocalDateTime.now());

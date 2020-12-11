@@ -1,6 +1,6 @@
 package com.thelak.event.endpoints;
 
-import com.thelak.core.endpoints.AbstractMicroservice;
+import com.thelak.core.endpoints.MicroserviceAdvice;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbEvent;
 import com.thelak.database.entity.DbVideo;
@@ -21,7 +21,6 @@ import org.apache.cayenne.query.SelectById;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,28 +30,22 @@ import static com.thelak.event.services.EventHelper.buildEventModel;
 
 @RestController
 @Api(value = "Event API", produces = "application/json")
-public class EventEndpoint extends AbstractMicroservice implements IEventService {
+public class EventEndpoint extends MicroserviceAdvice implements IEventService {
 
     @Autowired
     private DatabaseService databaseService;
-
-    ObjectContext objectContext;
-
-    @PostConstruct
-    private void initialize() {
-        objectContext = databaseService.getContext();
-    }
 
     @Override
     @ApiOperation(value = "Get event by id")
     @RequestMapping(value = EVENT_GET, method = {RequestMethod.GET})
     public EventModel get(@RequestParam Long id) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             DbEvent dbEvent = SelectById.query(DbEvent.class, id).selectFirst(objectContext);
             if (dbEvent.getDeletedDate() != null) return null;
 
             return buildEventModel(dbEvent, true);
-
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
         }
@@ -63,6 +56,8 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
     @RequestMapping(value = EVENT_GET_IDS, method = {RequestMethod.GET})
     public List<EventModel> getByIds(@RequestParam List<Long> ids) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             List<DbEvent> dbEvents;
             dbEvents = ObjectSelect.query(DbEvent.class).
                     where(ExpressionFactory.inDbExp(DbEvent.ID_PK_COLUMN, ids))
@@ -103,6 +98,7 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
                                  @RequestParam(required = false) LocalDateTime startDate,
                                  @RequestParam(required = false) LocalDateTime endDate) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
 
             final Expression startDateExpression;
             if (startDate != null)
@@ -165,6 +161,7 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
                                    @RequestParam(required = false) Integer page,
                                    @RequestParam(required = false) Integer size) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
 
             List<DbEvent> dbEvents;
             if (page == null || size == null)
@@ -206,6 +203,7 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
     @RequestMapping(value = EVENT_CREATE, method = {RequestMethod.POST})
     public EventModel create(@RequestBody EventCreateModel request) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
 
             DbEvent dbEvent = objectContext.newObject(DbEvent.class);
             dbEvent.setTitle(request.getTitle());
@@ -230,6 +228,7 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
     @RequestMapping(value = EVENT_UPDATE, method = {RequestMethod.PUT})
     public EventModel update(@RequestBody EventModel request) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
 
             DbEvent dbEvent = SelectById.query(DbEvent.class, request.getId()).selectFirst(objectContext);
 
@@ -255,6 +254,8 @@ public class EventEndpoint extends AbstractMicroservice implements IEventService
     @RequestMapping(value = EVENT_DELETE, method = {RequestMethod.DELETE})
     public Boolean delete(@RequestParam Long id) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             DbEvent dbEvent = SelectById.query(DbEvent.class, id).selectFirst(objectContext);
 
             dbEvent.setDeletedDate(LocalDateTime.now());

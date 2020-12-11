@@ -1,6 +1,6 @@
 package com.thelak.payments.endpoints;
 
-import com.thelak.core.endpoints.AbstractMicroservice;
+import com.thelak.core.endpoints.MicroserviceAdvice;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbSubscription;
 import com.thelak.route.exceptions.MicroServiceException;
@@ -13,9 +13,11 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,23 +25,18 @@ import static com.thelak.payments.services.PaymentsHelper.buildSubscriptionModel
 
 @RestController
 @Api(value = "Subscription API", produces = "application/json")
-public class SubscriptionEndpoint extends AbstractMicroservice implements ISubscriptionService {
+public class SubscriptionEndpoint extends MicroserviceAdvice implements ISubscriptionService {
 
     @Autowired
     private DatabaseService databaseService;
-
-    ObjectContext objectContext;
-
-    @PostConstruct
-    private void initialize() {
-        objectContext = databaseService.getContext();
-    }
 
     @Override
     @ApiOperation(value = "Get subscription by id")
     @RequestMapping(value = SUBSCRIPTION_GET, method = {RequestMethod.GET})
     public SubscriptionModel get(@RequestParam Long id) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             DbSubscription dbSubscription = SelectById.query(DbSubscription.class, id).selectFirst(objectContext);
 
             return buildSubscriptionModel(dbSubscription);
@@ -53,6 +50,8 @@ public class SubscriptionEndpoint extends AbstractMicroservice implements ISubsc
     @RequestMapping(value = SUBSCRIPTION_LIST, method = {RequestMethod.GET})
     public List<SubscriptionModel> list() throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             List<DbSubscription> dbSubscriptions = ObjectSelect.query(DbSubscription.class)
                     .orderBy(DbSubscription.MONTHS.asc())
                     .select(objectContext);

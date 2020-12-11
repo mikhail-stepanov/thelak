@@ -25,14 +25,11 @@ public class UserSubscriptionService {
 
     private Closeable queueSubscriber;
 
-    ObjectContext objectContext;
-
     @Value("${user.subscription.queue:#{null}}")
     private String userSubscriptionQueue;
 
     @PostConstruct
     void init() {
-        objectContext = databaseService.getContext();
         queueSubscriber = messageService.subscribe(userSubscriptionQueue, 10, SetSubscriptionModel.class, this::handleMessage);
     }
 
@@ -49,6 +46,7 @@ public class UserSubscriptionService {
     private boolean handleMessage(SetSubscriptionModel message) {
         try {
             if (message != null) {
+                ObjectContext objectContext = databaseService.getContext();
 
                 DbUser dbUser = SelectById.query(DbUser.class, message.getUserId()).selectFirst(objectContext);
                 dbUser.setSubscriptionDate(message.getSubscriptionDate());

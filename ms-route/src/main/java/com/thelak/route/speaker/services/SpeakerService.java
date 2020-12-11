@@ -28,27 +28,27 @@ public class SpeakerService extends BaseMicroservice implements ISpeakerService 
     }
 
     @Override
-    public SpeakerModel getByVideo(Long videoId) throws MicroServiceException {
+    public List<SpeakerModel> getByVideo(Long videoId) throws MicroServiceException {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(buildUrl(SPEAKER_GET_VIDEO))
                 .queryParam("videoId", videoId);
 
-        return retry(() -> restTemplate.getForEntity(builder.toUriString(), SpeakerModel.class, videoId).getBody());
+        return retry(() -> restTemplate.getForEntity(builder.toUriString(), List.class, videoId).getBody());
     }
 
     @Override
-    public SpeakerModel getByArticle(Long articleId) throws MicroServiceException {
+    public List<SpeakerModel> getByArticle(Long articleId) throws MicroServiceException {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(buildUrl(SPEAKER_GET_ARTICLE))
                 .queryParam("articleId", articleId);
 
-        return retry(() -> restTemplate.getForEntity(builder.toUriString(), SpeakerModel.class, articleId).getBody());
+        return retry(() -> restTemplate.getForEntity(builder.toUriString(), List.class, articleId).getBody());
     }
 
     @Override
-    public SpeakerModel getByEvent(Long eventId) throws MicroServiceException {
+    public List<SpeakerModel> getByEvent(Long eventId) throws MicroServiceException {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(buildUrl(SPEAKER_GET_EVENT))
                 .queryParam("eventId", eventId);
 
-        return retry(() -> restTemplate.getForEntity(builder.toUriString(), SpeakerModel.class, eventId).getBody());
+        return retry(() -> restTemplate.getForEntity(builder.toUriString(), List.class, eventId).getBody());
     }
 
     @Override

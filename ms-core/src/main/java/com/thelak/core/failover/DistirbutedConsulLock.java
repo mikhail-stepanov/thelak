@@ -14,7 +14,6 @@ public class DistirbutedConsulLock {
     protected String sessionId = null;
     protected String keyPath;
 
-
     public DistirbutedConsulLock(ConsulClient consulClient, String lockKey) {
         this.consulClient = consulClient;
         this.keyPath = prefix + lockKey;

@@ -1,6 +1,6 @@
 package com.thelak.category.endpoints;
 
-import com.thelak.core.endpoints.AbstractMicroservice;
+import com.thelak.core.endpoints.MicroserviceAdvice;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbCategory;
 import com.thelak.database.entity.DbCategoryArticles;
@@ -21,28 +21,22 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 
 @RestController
 @Api(value = "Category content API", produces = "application/json")
-public class CategoryContentEndpoint extends AbstractMicroservice implements ICategoryContentService {
+public class CategoryContentEndpoint extends MicroserviceAdvice implements ICategoryContentService {
 
     @Autowired
     private DatabaseService databaseService;
-
-    ObjectContext objectContext;
-
-    @PostConstruct
-    private void initialize() {
-        objectContext = databaseService.getContext();
-    }
 
     @Override
     @ApiOperation(value = "Get video ids by category ids")
     @RequestMapping(value = CATEGORY_VIDEO, method = {RequestMethod.GET})
     public List<Long> videoIds(@RequestParam List<Long> categoryIds) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             List<DbCategory> dbCategories = ObjectSelect.query(DbCategory.class).
                     where(ExpressionFactory.inDbExp(DbCategory.ID_PK_COLUMN, categoryIds))
                     .select(objectContext);
@@ -60,6 +54,8 @@ public class CategoryContentEndpoint extends AbstractMicroservice implements ICa
     @RequestMapping(value = CATEGORY_ARTICLE, method = {RequestMethod.GET})
     public List<Long> articleIds(List<Long> categoryIds) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             List<DbCategory> dbCategories = ObjectSelect.query(DbCategory.class).
                     where(ExpressionFactory.inDbExp(DbCategory.ID_PK_COLUMN, categoryIds))
                     .select(objectContext);
@@ -77,6 +73,8 @@ public class CategoryContentEndpoint extends AbstractMicroservice implements ICa
     @RequestMapping(value = CATEGORY_EVENT, method = {RequestMethod.GET})
     public List<Long> eventIds(List<Long> categoryIds) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             List<DbCategory> dbCategories = ObjectSelect.query(DbCategory.class).
                     where(ExpressionFactory.inDbExp(DbCategory.ID_PK_COLUMN, categoryIds))
                     .select(objectContext);
@@ -94,6 +92,8 @@ public class CategoryContentEndpoint extends AbstractMicroservice implements ICa
     @RequestMapping(value = CATEGORY_VIDEO_ADD, method = {RequestMethod.GET})
     public Boolean videoToCategoryAdd(Long videoId, Long categoryId) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             DbCategory dbCategory = SelectById.query(DbCategory.class, categoryId)
                     .selectFirst(objectContext);
 
@@ -104,7 +104,6 @@ public class CategoryContentEndpoint extends AbstractMicroservice implements ICa
             objectContext.commitChanges();
 
             return true;
-
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
         }
@@ -115,6 +114,8 @@ public class CategoryContentEndpoint extends AbstractMicroservice implements ICa
     @RequestMapping(value = CATEGORY_ARTICLE_ADD, method = {RequestMethod.GET})
     public Boolean articleToCategoryAdd(Long articleId, Long categoryId) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             DbCategory dbCategory = SelectById.query(DbCategory.class, categoryId)
                     .selectFirst(objectContext);
 
@@ -125,7 +126,6 @@ public class CategoryContentEndpoint extends AbstractMicroservice implements ICa
             objectContext.commitChanges();
 
             return true;
-
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
         }
@@ -136,6 +136,8 @@ public class CategoryContentEndpoint extends AbstractMicroservice implements ICa
     @RequestMapping(value = CATEGORY_EVENT_ADD, method = {RequestMethod.GET})
     public Boolean eventToCategoryAdd(Long eventId, Long categoryId) throws MicroServiceException {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             DbCategory dbCategory = SelectById.query(DbCategory.class, categoryId)
                     .selectFirst(objectContext);
 
@@ -146,7 +148,6 @@ public class CategoryContentEndpoint extends AbstractMicroservice implements ICa
             objectContext.commitChanges();
 
             return true;
-
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
         }
@@ -154,6 +155,7 @@ public class CategoryContentEndpoint extends AbstractMicroservice implements ICa
 
     @Override
     public Boolean videoToCategoryDelete(Long videoId) throws MicroServiceException {
+        ObjectContext objectContext = databaseService.getContext();
         List<DbCategoryVideos> dbCategoryVideos = ObjectSelect.query(DbCategoryVideos.class)
                 .where(DbCategoryVideos.ID_VIDEO.eq(videoId))
                 .select(objectContext);
@@ -164,6 +166,7 @@ public class CategoryContentEndpoint extends AbstractMicroservice implements ICa
 
     @Override
     public Boolean articleToCategoryDelete(Long articleId) throws MicroServiceException {
+        ObjectContext objectContext = databaseService.getContext();
         List<DbCategoryArticles> dbCategoryArticles = ObjectSelect.query(DbCategoryArticles.class)
                 .where(DbCategoryArticles.ID_ARTICLE.eq(articleId))
                 .select(objectContext);
@@ -174,6 +177,7 @@ public class CategoryContentEndpoint extends AbstractMicroservice implements ICa
 
     @Override
     public Boolean eventToCategory(Long eventId) throws MicroServiceException {
+        ObjectContext objectContext = databaseService.getContext();
         List<DbCategoryEvents> dbCategoryEvents = ObjectSelect.query(DbCategoryEvents.class)
                 .where(DbCategoryEvents.ID_EVENT.eq(eventId))
                 .select(objectContext);

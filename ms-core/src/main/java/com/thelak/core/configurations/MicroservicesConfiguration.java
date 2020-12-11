@@ -15,9 +15,11 @@ import com.thelak.route.event.interfaces.IEventService;
 import com.thelak.route.event.services.EventService;
 import com.thelak.route.payments.interfaces.ICertificateService;
 import com.thelak.route.payments.interfaces.IPaymentService;
+import com.thelak.route.payments.interfaces.IPromoService;
 import com.thelak.route.payments.interfaces.ISubscriptionService;
 import com.thelak.route.payments.services.CertificateService;
 import com.thelak.route.payments.services.PaymentService;
+import com.thelak.route.payments.services.PromoService;
 import com.thelak.route.payments.services.SubscriptionService;
 import com.thelak.route.smtp.interfaces.IEmailService;
 import com.thelak.route.smtp.services.EmailService;
@@ -150,6 +152,11 @@ public class MicroservicesConfiguration {
     @Bean
     IPaymentService paymentService() {
         return new PaymentService(restTemplate());
+    }
+
+    @Bean
+    IPromoService promoService() {
+        return new PromoService(restTemplate());
     }
 
     @Bean

@@ -29,17 +29,14 @@ public class MultiReadHttpServletRequest extends HttpServletRequestWrapper {
     }
 
     private void cacheInputStream() throws IOException {
-        //cache the inputstream in order to read it multiple times
         cachedBytes = new ByteArrayOutputStream();
         IOUtils.copy(super.getInputStream(), cachedBytes);
     }
 
-    //an inputstream which reads the cached request body
     public class CachedServletInputStream extends ServletInputStream {
         private ByteArrayInputStream input;
 
         public CachedServletInputStream() {
-            //create a new input stream from the cached request body
             input = new ByteArrayInputStream(cachedBytes.toByteArray());
         }
 

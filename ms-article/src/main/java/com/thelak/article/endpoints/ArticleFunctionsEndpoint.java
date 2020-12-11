@@ -1,6 +1,6 @@
 package com.thelak.article.endpoints;
 
-import com.thelak.core.endpoints.AbstractMicroservice;
+import com.thelak.core.endpoints.MicroserviceAdvice;
 import com.thelak.core.models.UserInfo;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbArticle;
@@ -15,32 +15,20 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 
 import static com.thelak.article.services.ArticleHelper.avgRating;
 
 @RestController
 @Api(value = "Article functions API", produces = "application/json")
-public class ArticleFunctionsEndpoint extends AbstractMicroservice implements IArticleFunctionsService {
+public class ArticleFunctionsEndpoint extends MicroserviceAdvice implements IArticleFunctionsService {
 
     @Autowired
     private DatabaseService databaseService;
-
-    ObjectContext objectContext;
-
-    protected static final Logger log = LoggerFactory.getLogger(ArticleFunctionsEndpoint.class);
-
-    @PostConstruct
-    private void initialize() {
-        objectContext = databaseService.getContext();
-    }
 
     @Override
     @CrossOrigin
@@ -53,6 +41,8 @@ public class ArticleFunctionsEndpoint extends AbstractMicroservice implements IA
     )
     @RequestMapping(value = ARTICLE_RATING_ADD, method = {RequestMethod.POST})
     public Boolean addRating(@RequestParam Long articleId, @RequestParam Integer score) throws MicroServiceException {
+        ObjectContext objectContext = databaseService.getContext();
+
         UserInfo userInfo = (UserInfo) SecurityContextHolder
                 .getContext()
                 .getAuthentication()
@@ -76,7 +66,6 @@ public class ArticleFunctionsEndpoint extends AbstractMicroservice implements IA
             objectContext.commitChanges();
 
             return true;
-
         } else
             throw new MsBadRequestException("Always in favorites");
     }
@@ -92,6 +81,8 @@ public class ArticleFunctionsEndpoint extends AbstractMicroservice implements IA
     )
     @RequestMapping(value = ARTICLE_RATING_DELETE, method = {RequestMethod.DELETE})
     public Boolean deleteRating(@RequestParam Long articleId) throws MicroServiceException {
+        ObjectContext objectContext = databaseService.getContext();
+
         UserInfo userInfo = (UserInfo) SecurityContextHolder
                 .getContext()
                 .getAuthentication()
@@ -126,6 +117,8 @@ public class ArticleFunctionsEndpoint extends AbstractMicroservice implements IA
     )
     @RequestMapping(value = ARTICLE_RATING_CHECK, method = {RequestMethod.GET})
     public Boolean checkRating(@RequestParam Long articleId) throws MicroServiceException {
+        ObjectContext objectContext = databaseService.getContext();
+
         UserInfo userInfo = (UserInfo) SecurityContextHolder
                 .getContext()
                 .getAuthentication()
@@ -139,6 +132,8 @@ public class ArticleFunctionsEndpoint extends AbstractMicroservice implements IA
 
     private boolean checkIsRate(DbArticle article, Long userId) {
         try {
+            ObjectContext objectContext = databaseService.getContext();
+
             DbArticleRating rating = ObjectSelect.query(DbArticleRating.class)
                     .where(DbArticleRating.ID_USER.eq(userId))
                     .and(DbArticleRating.RATING_TO_ARTICLE.eq(article))
@@ -146,7 +141,6 @@ public class ArticleFunctionsEndpoint extends AbstractMicroservice implements IA
 
             return rating != null;
         } catch (Exception e) {
-            log.error(e.getMessage());
             return false;
         }
     }
