@@ -6,6 +6,7 @@ import com.thelak.route.payments.models.subscription.SetSubscriptionModel;
 import org.springframework.http.ResponseEntity;
 
 import java.text.ParseException;
+import java.util.List;
 
 public interface IAuthenticationService {
 
@@ -17,6 +18,8 @@ public interface IAuthenticationService {
     String AUTH_USER_RESTORE_REQUEST = "/v1/auth/restore/request";
     String AUTH_USER_RESTORE_CONFIRM = "/v1/auth/restore/confirm";
     String AUTH_USER_SUBSCRIPTION = "/v1/auth/subscription";
+
+    String AUTH_USER_INFO = "/v1/auth/info/list";
 
     String AUTH_USER_NOTIFICATION_INFO = "/v1/auth/notification/info";
     String AUTH_USER_NOTIFICATION_UPDATE = "/v1/auth/notification/update";
@@ -42,4 +45,5 @@ public interface IAuthenticationService {
 
     NotificationModel updateNotificationInfo(NotificationModel notificationModel) throws MicroServiceException;
 
+    List<UserInfoModel> infoList(String search, Integer page, Integer size) throws MicroServiceException;
 }

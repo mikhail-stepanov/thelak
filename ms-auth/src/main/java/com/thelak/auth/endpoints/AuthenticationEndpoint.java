@@ -32,6 +32,8 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -418,6 +420,90 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
                     .sales(notification.isSales())
                     .build();
 
+        } catch (Exception e) {
+            throw new MsInternalErrorException(e.getMessage());
+        }
+    }
+
+    @Override
+    @ApiOperation(value = "Get list of users")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(required = true,
+                    defaultValue = "Bearer ",
+                    name = "Authorization",
+                    paramType = "header")}
+    )
+    @RequestMapping(value = AUTH_USER_INFO, method = {RequestMethod.GET})
+    public List<UserInfoModel> infoList(@RequestParam String search, @RequestParam Integer page, @RequestParam Integer size) throws MicroServiceException {
+        try {
+            ObjectContext objectContext = databaseService.getContext();
+
+            List<DbUser> dbUsers;
+            if(search!=null && !search.isEmpty()){
+            if (page == null || size == null)
+                dbUsers = ObjectSelect.query(DbUser.class).
+                        where(DbUser.DELETED_DATE.isNull())
+                        .and(DbUser.NAME.containsIgnoreCase(search.toLowerCase()))
+                        .or(DbUser.EMAIL.containsIgnoreCase(search.toLowerCase()))
+                        .or(DbUser.PHONE.containsIgnoreCase(search.toLowerCase()))
+                        .pageSize(30)
+                        .select(objectContext);
+            else {
+                dbUsers = ObjectSelect.query(DbUser.class).
+                        where(DbUser.DELETED_DATE.isNull())
+                        .and(DbUser.NAME.containsIgnoreCase(search.toLowerCase()))
+                        .or(DbUser.EMAIL.containsIgnoreCase(search.toLowerCase()))
+                        .or(DbUser.PHONE.containsIgnoreCase(search.toLowerCase()))
+                        .pageSize(size)
+                        .select(objectContext);
+                if (dbUsers.size() >= size * page)
+                    dbUsers = dbUsers.subList(page * size - size, page * size);
+                else if (dbUsers.size() >= size * (page - 1))
+                    dbUsers = dbUsers.subList(page * size - size, dbUsers.size() - 1);
+                else
+                    dbUsers = new ArrayList<>();
+            }}
+            else {
+                if (page == null || size == null)
+                    dbUsers = ObjectSelect.query(DbUser.class).
+                            where(DbUser.DELETED_DATE.isNull())
+                            .pageSize(30)
+                            .select(objectContext);
+                else {
+                    dbUsers = ObjectSelect.query(DbUser.class).
+                            where(DbUser.DELETED_DATE.isNull())
+                            .pageSize(size)
+                            .select(objectContext);
+                    if (dbUsers.size() >= size * page)
+                        dbUsers = dbUsers.subList(page * size - size, page * size);
+                    else if (dbUsers.size() >= size * (page - 1))
+                        dbUsers = dbUsers.subList(page * size - size, dbUsers.size() - 1);
+                    else
+                        dbUsers = new ArrayList<>();
+                }
+            }
+
+            List<UserInfoModel> users = new ArrayList<>();
+            dbUsers.forEach(dbUser -> {
+                users.add(UserInfoModel.builder()
+                        .id((Long) dbUser.getObjectId().getIdSnapshot().get("id"))
+                        .email(dbUser.getEmail())
+                        .name(dbUser.getName())
+                        .phone(dbUser.getPhone())
+                        .birthday(dbUser.getBirthday())
+                        .city(dbUser.getCity())
+                        .country(dbUser.getCountry())
+                        .isSubscribe(dbUser.isIsSubscribe())
+                        .subscriptionDate(dbUser.getSubscriptionDate())
+                        .subType(dbUser.getSubType())
+                        .renew(dbUser.isRenew())
+                        .createdDate(dbUser.getCreatedDate())
+                        .modifiedDate(dbUser.getModifiedDate())
+                        .lastLoginDate(dbUser.getUserToSession().get(dbUser.getUserToSession().size()-1).getCreatedDate())
+                        .build());
+            });
+
+            return users;
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
         }

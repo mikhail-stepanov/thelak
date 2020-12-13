@@ -8,6 +8,8 @@ import com.thelak.route.payments.models.subscription.SetSubscriptionModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+
 public class AuthenticationService extends BaseMicroservice implements IAuthenticationService {
 
     public AuthenticationService(RestTemplate restTemplate) {
@@ -61,6 +63,11 @@ public class AuthenticationService extends BaseMicroservice implements IAuthenti
 
     @Override
     public NotificationModel updateNotificationInfo(NotificationModel notificationModel) throws MicroServiceException {
+        return null;
+    }
+
+    @Override
+    public List<UserInfoModel> infoList(String search, Integer page, Integer size) throws MicroServiceException {
         return null;
     }
 }
