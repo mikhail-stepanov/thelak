@@ -757,8 +757,13 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
         }
 
         try {
-            DbPromo dbPromo = ObjectSelect.query(DbPromo.class)
-                    .where(DbPromo.CODE.lower().eq(code.toLowerCase())).selectFirst(objectContext);
+            DbPromo dbPromo = null;
+            try {
+                dbPromo = ObjectSelect.query(DbPromo.class)
+                        .where(DbPromo.CODE.lower().eq(code.toLowerCase())).selectFirst(objectContext);
+            } catch (Exception e){
+                throw new MsObjectNotFoundException("Can't find certificate or promo: ", code);
+            }
             try {
                 DbPromoEmail dbPromoEmail = ObjectSelect.query(DbPromoEmail.class)
                         .where(DbPromoEmail.EMAIL_TO_PROMO.eq(dbPromo))
@@ -812,7 +817,7 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
                     .months(dbPromo.getMonths())
                     .description(dbPromo.getDescription())
                     .build();
-        } catch (Exception ignored) {
+        } catch (Exception e) {
         }
         try {
             DbIssuedCertificate dbIssuedCertificate = ObjectSelect.query(DbIssuedCertificate.class)

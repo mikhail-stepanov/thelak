@@ -170,12 +170,14 @@ public class SpeakerEndpoint extends MicroserviceAdvice implements ISpeakerServi
                         .where(countryFilterExpression)
                         .and(DbSpeaker.DELETED_DATE.isNull())
                         .pageSize(30)
+                        .orderBy(DbSpeaker.CREATED_DATE.desc())
                         .select(objectContext);
             else {
                 dbSpeakers = ObjectSelect.query(DbSpeaker.class)
                         .where(countryFilterExpression)
                         .and(DbSpeaker.DELETED_DATE.isNull())
                         .pageSize(size)
+                        .orderBy(DbSpeaker.CREATED_DATE.desc())
                         .select(objectContext);
                 if (dbSpeakers.size() >= size * page)
                     dbSpeakers = dbSpeakers.subList(page * size - size, page * size);
