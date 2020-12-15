@@ -434,36 +434,34 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
                     paramType = "header")}
     )
     @RequestMapping(value = AUTH_USER_INFO, method = {RequestMethod.GET})
-    public List<UserInfoModel> infoList(@RequestParam String search, @RequestParam Integer page, @RequestParam Integer size) throws MicroServiceException {
+    public List<UserInfoModel> infoList(@RequestParam(required = false) String search, @RequestParam Integer page, @RequestParam Integer size) throws MicroServiceException {
         try {
             ObjectContext objectContext = databaseService.getContext();
 
             List<DbUser> dbUsers;
-            if(search!=null && !search.isEmpty()){
-            if (page == null || size == null)
-                dbUsers = ObjectSelect.query(DbUser.class).
-                        where(DbUser.DELETED_DATE.isNull())
-                        .and(DbUser.NAME.containsIgnoreCase(search.toLowerCase()))
-                        .or(DbUser.EMAIL.containsIgnoreCase(search.toLowerCase()))
-                        .or(DbUser.PHONE.containsIgnoreCase(search.toLowerCase()))
-                        .pageSize(30)
-                        .select(objectContext);
-            else {
-                dbUsers = ObjectSelect.query(DbUser.class).
-                        where(DbUser.DELETED_DATE.isNull())
-                        .and(DbUser.NAME.containsIgnoreCase(search.toLowerCase()))
-                        .or(DbUser.EMAIL.containsIgnoreCase(search.toLowerCase()))
-                        .or(DbUser.PHONE.containsIgnoreCase(search.toLowerCase()))
-                        .pageSize(size)
-                        .select(objectContext);
-                if (dbUsers.size() >= size * page)
-                    dbUsers = dbUsers.subList(page * size - size, page * size);
-                else if (dbUsers.size() >= size * (page - 1))
-                    dbUsers = dbUsers.subList(page * size - size, dbUsers.size() - 1);
-                else
-                    dbUsers = new ArrayList<>();
-            }}
-            else {
+            if (search != null && !search.isEmpty()) {
+                if (page == null || size == null)
+                    dbUsers = ObjectSelect.query(DbUser.class).
+                            where(DbUser.DELETED_DATE.isNull())
+                            .and(DbUser.NAME.containsIgnoreCase(search.toLowerCase()))
+                            .or(DbUser.EMAIL.containsIgnoreCase(search.toLowerCase()))
+                            .or(DbUser.PHONE.containsIgnoreCase(search.toLowerCase()))
+                            .pageSize(30)
+                            .select(objectContext);
+                else {
+                    dbUsers = ObjectSelect.query(DbUser.class).
+                            where(DbUser.DELETED_DATE.isNull())
+                            .and(DbUser.NAME.containsIgnoreCase(search.toLowerCase()))
+                            .or(DbUser.EMAIL.containsIgnoreCase(search.toLowerCase()))
+                            .or(DbUser.PHONE.containsIgnoreCase(search.toLowerCase()))
+                            .pageSize(size)
+                            .select(objectContext);
+                    if (dbUsers.size() >= size * page)
+                        dbUsers = dbUsers.subList(page * size - size, page * size);
+                    else if (dbUsers.size() >= size * (page - 1))
+                        dbUsers = dbUsers.subList(page * size - size, dbUsers.size() - 1);
+                }
+            } else {
                 if (page == null || size == null)
                     dbUsers = ObjectSelect.query(DbUser.class).
                             where(DbUser.DELETED_DATE.isNull())
@@ -478,8 +476,6 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
                         dbUsers = dbUsers.subList(page * size - size, page * size);
                     else if (dbUsers.size() >= size * (page - 1))
                         dbUsers = dbUsers.subList(page * size - size, dbUsers.size() - 1);
-                    else
-                        dbUsers = new ArrayList<>();
                 }
             }
 
@@ -499,7 +495,7 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
                         .renew(dbUser.isRenew())
                         .createdDate(dbUser.getCreatedDate())
                         .modifiedDate(dbUser.getModifiedDate())
-                        .lastLoginDate(dbUser.getUserToSession().get(dbUser.getUserToSession().size()-1).getCreatedDate())
+                        .lastLoginDate(dbUser.getUserToSession().size() > 0 ? dbUser.getUserToSession().get(dbUser.getUserToSession().size() - 1).getCreatedDate() : null)
                         .build());
             });
 

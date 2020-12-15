@@ -1446,7 +1446,7 @@ false posixrules
     <database id="10" parent="1" name="speaker">
       <ObjectId>17078</ObjectId>
       <Owner>speaker_user</Owner>
-      <IntrospectionStateNumber>1550192</IntrospectionStateNumber>
+      <IntrospectionStateNumber>1994214</IntrospectionStateNumber>
       <Current>1</Current>
     </database>
     <database id="11" parent="1" name="video">
@@ -1538,7 +1538,7 @@ false posixrules
       <Comment>standard public schema</Comment>
       <StateNumber>275</StateNumber>
       <Owner>postgres</Owner>
-      <IntrospectionStateNumber>1550193</IntrospectionStateNumber>
+      <IntrospectionStateNumber>1994215</IntrospectionStateNumber>
       <Current>1</Current>
     </schema>
     <access-method id="33" parent="10" name="heap">
@@ -1738,49 +1738,57 @@ false posixrules
       <Unique>1</Unique>
       <Primary>1</Primary>
     </index>
-    <key id="66" parent="49" name="db_speaker_pkey">
+    <index id="66" parent="49" name="db_speaker_index_1">
+      <ObjectId>19571</ObjectId>
+      <StateNumber>1994213</StateNumber>
+      <ColNames>name
+photo_url
+country
+country_flag_code</ColNames>
+    </index>
+    <key id="67" parent="49" name="db_speaker_pkey">
       <ObjectId>17092</ObjectId>
       <StateNumber>857</StateNumber>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>db_speaker_pkey</UnderlyingIndexName>
     </key>
-    <column id="67" parent="50" name="id">
+    <column id="68" parent="50" name="id">
       <Position>1</Position>
       <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>886</StateNumber>
       <TypeId>20</TypeId>
     </column>
-    <column id="68" parent="50" name="id_article">
+    <column id="69" parent="50" name="id_article">
       <Position>2</Position>
       <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>886</StateNumber>
       <TypeId>20</TypeId>
     </column>
-    <column id="69" parent="50" name="id_speaker">
+    <column id="70" parent="50" name="id_speaker">
       <Position>3</Position>
       <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>886</StateNumber>
       <TypeId>20</TypeId>
     </column>
-    <index id="70" parent="50" name="db_speaker_articles_pkey">
+    <index id="71" parent="50" name="db_speaker_articles_pkey">
       <ObjectId>17112</ObjectId>
       <StateNumber>886</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
     </index>
-    <key id="71" parent="50" name="db_speaker_articles_pkey">
+    <key id="72" parent="50" name="db_speaker_articles_pkey">
       <ObjectId>17113</ObjectId>
       <StateNumber>886</StateNumber>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>db_speaker_articles_pkey</UnderlyingIndexName>
     </key>
-    <foreign-key id="72" parent="50" name="db_speaker_articles_id_speaker_fkey">
+    <foreign-key id="73" parent="50" name="db_speaker_articles_id_speaker_fkey">
       <ObjectId>17124</ObjectId>
       <StateNumber>889</StateNumber>
       <ColNames>id_speaker</ColNames>
@@ -1790,42 +1798,42 @@ false posixrules
       <RefKeyName>db_speaker_pkey</RefKeyName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="73" parent="51" name="id">
+    <column id="74" parent="51" name="id">
       <Position>1</Position>
       <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>885</StateNumber>
       <TypeId>20</TypeId>
     </column>
-    <column id="74" parent="51" name="id_event">
+    <column id="75" parent="51" name="id_event">
       <Position>2</Position>
       <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>885</StateNumber>
       <TypeId>20</TypeId>
     </column>
-    <column id="75" parent="51" name="id_speaker">
+    <column id="76" parent="51" name="id_speaker">
       <Position>3</Position>
       <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>885</StateNumber>
       <TypeId>20</TypeId>
     </column>
-    <index id="76" parent="51" name="db_speaker_events_pkey">
+    <index id="77" parent="51" name="db_speaker_events_pkey">
       <ObjectId>17107</ObjectId>
       <StateNumber>885</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
     </index>
-    <key id="77" parent="51" name="db_speaker_events_pkey">
+    <key id="78" parent="51" name="db_speaker_events_pkey">
       <ObjectId>17108</ObjectId>
       <StateNumber>885</StateNumber>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>db_speaker_events_pkey</UnderlyingIndexName>
     </key>
-    <foreign-key id="78" parent="51" name="db_speaker_events_id_speaker_fkey">
+    <foreign-key id="79" parent="51" name="db_speaker_events_id_speaker_fkey">
       <ObjectId>17119</ObjectId>
       <StateNumber>888</StateNumber>
       <ColNames>id_speaker</ColNames>
@@ -1835,42 +1843,42 @@ false posixrules
       <RefKeyName>db_speaker_pkey</RefKeyName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="79" parent="52" name="id">
+    <column id="80" parent="52" name="id">
       <Position>1</Position>
       <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>884</StateNumber>
       <TypeId>20</TypeId>
     </column>
-    <column id="80" parent="52" name="id_speaker">
+    <column id="81" parent="52" name="id_speaker">
       <Position>2</Position>
       <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>884</StateNumber>
       <TypeId>20</TypeId>
     </column>
-    <column id="81" parent="52" name="id_video">
+    <column id="82" parent="52" name="id_video">
       <Position>3</Position>
       <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>884</StateNumber>
       <TypeId>20</TypeId>
     </column>
-    <index id="82" parent="52" name="db_speaker_videos_pkey">
+    <index id="83" parent="52" name="db_speaker_videos_pkey">
       <ObjectId>17102</ObjectId>
       <StateNumber>884</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
     </index>
-    <key id="83" parent="52" name="db_speaker_videos_pkey">
+    <key id="84" parent="52" name="db_speaker_videos_pkey">
       <ObjectId>17103</ObjectId>
       <StateNumber>884</StateNumber>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>db_speaker_videos_pkey</UnderlyingIndexName>
     </key>
-    <foreign-key id="84" parent="52" name="db_speaker_videos_id_speaker_fkey">
+    <foreign-key id="85" parent="52" name="db_speaker_videos_id_speaker_fkey">
       <ObjectId>17114</ObjectId>
       <StateNumber>887</StateNumber>
       <ColNames>id_speaker</ColNames>
@@ -1880,50 +1888,50 @@ false posixrules
       <RefKeyName>db_speaker_pkey</RefKeyName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="85" parent="53" name="id">
+    <column id="86" parent="53" name="id">
       <Position>1</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>5239</StateNumber>
       <TypeId>23</TypeId>
     </column>
-    <column id="86" parent="53" name="name">
+    <column id="87" parent="53" name="name">
       <Position>2</Position>
       <DataType>varchar|0s</DataType>
       <StateNumber>5239</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="87" parent="53" name="country">
+    <column id="88" parent="53" name="country">
       <Position>3</Position>
       <DataType>varchar|0s</DataType>
       <StateNumber>5239</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="88" parent="53" name="url">
+    <column id="89" parent="53" name="url">
       <Position>4</Position>
       <DataType>varchar|0s</DataType>
       <StateNumber>5239</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <index id="89" parent="53" name="speaker_te,_pk">
+    <index id="90" parent="53" name="speaker_te,_pk">
       <ObjectId>18361</ObjectId>
       <StateNumber>5239</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
     </index>
-    <key id="90" parent="53" name="speaker_te,_pk">
+    <key id="91" parent="53" name="speaker_te,_pk">
       <ObjectId>18362</ObjectId>
       <StateNumber>5239</StateNumber>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>speaker_te,_pk</UnderlyingIndexName>
     </key>
-    <argument id="91" parent="54" name="p_string">
+    <argument id="92" parent="54" name="p_string">
       <Position>1</Position>
       <DataType>varchar|0s</DataType>
     </argument>
-    <argument id="92" parent="54">
+    <argument id="93" parent="54">
       <ArgumentDirection>R</ArgumentDirection>
       <DataType>varchar|0s</DataType>
     </argument>

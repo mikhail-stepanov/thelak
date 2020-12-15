@@ -1450,7 +1450,7 @@ false posixrules
     <database id="11" parent="1" name="video">
       <ObjectId>16442</ObjectId>
       <Owner>video_user</Owner>
-      <IntrospectionStateNumber>1550205</IntrospectionStateNumber>
+      <IntrospectionStateNumber>1994227</IntrospectionStateNumber>
       <Current>1</Current>
     </database>
     <role id="12" parent="1" name="article_user">
@@ -1538,7 +1538,7 @@ false posixrules
       <Comment>standard public schema</Comment>
       <StateNumber>275</StateNumber>
       <Owner>postgres</Owner>
-      <IntrospectionStateNumber>1550206</IntrospectionStateNumber>
+      <IntrospectionStateNumber>1994228</IntrospectionStateNumber>
       <Current>1</Current>
     </schema>
     <access-method id="33" parent="11" name="heap">
@@ -1826,39 +1826,39 @@ false posixrules
     </column>
     <index id="81" parent="51" name="db_video_pkey">
       <ObjectId>16459</ObjectId>
-      <StateNumber>587</StateNumber>
+      <StateNumber>1994219</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
     </index>
     <index id="82" parent="51" name="db_video_id_indx">
       <ObjectId>17925</ObjectId>
-      <StateNumber>4157</StateNumber>
+      <StateNumber>1994219</StateNumber>
       <ColNames>id</ColNames>
     </index>
     <index id="83" parent="51" name="db_video_title_indx">
       <ObjectId>17926</ObjectId>
-      <StateNumber>4158</StateNumber>
+      <StateNumber>1994219</StateNumber>
       <ColNames>title</ColNames>
     </index>
     <index id="84" parent="51" name="db_video_description_indx">
       <ObjectId>18128</ObjectId>
-      <StateNumber>4763</StateNumber>
+      <StateNumber>1994219</StateNumber>
       <ColNames>description</ColNames>
     </index>
     <index id="85" parent="51" name="db_video_speaker_indx">
       <ObjectId>18847</ObjectId>
-      <StateNumber>735307</StateNumber>
+      <StateNumber>1994219</StateNumber>
       <ColNames>speaker</ColNames>
     </index>
     <index id="86" parent="51" name="db_video_created_date_indx">
       <ObjectId>17930</ObjectId>
-      <StateNumber>4162</StateNumber>
+      <StateNumber>1994219</StateNumber>
       <ColNames>created_date</ColNames>
     </index>
     <index id="87" parent="51" name="db_video_duration_indx">
       <ObjectId>17929</ObjectId>
-      <StateNumber>4161</StateNumber>
+      <StateNumber>1994219</StateNumber>
       <ColNames>duration</ColNames>
     </index>
     <key id="88" parent="51" name="db_video_pkey">
@@ -1977,14 +1977,21 @@ false posixrules
       <Unique>1</Unique>
       <Primary>1</Primary>
     </index>
-    <key id="105" parent="53" name="db_video_history_pkey">
+    <index id="105" parent="53" name="db_video_history_index_1">
+      <ObjectId>19580</ObjectId>
+      <StateNumber>1994220</StateNumber>
+      <ColNames>id_user
+id_video
+created_date</ColNames>
+    </index>
+    <key id="106" parent="53" name="db_video_history_pkey">
       <ObjectId>16524</ObjectId>
       <StateNumber>627</StateNumber>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>db_video_history_pkey</UnderlyingIndexName>
     </key>
-    <foreign-key id="106" parent="53" name="db_video_history_id_video_fkey">
+    <foreign-key id="107" parent="53" name="db_video_history_id_video_fkey">
       <ObjectId>16535</ObjectId>
       <StateNumber>630</StateNumber>
       <ColNames>id_video</ColNames>
@@ -1994,72 +2001,72 @@ false posixrules
       <RefKeyName>db_video_pkey</RefKeyName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="107" parent="54" name="id">
+    <column id="108" parent="54" name="id">
       <Position>1</Position>
       <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>642</StateNumber>
       <TypeId>20</TypeId>
     </column>
-    <column id="108" parent="54" name="id_user">
+    <column id="109" parent="54" name="id_user">
       <Position>2</Position>
       <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>642</StateNumber>
       <TypeId>20</TypeId>
     </column>
-    <column id="109" parent="54" name="id_video">
+    <column id="110" parent="54" name="id_video">
       <Position>3</Position>
       <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>642</StateNumber>
       <TypeId>20</TypeId>
     </column>
-    <column id="110" parent="54" name="score">
+    <column id="111" parent="54" name="score">
       <Position>4</Position>
       <DataType>integer|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>642</StateNumber>
       <TypeId>23</TypeId>
     </column>
-    <column id="111" parent="54" name="created_date">
+    <column id="112" parent="54" name="created_date">
       <Position>5</Position>
       <DataType>timestamp with time zone|0s</DataType>
       <StateNumber>642</StateNumber>
       <TypeId>1184</TypeId>
     </column>
-    <column id="112" parent="54" name="deleted_date">
+    <column id="113" parent="54" name="deleted_date">
       <Position>6</Position>
       <DataType>timestamp with time zone|0s</DataType>
       <StateNumber>642</StateNumber>
       <TypeId>1184</TypeId>
     </column>
-    <column id="113" parent="54" name="modified_date">
+    <column id="114" parent="54" name="modified_date">
       <Position>7</Position>
       <DataType>timestamp with time zone|0s</DataType>
       <StateNumber>642</StateNumber>
       <TypeId>1184</TypeId>
     </column>
-    <index id="114" parent="54" name="db_video_rating_pkey">
+    <index id="115" parent="54" name="db_video_rating_pkey">
       <ObjectId>16554</ObjectId>
       <StateNumber>642</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
     </index>
-    <index id="115" parent="54" name="db_video_ration_score_indx">
+    <index id="116" parent="54" name="db_video_ration_score_indx">
       <ObjectId>17931</ObjectId>
       <StateNumber>4165</StateNumber>
       <ColNames>score</ColNames>
     </index>
-    <key id="116" parent="54" name="db_video_rating_pkey">
+    <key id="117" parent="54" name="db_video_rating_pkey">
       <ObjectId>16555</ObjectId>
       <StateNumber>642</StateNumber>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>db_video_rating_pkey</UnderlyingIndexName>
     </key>
-    <foreign-key id="117" parent="54" name="db_video_rating_id_video_fkey">
+    <foreign-key id="118" parent="54" name="db_video_rating_id_video_fkey">
       <ObjectId>16556</ObjectId>
       <StateNumber>643</StateNumber>
       <ColNames>id_video</ColNames>
@@ -2069,67 +2076,75 @@ false posixrules
       <RefKeyName>db_video_pkey</RefKeyName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="118" parent="55" name="id">
+    <column id="119" parent="55" name="id">
       <Position>1</Position>
       <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>626</StateNumber>
       <TypeId>20</TypeId>
     </column>
-    <column id="119" parent="55" name="id_user">
+    <column id="120" parent="55" name="id_user">
       <Position>2</Position>
       <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>626</StateNumber>
       <TypeId>20</TypeId>
     </column>
-    <column id="120" parent="55" name="id_video">
+    <column id="121" parent="55" name="id_video">
       <Position>3</Position>
       <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>626</StateNumber>
       <TypeId>20</TypeId>
     </column>
-    <column id="121" parent="55" name="timecode">
+    <column id="122" parent="55" name="timecode">
       <Position>4</Position>
       <DataType>varchar(256)|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>626</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="122" parent="55" name="modified_date">
+    <column id="123" parent="55" name="modified_date">
       <Position>5</Position>
       <DataType>timestamp with time zone|0s</DataType>
       <StateNumber>626</StateNumber>
       <TypeId>1184</TypeId>
     </column>
-    <column id="123" parent="55" name="created_date">
+    <column id="124" parent="55" name="created_date">
       <Position>6</Position>
       <DataType>timestamp with time zone|0s</DataType>
       <StateNumber>626</StateNumber>
       <TypeId>1184</TypeId>
     </column>
-    <column id="124" parent="55" name="deleted_date">
+    <column id="125" parent="55" name="deleted_date">
       <Position>7</Position>
       <DataType>timestamp with time zone|0s</DataType>
       <StateNumber>626</StateNumber>
       <TypeId>1184</TypeId>
     </column>
-    <index id="125" parent="55" name="db_video_timecode_pkey">
+    <index id="126" parent="55" name="db_video_timecode_pkey">
       <ObjectId>16518</ObjectId>
       <StateNumber>3352</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
     </index>
-    <key id="126" parent="55" name="db_video_timecode_pkey">
+    <index id="127" parent="55" name="db_video_timecode_index_1">
+      <ObjectId>19581</ObjectId>
+      <StateNumber>1994223</StateNumber>
+      <ColNames>id_user
+id_video
+timecode
+created_date</ColNames>
+    </index>
+    <key id="128" parent="55" name="db_video_timecode_pkey">
       <ObjectId>16519</ObjectId>
       <StateNumber>626</StateNumber>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>db_video_timecode_pkey</UnderlyingIndexName>
     </key>
-    <foreign-key id="127" parent="55" name="db_video_timecode_id_video_fkey">
+    <foreign-key id="129" parent="55" name="db_video_timecode_id_video_fkey">
       <ObjectId>16530</ObjectId>
       <StateNumber>629</StateNumber>
       <ColNames>id_video</ColNames>
@@ -2139,60 +2154,67 @@ false posixrules
       <RefKeyName>db_video_pkey</RefKeyName>
       <RefColNames>id</RefColNames>
     </foreign-key>
-    <column id="128" parent="56" name="id">
+    <column id="130" parent="56" name="id">
       <Position>1</Position>
       <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>684</StateNumber>
       <TypeId>20</TypeId>
     </column>
-    <column id="129" parent="56" name="id_user">
+    <column id="131" parent="56" name="id_user">
       <Position>2</Position>
       <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>684</StateNumber>
       <TypeId>20</TypeId>
     </column>
-    <column id="130" parent="56" name="id_video">
+    <column id="132" parent="56" name="id_video">
       <Position>3</Position>
       <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>684</StateNumber>
       <TypeId>20</TypeId>
     </column>
-    <column id="131" parent="56" name="created_date">
+    <column id="133" parent="56" name="created_date">
       <Position>4</Position>
       <DataType>timestamp with time zone|0s</DataType>
       <StateNumber>684</StateNumber>
       <TypeId>1184</TypeId>
     </column>
-    <column id="132" parent="56" name="deleted_date">
+    <column id="134" parent="56" name="deleted_date">
       <Position>5</Position>
       <DataType>timestamp with time zone|0s</DataType>
       <StateNumber>684</StateNumber>
       <TypeId>1184</TypeId>
     </column>
-    <column id="133" parent="56" name="modified_date">
+    <column id="135" parent="56" name="modified_date">
       <Position>6</Position>
       <DataType>timestamp with time zone|0s</DataType>
       <StateNumber>684</StateNumber>
       <TypeId>1184</TypeId>
     </column>
-    <index id="134" parent="56" name="db_video_views_pkey">
+    <index id="136" parent="56" name="db_video_views_pkey">
       <ObjectId>16894</ObjectId>
       <StateNumber>684</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
     </index>
-    <key id="135" parent="56" name="db_video_views_pkey">
+    <index id="137" parent="56" name="db_video_view_index_1">
+      <ObjectId>19582</ObjectId>
+      <StateNumber>1994226</StateNumber>
+      <ColNames>id_user
+id_video
+created_date</ColNames>
+    </index>
+    <key id="138" parent="56" name="db_video_views_pkey">
       <ObjectId>16895</ObjectId>
       <StateNumber>684</StateNumber>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>db_video_views_pkey</UnderlyingIndexName>
     </key>
-    <foreign-key id="136" parent="56" name="db_video_views_id_video_fkey">
+    <foreign-key id="139" parent="56" name="db_video_views_id_video_fkey">
       <ObjectId>16896</ObjectId>
       <StateNumber>685</StateNumber>
       <ColNames>id_video</ColNames>

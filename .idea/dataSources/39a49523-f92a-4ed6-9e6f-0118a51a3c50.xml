@@ -1417,7 +1417,7 @@ false posixrules
     <database id="3" parent="1" name="auth">
       <ObjectId>16385</ObjectId>
       <Owner>auth_user</Owner>
-      <IntrospectionStateNumber>1694107</IntrospectionStateNumber>
+      <IntrospectionStateNumber>1994206</IntrospectionStateNumber>
       <Current>1</Current>
     </database>
     <database id="4" parent="1" name="category">
@@ -1538,7 +1538,7 @@ false posixrules
       <Comment>standard public schema</Comment>
       <StateNumber>275</StateNumber>
       <Owner>postgres</Owner>
-      <IntrospectionStateNumber>1694108</IntrospectionStateNumber>
+      <IntrospectionStateNumber>1994207</IntrospectionStateNumber>
       <Current>1</Current>
     </schema>
     <access-method id="33" parent="3" name="heap">
@@ -1906,64 +1906,89 @@ false posixrules
     </column>
     <index id="90" parent="51" name="db_user_pkey">
       <ObjectId>16414</ObjectId>
-      <StateNumber>1536440</StateNumber>
+      <StateNumber>1994199</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
     </index>
-    <key id="91" parent="51" name="db_user_pkey">
+    <index id="91" parent="51" name="db_user_index_1">
+      <ObjectId>19567</ObjectId>
+      <StateNumber>1994200</StateNumber>
+      <ColNames>name
+email
+phone</ColNames>
+    </index>
+    <index id="92" parent="51" name="db_user_index_2">
+      <ObjectId>19568</ObjectId>
+      <StateNumber>1994201</StateNumber>
+      <ColNames>password
+salt</ColNames>
+    </index>
+    <index id="93" parent="51" name="db_user_index_3">
+      <ObjectId>19569</ObjectId>
+      <StateNumber>1994202</StateNumber>
+      <ColNames>is_subscribe
+subscription_date</ColNames>
+    </index>
+    <key id="94" parent="51" name="db_user_pkey">
       <ObjectId>16415</ObjectId>
       <StateNumber>528</StateNumber>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>db_user_pkey</UnderlyingIndexName>
     </key>
-    <column id="92" parent="52" name="id">
+    <column id="95" parent="52" name="id">
       <Position>1</Position>
       <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>543</StateNumber>
       <TypeId>20</TypeId>
     </column>
-    <column id="93" parent="52" name="id_customer">
+    <column id="96" parent="52" name="id_customer">
       <Position>2</Position>
       <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
       <StateNumber>543</StateNumber>
       <TypeId>20</TypeId>
     </column>
-    <column id="94" parent="52" name="token">
+    <column id="97" parent="52" name="token">
       <Position>3</Position>
       <DataType>varchar(1024)|0s</DataType>
       <StateNumber>543</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <column id="95" parent="52" name="created_date">
+    <column id="98" parent="52" name="created_date">
       <Position>4</Position>
       <DataType>timestamp with time zone|0s</DataType>
       <StateNumber>543</StateNumber>
       <TypeId>1184</TypeId>
     </column>
-    <column id="96" parent="52" name="deleted_date">
+    <column id="99" parent="52" name="deleted_date">
       <Position>5</Position>
       <DataType>timestamp with time zone|0s</DataType>
       <StateNumber>543</StateNumber>
       <TypeId>1184</TypeId>
     </column>
-    <column id="97" parent="52" name="modified_date">
+    <column id="100" parent="52" name="modified_date">
       <Position>6</Position>
       <DataType>timestamp with time zone|0s</DataType>
       <StateNumber>543</StateNumber>
       <TypeId>1184</TypeId>
     </column>
-    <index id="98" parent="52" name="db_user_session_pkey">
+    <index id="101" parent="52" name="db_user_session_pkey">
       <ObjectId>16439</ObjectId>
       <StateNumber>543</StateNumber>
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Primary>1</Primary>
     </index>
-    <key id="99" parent="52" name="db_user_session_pkey">
+    <index id="102" parent="52" name="db_user_session_index_1">
+      <ObjectId>19570</ObjectId>
+      <StateNumber>1994205</StateNumber>
+      <ColNames>id_customer
+created_date</ColNames>
+    </index>
+    <key id="103" parent="52" name="db_user_session_pkey">
       <ObjectId>16440</ObjectId>
       <StateNumber>543</StateNumber>
       <ColNames>id</ColNames>
