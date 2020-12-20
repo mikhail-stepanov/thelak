@@ -74,6 +74,9 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
     @Value("${user.subscription.queue:#{null}}")
     private String userSubscriptionQueue;
 
+    @Value("${user.certificate.queue:#{null}}")
+    private String userCertificateQueue;
+
     RestTemplate restTemplate;
 
     Gson gson;
@@ -216,18 +219,22 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
 
                 objectContext.commitChanges();
 
+                IssuedCertificateModel issuedCertificateModel = IssuedCertificateModel.builder()
+                        .id((Long) certificate.getObjectId().getIdSnapshot().get("id"))
+                        .uuid(certificate.getUuid())
+                        .fio(certificate.getFio())
+                        .description(certificate.getDescription())
+                        .active(certificate.isActive())
+                        .activeDate(certificate.getActiveDate())
+                        .type(CertificateViewType.valueOf(certificate.getType()))
+                        .certificateModel(buildCertificateModel(certificate.getIssuedToCertificate()))
+                        .build();
+
+                messageService.publish(userCertificateQueue, issuedCertificateModel);
+
                 return BuyCertificateResponse.builder()
                         .payResponse(secureResponse)
-                        .certificate(IssuedCertificateModel.builder()
-                                .id((Long) certificate.getObjectId().getIdSnapshot().get("id"))
-                                .uuid(certificate.getUuid())
-                                .fio(certificate.getFio())
-                                .description(certificate.getDescription())
-                                .active(certificate.isActive())
-                                .activeDate(certificate.getActiveDate())
-                                .type(CertificateViewType.valueOf(certificate.getType()))
-                                .certificateModel(buildCertificateModel(certificate.getIssuedToCertificate()))
-                                .build())
+                        .certificate(issuedCertificateModel)
                         .build();
             }
 
