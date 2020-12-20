@@ -16,6 +16,8 @@ public interface ICertificateService {
     String CERTIFICATE_LIST = "/v1/certificate/list";
     String CERTIFICATE_GENERATE = "/v1/certificate/generate";
     String CERTIFICATE_ACTIVATE = "/v1/certificate/activate";
+    String CERTIFICATE_GET_UUID = "/v1/certificate/uuid";
+
 
     CertificateModel get(Long id) throws MicroServiceException;
 
@@ -28,6 +30,8 @@ public interface ICertificateService {
     Boolean delete(Long id) throws MicroServiceException;
 
     IssuedCertificateModel generate(Long certificateId) throws MicroServiceException;
+
+    IssuedCertificateModel getByUUID(String uuid) throws MicroServiceException;
 
     Boolean activate(String uuid) throws MicroServiceException;
 }

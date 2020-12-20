@@ -22,17 +22,6 @@ public class EmailService extends BaseMicroservice implements IEmailService {
     }
 
     @Override
-    public Boolean sendCert(String to, Long templateId, String promo, String fio, String description) throws MicroServiceException {
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(buildUrl(EMAIL_CERTIFICATE))
-                .queryParam("to", to)
-                .queryParam("templateId", templateId)
-                .queryParam("promo", promo)
-                .queryParam("fio", fio)
-                .queryParam("description", description);
-        return retry(() -> restTemplate.getForEntity(builder.toUriString(), Boolean.class, to, templateId, promo, fio, description).getBody());
-    }
-
-    @Override
     public Boolean sendHtmlMessage(String to, String subject, String link, Long templateId) throws MicroServiceException {
         return retry(() -> restTemplate.getForEntity(buildUrl(EMAIL_HTML), Boolean.class, to, subject, link).getBody());
     }

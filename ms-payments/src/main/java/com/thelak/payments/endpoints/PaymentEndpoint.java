@@ -221,6 +221,7 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
 
                 IssuedCertificateModel issuedCertificateModel = IssuedCertificateModel.builder()
                         .id((Long) certificate.getObjectId().getIdSnapshot().get("id"))
+                        .buyerEmail(userInfo.getUserEmail())
                         .uuid(certificate.getUuid())
                         .fio(certificate.getFio())
                         .description(certificate.getDescription())

@@ -1,10 +1,10 @@
 package com.thelak.smtp.endpoints;
 
-import com.itextpdf.text.Document;
-import com.itextpdf.text.pdf.PdfWriter;
-import com.itextpdf.tool.xml.XMLWorkerHelper;
+import com.google.gson.Gson;
 import com.thelak.core.endpoints.MicroserviceAdvice;
+import com.thelak.core.services.MessageService;
 import com.thelak.database.DatabaseService;
+import com.thelak.database.entity.DbPaymentConfig;
 import com.thelak.database.entity.DbSmtpTemplate;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.smtp.interfaces.IEmailService;
@@ -14,10 +14,11 @@ import com.thelak.route.smtp.models.SendEmailRequest;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -25,9 +26,8 @@ import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
+import javax.annotation.PostConstruct;
 import javax.mail.internet.MimeMessage;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
@@ -60,45 +60,6 @@ public class EmailEndpoint extends MicroserviceAdvice implements IEmailService {
             message.setText("Подтвердите регистрация на аккаунт " + request.getEmail());
             emailSender.send(message);
 
-            return true;
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return false;
-        }
-    }
-
-    @Override
-    @RequestMapping(value = EMAIL_CERTIFICATE, method = {RequestMethod.GET})
-    public Boolean sendCert(@RequestParam String to, @RequestParam Long templateId,
-                            @RequestParam String promo, @RequestParam String fio, @RequestParam String description) throws MicroServiceException {
-        try {
-            ObjectContext objectContext = databaseService.getContext();
-
-            DbSmtpTemplate smtpTemplate = SelectById.query(DbSmtpTemplate.class, templateId).selectFirst(objectContext);
-
-            Context thymeleafContext = new Context();
-            thymeleafContext.setVariable("promo", promo);
-            thymeleafContext.setVariable("fio", fio);
-            thymeleafContext.setVariable("description", description);
-
-            String htmlBody = thymeleafTemplateEngine.process(smtpTemplate.getContent(), thymeleafContext);
-
-            Document document = new Document();
-            File yourFile = new File("html.pdf");
-            yourFile.createNewFile();
-            PdfWriter writer = PdfWriter.getInstance(document,
-                    new FileOutputStream("html.pdf"));
-            document.open();
-            XMLWorkerHelper.getInstance().parseXHtml(writer, document,
-                    IOUtils.toInputStream(htmlBody, StandardCharsets.UTF_8), StandardCharsets.UTF_8);
-            document.close();
-
-            MimeMessage message = emailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, false, "utf-8");
-            helper.setTo(to);
-            helper.setSubject("Сертификат Thelak");
-            helper.setText(htmlBody, true);
-            emailSender.send(message);
             return true;
         } catch (Exception e) {
             log.error(e.getMessage());

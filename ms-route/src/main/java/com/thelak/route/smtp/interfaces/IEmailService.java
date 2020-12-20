@@ -17,8 +17,6 @@ public interface IEmailService {
 
     Boolean sendMessage(SendEmailRequest request) throws MicroServiceException;
 
-    Boolean sendCert(String to, Long templateId, String promo, String fio, String description) throws MicroServiceException;
-
     Boolean sendHtmlMessage(String to, String subject, String link, Long templateId) throws MicroServiceException;
 
     Boolean sendPartnerRequest(PartnerRequest request) throws MicroServiceException;

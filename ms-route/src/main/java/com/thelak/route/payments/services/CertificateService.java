@@ -48,6 +48,11 @@ public class CertificateService extends BaseMicroservice implements ICertificate
     }
 
     @Override
+    public IssuedCertificateModel getByUUID(String uuid) throws MicroServiceException {
+        return null;
+    }
+
+    @Override
     public Boolean activate(String uuid) throws MicroServiceException {
         return retry(() -> restTemplate.getForEntity(buildUrl(CERTIFICATE_ACTIVATE), Boolean.class, uuid).getBody());
     }

@@ -66,6 +66,7 @@ public class CertificateEndpoint extends MicroserviceAdvice implements ICertific
             ObjectContext objectContext = databaseService.getContext();
 
             List<DbCertificate> dbCertificates = ObjectSelect.query(DbCertificate.class)
+                    .where(DbCertificate.DELETED_DATE.isNull())
                     .orderBy(DbCertificate.MONTHS.asc())
                     .select(objectContext);
 
@@ -185,6 +186,30 @@ public class CertificateEndpoint extends MicroserviceAdvice implements ICertific
             throw new MsInternalErrorException(e.getMessage());
         }
     }
+
+    @Override
+    @ApiOperation(value = "Generate certificate")
+    @RequestMapping(value = CERTIFICATE_GET_UUID, method = {RequestMethod.GET})
+    public IssuedCertificateModel getByUUID(@RequestParam String uuid) throws MicroServiceException {
+        try {
+            ObjectContext objectContext = databaseService.getContext();
+
+            DbIssuedCertificate dbIssuedCertificate = ObjectSelect.query(DbIssuedCertificate.class)
+                    .where(DbIssuedCertificate.UUID.eq(uuid))
+                    .selectFirst(objectContext);
+
+            return IssuedCertificateModel.builder()
+                    .id((Long) dbIssuedCertificate.getObjectId().getIdSnapshot().get("id"))
+                    .active(dbIssuedCertificate.isActive())
+                    .activeDate(dbIssuedCertificate.getActiveDate())
+                    .uuid(dbIssuedCertificate.getUuid())
+                    .fio(dbIssuedCertificate.getFio())
+                    .certificateModel(buildCertificateModel(dbIssuedCertificate.getIssuedToCertificate()))
+                    .build();
+
+        } catch (Exception e) {
+            throw new MsInternalErrorException(e.getMessage());
+        }    }
 
     @Override
     @ApiOperation(value = "Activate certificate")

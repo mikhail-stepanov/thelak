@@ -15,6 +15,8 @@ public class IssuedCertificateModel {
 
     Long id;
 
+    String buyerEmail;
+
     String uuid;
 
     String fio;
