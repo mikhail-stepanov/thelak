@@ -188,7 +188,7 @@ public class CertificateEndpoint extends MicroserviceAdvice implements ICertific
     }
 
     @Override
-    @ApiOperation(value = "Generate certificate")
+    @ApiOperation(value = "Get certificate by uuid")
     @RequestMapping(value = CERTIFICATE_GET_UUID, method = {RequestMethod.GET})
     public IssuedCertificateModel getByUUID(@RequestParam String uuid) throws MicroServiceException {
         try {

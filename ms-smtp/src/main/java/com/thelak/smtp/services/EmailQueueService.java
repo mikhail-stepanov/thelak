@@ -27,7 +27,7 @@ public class EmailQueueService {
 
     private Closeable queueSubscriber;
 
-    @Value("${user.cetificate.queue:#{null}}")
+    @Value("${user.certificate.queue:#{null}}")
     private String userCertificateQueue;
 
     @PostConstruct
