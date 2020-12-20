@@ -14,6 +14,7 @@ import javax.annotation.PreDestroy;
 import java.io.Closeable;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Service
 public class EmailQueueService {
@@ -32,7 +33,7 @@ public class EmailQueueService {
 
     @PostConstruct
     void init() {
-        queueSubscriber = messageService.subscribe(userCertificateQueue, 10, IssuedCertificateModel.class, this::handleMessage);
+        queueSubscriber = messageService.subscribeBatch(userCertificateQueue, 1, IssuedCertificateModel.class, this::handleMessage);
     }
 
     @PreDestroy
@@ -45,15 +46,17 @@ public class EmailQueueService {
         }
     }
 
-    private boolean handleMessage(IssuedCertificateModel model) {
+    private boolean handleMessage(List<IssuedCertificateModel> model) {
         try {
-            System.out.println("1!!!!!!!!!!!!!!!!");
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(model.getBuyerEmail());
-            message.setSubject("Thelak. Сертификат.");
-            message.setText("Уважаемый пользователь Thelak!\n\nВы приобрели сертификат на подписку.\nДля его просмотра перейдите по ссылке: " + "https://thelak.com/cert/view?uuid=" + URLEncoder.encode(model.getUuid(), StandardCharsets.UTF_8) + "\n\n\nС уважением,\nКоманда Thelak");
-            emailSender.send(message);
-            System.out.println("2!!!!!!!!!!!!!!!!");
+            model.forEach(m -> {
+                System.out.println("1!!!!!!!!!!!!!!!!");
+                SimpleMailMessage message = new SimpleMailMessage();
+                message.setTo(m.getBuyerEmail());
+                message.setSubject("Thelak. Сертификат.");
+                message.setText("Уважаемый пользователь Thelak!\n\nВы приобрели сертификат на подписку.\nДля его просмотра перейдите по ссылке: " + "https://thelak.com/cert/view?uuid=" + URLEncoder.encode(m.getUuid(), StandardCharsets.UTF_8) + "\n\n\nС уважением,\nКоманда Thelak");
+                emailSender.send(message);
+                System.out.println("2!!!!!!!!!!!!!!!!");
+            });
 
             return true;
         } catch (Exception e) {
