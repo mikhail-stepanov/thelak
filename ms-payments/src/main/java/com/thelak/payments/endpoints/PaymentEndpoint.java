@@ -108,9 +108,16 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
             DbCertificate dbCertificate = SelectById.query(DbCertificate.class, buyCertificateRequest.getCertificateId())
                     .selectFirst(objectContext);
 
-            byte[] array = new byte[7]; // length is bounded by 7
-            new Random().nextBytes(array);
-            String generatedString = new String(array, Charset.forName("UTF-8"));
+            int leftLimit = 48; // numeral '0'
+            int rightLimit = 122; // letter 'z'
+            int targetStringLength = 10;
+            Random random = new Random();
+
+            String generatedString = random.ints(leftLimit, rightLimit + 1)
+                    .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                    .limit(targetStringLength)
+                    .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                    .toString();
 
             DbIssuedCertificate dbIssuedCertificate = objectContext.newObject(DbIssuedCertificate.class);
             dbIssuedCertificate.setActive(true);
@@ -475,9 +482,16 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
             DbCertificate dbCertificate = SelectById.query(DbCertificate.class, request.getCertificateId())
                     .selectFirst(objectContext);
 
-            byte[] array = new byte[7]; // length is bounded by 7
-            new Random().nextBytes(array);
-            String generatedString = new String(array, Charset.forName("UTF-8"));
+            int leftLimit = 48; // numeral '0'
+            int rightLimit = 122; // letter 'z'
+            int targetStringLength = 10;
+            Random random = new Random();
+
+            String generatedString = random.ints(leftLimit, rightLimit + 1)
+                    .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                    .limit(targetStringLength)
+                    .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                    .toString();
 
             DbIssuedCertificate dbIssuedCertificate = objectContext.newObject(DbIssuedCertificate.class);
             dbIssuedCertificate.setActive(true);
