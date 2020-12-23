@@ -195,10 +195,6 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
 
                 DbIssuedCertificate certificate = dbPaymentsCryptogramm.getCryptogrammToCertificate();
 
-                DbPromo dbPromo = objectContext.newObject(DbPromo.class);
-                dbPromo.setCode(certificate.getUuid());
-                dbPromo.setMonths((int) certificate.getIssuedToCertificate().getMonths());
-
                 objectContext.commitChanges();
 
                 IssuedCertificateModel issuedCertificateModel = IssuedCertificateModel.builder()
@@ -539,10 +535,6 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
                 dbPaymentsCryptogramm.setModifiedDate(LocalDateTime.now());
 
                 DbIssuedCertificate certificate = dbPaymentsCryptogramm.getCryptogrammToCertificate();
-
-                DbPromo dbPromo = objectContext.newObject(DbPromo.class);
-                dbPromo.setCode(certificate.getUuid());
-                dbPromo.setMonths((int) certificate.getIssuedToCertificate().getMonths());
 
                 objectContext.commitChanges();
 
