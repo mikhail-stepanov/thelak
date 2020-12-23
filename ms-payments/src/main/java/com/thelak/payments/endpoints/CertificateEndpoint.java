@@ -204,6 +204,7 @@ public class CertificateEndpoint extends MicroserviceAdvice implements ICertific
                     .activeDate(dbIssuedCertificate.getActiveDate())
                     .uuid(dbIssuedCertificate.getUuid())
                     .fio(dbIssuedCertificate.getFio())
+                    .description(dbIssuedCertificate.getDescription())
                     .certificateModel(buildCertificateModel(dbIssuedCertificate.getIssuedToCertificate()))
                     .build();
 
