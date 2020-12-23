@@ -1,6 +1,10 @@
 package com.thelak.database.entity.auto;
 
-import org.apache.cayenne.CayenneDataObject;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 
 import com.thelak.database.entity.DbPromo;
@@ -11,7 +15,7 @@ import com.thelak.database.entity.DbPromo;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _DbPromoEmail extends CayenneDataObject {
+public abstract class _DbPromoEmail extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -21,19 +25,29 @@ public abstract class _DbPromoEmail extends CayenneDataObject {
     public static final Property<String> EMAIL = Property.create("email", String.class);
     public static final Property<DbPromo> EMAIL_TO_PROMO = Property.create("emailToPromo", DbPromo.class);
 
+    protected boolean active;
+    protected String email;
+
+    protected Object emailToPromo;
+
     public void setActive(boolean active) {
-        writeProperty("active", active);
+        beforePropertyWrite("active", this.active, active);
+        this.active = active;
     }
+
 	public boolean isActive() {
-        Boolean value = (Boolean)readProperty("active");
-        return (value != null) ? value.booleanValue() : false;
+        beforePropertyRead("active");
+        return this.active;
     }
 
     public void setEmail(String email) {
-        writeProperty("email", email);
+        beforePropertyWrite("email", this.email, email);
+        this.email = email;
     }
+
     public String getEmail() {
-        return (String)readProperty("email");
+        beforePropertyRead("email");
+        return this.email;
     }
 
     public void setEmailToPromo(DbPromo emailToPromo) {
@@ -44,5 +58,67 @@ public abstract class _DbPromoEmail extends CayenneDataObject {
         return (DbPromo)readProperty("emailToPromo");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "active":
+                return this.active;
+            case "email":
+                return this.email;
+            case "emailToPromo":
+                return this.emailToPromo;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "active":
+                this.active = val == null ? false : (boolean)val;
+                break;
+            case "email":
+                this.email = (String)val;
+                break;
+            case "emailToPromo":
+                this.emailToPromo = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeBoolean(this.active);
+        out.writeObject(this.email);
+        out.writeObject(this.emailToPromo);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.active = in.readBoolean();
+        this.email = (String)in.readObject();
+        this.emailToPromo = in.readObject();
+    }
 
 }

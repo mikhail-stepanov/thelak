@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap https://cayenne.apache.org/schema/9/modelMap.xsd"
-	 project-version="9">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
 	<property name="defaultPackage" value="com.thelak.database.entity"/>
 	<property name="defaultSchema" value="public"/>
 	<property name="quoteSqlIdentifiers" value="true"/>
@@ -28,6 +28,7 @@
 		<db-attribute name="created_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="deleted_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="description" type="VARCHAR" length="4096"/>
+		<db-attribute name="email" type="VARCHAR" length="256"/>
 		<db-attribute name="fio" type="VARCHAR" length="1048"/>
 		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="id_certificate" type="BIGINT"/>
@@ -138,15 +139,14 @@
 		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
 		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
 		<obj-attribute name="description" type="java.lang.String" db-attribute-path="description"/>
+		<obj-attribute name="email" type="java.lang.String" db-attribute-path="email"/>
 		<obj-attribute name="fio" type="java.lang.String" db-attribute-path="fio"/>
 		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
 		<obj-attribute name="type" type="java.lang.String" db-attribute-path="type"/>
 		<obj-attribute name="uuid" type="java.lang.String" db-attribute-path="uuid"/>
 	</obj-entity>
-	<obj-entity name="DbOptionCertificate" className="com.thelak.database.entity.DbOptionCertificate" dbEntityName="db_option_certificate">
-	</obj-entity>
-	<obj-entity name="DbOptionSubscription" className="com.thelak.database.entity.DbOptionSubscription" dbEntityName="db_option_subscription">
-	</obj-entity>
+	<obj-entity name="DbOptionCertificate" className="com.thelak.database.entity.DbOptionCertificate" dbEntityName="db_option_certificate"/>
+	<obj-entity name="DbOptionSubscription" className="com.thelak.database.entity.DbOptionSubscription" dbEntityName="db_option_subscription"/>
 	<obj-entity name="DbOptions" className="com.thelak.database.entity.DbOptions" dbEntityName="db_options">
 		<obj-attribute name="text" type="java.lang.String" db-attribute-path="text"/>
 	</obj-entity>
@@ -217,37 +217,37 @@
 	<db-relationship name="certificateToCryptogramm" source="db_issued_certificate" target="db_payments_cryptogramm" toMany="true">
 		<db-attribute-pair source="id" target="id_certificate"/>
 	</db-relationship>
-	<db-relationship name="issuedToCertificate" source="db_issued_certificate" target="db_certificate" toMany="false">
+	<db-relationship name="issuedToCertificate" source="db_issued_certificate" target="db_certificate">
 		<db-attribute-pair source="id_certificate" target="id"/>
 	</db-relationship>
-	<db-relationship name="opsubToCertificate" source="db_option_certificate" target="db_certificate" toMany="false">
+	<db-relationship name="opsubToCertificate" source="db_option_certificate" target="db_certificate">
 		<db-attribute-pair source="id_certificate" target="id"/>
 	</db-relationship>
-	<db-relationship name="opsubToOptions" source="db_option_certificate" target="db_options" toMany="false">
+	<db-relationship name="opsubToOptions" source="db_option_certificate" target="db_options">
 		<db-attribute-pair source="id_option" target="id"/>
 	</db-relationship>
-	<db-relationship name="opsubToOptions" source="db_option_subscription" target="db_options" toMany="false">
+	<db-relationship name="opsubToOptions" source="db_option_subscription" target="db_options">
 		<db-attribute-pair source="id_option" target="id"/>
 	</db-relationship>
-	<db-relationship name="opsubToSubscription" source="db_option_subscription" target="db_subscription" toMany="false">
+	<db-relationship name="opsubToSubscription" source="db_option_subscription" target="db_subscription">
 		<db-attribute-pair source="id_subscription" target="id"/>
 	</db-relationship>
 	<db-relationship name="optionsToOpsub" source="db_options" target="db_option_subscription" toMany="true">
 		<db-attribute-pair source="id" target="id_option"/>
 	</db-relationship>
-	<db-relationship name="cryptogrammToCertificate" source="db_payments_cryptogramm" target="db_issued_certificate" toMany="false">
+	<db-relationship name="cryptogrammToCertificate" source="db_payments_cryptogramm" target="db_issued_certificate">
 		<db-attribute-pair source="id_certificate" target="id"/>
 	</db-relationship>
-	<db-relationship name="cryptogrammToSubscription" source="db_payments_cryptogramm" target="db_subscription" toMany="false">
+	<db-relationship name="cryptogrammToSubscription" source="db_payments_cryptogramm" target="db_subscription">
 		<db-attribute-pair source="id_subscription" target="id"/>
 	</db-relationship>
-	<db-relationship name="recurrentToSubscription" source="db_payments_recurrent" target="db_subscription" toMany="false">
+	<db-relationship name="recurrentToSubscription" source="db_payments_recurrent" target="db_subscription">
 		<db-attribute-pair source="id_subscription" target="id"/>
 	</db-relationship>
 	<db-relationship name="promoToEmail" source="db_promo" target="db_promo_email" toMany="true">
 		<db-attribute-pair source="id" target="id_promo"/>
 	</db-relationship>
-	<db-relationship name="emailToPromo" source="db_promo_email" target="db_promo" toMany="false">
+	<db-relationship name="emailToPromo" source="db_promo_email" target="db_promo">
 		<db-attribute-pair source="id_promo" target="id"/>
 	</db-relationship>
 	<db-relationship name="subscriptionToCryptogramm" source="db_subscription" target="db_payments_cryptogramm" toMany="true">
@@ -276,4 +276,17 @@
 	<obj-relationship name="subscriptionToCryptogramm" source="DbSubscription" target="DbPaymentsCryptogramm" deleteRule="Deny" db-relationship-path="subscriptionToCryptogramm"/>
 	<obj-relationship name="subscriptionToOpsub" source="DbSubscription" target="DbOptionSubscription" deleteRule="Deny" db-relationship-path="subscriptionToOpsub"/>
 	<obj-relationship name="subscriptionToRecurrent" source="DbSubscription" target="DbPaymentsRecurrent" deleteRule="Deny" db-relationship-path="subscriptionToRecurrent"/>
+	<cgen xmlns="http://cayenne.apache.org/schema/10/cgen">
+		<destDir>../../java</destDir>
+		<mode>all</mode>
+		<template>templates/v4_1/subclass.vm</template>
+		<superTemplate>templates/v4_1/superclass.vm</superTemplate>
+		<outputPattern>*.java</outputPattern>
+		<makePairs>true</makePairs>
+		<usePkgPath>true</usePkgPath>
+		<overwrite>false</overwrite>
+		<createPropertyNames>false</createPropertyNames>
+		<createPKProperties>false</createPKProperties>
+		<client>false</client>
+	</cgen>
 </data-map>

@@ -1,8 +1,11 @@
 package com.thelak.database.entity.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.time.LocalDateTime;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 
 import com.thelak.database.entity.DbSubscription;
@@ -13,7 +16,7 @@ import com.thelak.database.entity.DbSubscription;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _DbPaymentsRecurrent extends CayenneDataObject {
+public abstract class _DbPaymentsRecurrent extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -36,114 +39,175 @@ public abstract class _DbPaymentsRecurrent extends CayenneDataObject {
     public static final Property<String> TOKEN = Property.create("token", String.class);
     public static final Property<DbSubscription> RECURRENT_TO_SUBSCRIPTION = Property.create("recurrentToSubscription", DbSubscription.class);
 
+    protected int amount;
+    protected LocalDateTime createdDate;
+    protected String currency;
+    protected LocalDateTime deletedDate;
+    protected String description;
+    protected String email;
+    protected String idRecurrent;
+    protected long idUser;
+    protected String interval;
+    protected LocalDateTime modifiedDate;
+    protected int period;
+    protected boolean requireConfirmation;
+    protected LocalDateTime startDate;
+    protected Boolean status;
+    protected String token;
+
+    protected Object recurrentToSubscription;
+
     public void setAmount(int amount) {
-        writeProperty("amount", amount);
+        beforePropertyWrite("amount", this.amount, amount);
+        this.amount = amount;
     }
+
     public int getAmount() {
-        Object value = readProperty("amount");
-        return (value != null) ? (Integer) value : 0;
+        beforePropertyRead("amount");
+        return this.amount;
     }
 
     public void setCreatedDate(LocalDateTime createdDate) {
-        writeProperty("createdDate", createdDate);
+        beforePropertyWrite("createdDate", this.createdDate, createdDate);
+        this.createdDate = createdDate;
     }
+
     public LocalDateTime getCreatedDate() {
-        return (LocalDateTime)readProperty("createdDate");
+        beforePropertyRead("createdDate");
+        return this.createdDate;
     }
 
     public void setCurrency(String currency) {
-        writeProperty("currency", currency);
+        beforePropertyWrite("currency", this.currency, currency);
+        this.currency = currency;
     }
+
     public String getCurrency() {
-        return (String)readProperty("currency");
+        beforePropertyRead("currency");
+        return this.currency;
     }
 
     public void setDeletedDate(LocalDateTime deletedDate) {
-        writeProperty("deletedDate", deletedDate);
+        beforePropertyWrite("deletedDate", this.deletedDate, deletedDate);
+        this.deletedDate = deletedDate;
     }
+
     public LocalDateTime getDeletedDate() {
-        return (LocalDateTime)readProperty("deletedDate");
+        beforePropertyRead("deletedDate");
+        return this.deletedDate;
     }
 
     public void setDescription(String description) {
-        writeProperty("description", description);
+        beforePropertyWrite("description", this.description, description);
+        this.description = description;
     }
+
     public String getDescription() {
-        return (String)readProperty("description");
+        beforePropertyRead("description");
+        return this.description;
     }
 
     public void setEmail(String email) {
-        writeProperty("email", email);
+        beforePropertyWrite("email", this.email, email);
+        this.email = email;
     }
+
     public String getEmail() {
-        return (String)readProperty("email");
+        beforePropertyRead("email");
+        return this.email;
     }
 
     public void setIdRecurrent(String idRecurrent) {
-        writeProperty("idRecurrent", idRecurrent);
+        beforePropertyWrite("idRecurrent", this.idRecurrent, idRecurrent);
+        this.idRecurrent = idRecurrent;
     }
+
     public String getIdRecurrent() {
-        return (String)readProperty("idRecurrent");
+        beforePropertyRead("idRecurrent");
+        return this.idRecurrent;
     }
 
     public void setIdUser(long idUser) {
-        writeProperty("idUser", idUser);
+        beforePropertyWrite("idUser", this.idUser, idUser);
+        this.idUser = idUser;
     }
+
     public long getIdUser() {
-        Object value = readProperty("idUser");
-        return (value != null) ? (Long) value : 0;
+        beforePropertyRead("idUser");
+        return this.idUser;
     }
 
     public void setInterval(String interval) {
-        writeProperty("interval", interval);
+        beforePropertyWrite("interval", this.interval, interval);
+        this.interval = interval;
     }
+
     public String getInterval() {
-        return (String)readProperty("interval");
+        beforePropertyRead("interval");
+        return this.interval;
     }
 
     public void setModifiedDate(LocalDateTime modifiedDate) {
-        writeProperty("modifiedDate", modifiedDate);
+        beforePropertyWrite("modifiedDate", this.modifiedDate, modifiedDate);
+        this.modifiedDate = modifiedDate;
     }
+
     public LocalDateTime getModifiedDate() {
-        return (LocalDateTime)readProperty("modifiedDate");
+        beforePropertyRead("modifiedDate");
+        return this.modifiedDate;
     }
 
     public void setPeriod(int period) {
-        writeProperty("period", period);
+        beforePropertyWrite("period", this.period, period);
+        this.period = period;
     }
+
     public int getPeriod() {
-        Object value = readProperty("period");
-        return (value != null) ? (Integer) value : 0;
+        beforePropertyRead("period");
+        return this.period;
     }
 
     public void setRequireConfirmation(boolean requireConfirmation) {
-        writeProperty("requireConfirmation", requireConfirmation);
+        beforePropertyWrite("requireConfirmation", this.requireConfirmation, requireConfirmation);
+        this.requireConfirmation = requireConfirmation;
     }
+
 	public boolean isRequireConfirmation() {
-        Boolean value = (Boolean)readProperty("requireConfirmation");
-        return (value != null) ? value.booleanValue() : false;
+        beforePropertyRead("requireConfirmation");
+        return this.requireConfirmation;
     }
 
     public void setStartDate(LocalDateTime startDate) {
-        writeProperty("startDate", startDate);
+        beforePropertyWrite("startDate", this.startDate, startDate);
+        this.startDate = startDate;
     }
+
     public LocalDateTime getStartDate() {
-        return (LocalDateTime)readProperty("startDate");
+        beforePropertyRead("startDate");
+        return this.startDate;
     }
 
     public void setStatus(boolean status) {
-        writeProperty("status", status);
+        beforePropertyWrite("status", this.status, status);
+        this.status = status;
     }
+
 	public boolean isStatus() {
-        Boolean value = (Boolean)readProperty("status");
-        return (value != null) ? value.booleanValue() : false;
+        beforePropertyRead("status");
+        if(this.status == null) {
+            return false;
+        }
+        return this.status;
     }
 
     public void setToken(String token) {
-        writeProperty("token", token);
+        beforePropertyWrite("token", this.token, token);
+        this.token = token;
     }
+
     public String getToken() {
-        return (String)readProperty("token");
+        beforePropertyRead("token");
+        return this.token;
     }
 
     public void setRecurrentToSubscription(DbSubscription recurrentToSubscription) {
@@ -154,5 +218,158 @@ public abstract class _DbPaymentsRecurrent extends CayenneDataObject {
         return (DbSubscription)readProperty("recurrentToSubscription");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "amount":
+                return this.amount;
+            case "createdDate":
+                return this.createdDate;
+            case "currency":
+                return this.currency;
+            case "deletedDate":
+                return this.deletedDate;
+            case "description":
+                return this.description;
+            case "email":
+                return this.email;
+            case "idRecurrent":
+                return this.idRecurrent;
+            case "idUser":
+                return this.idUser;
+            case "interval":
+                return this.interval;
+            case "modifiedDate":
+                return this.modifiedDate;
+            case "period":
+                return this.period;
+            case "requireConfirmation":
+                return this.requireConfirmation;
+            case "startDate":
+                return this.startDate;
+            case "status":
+                return this.status;
+            case "token":
+                return this.token;
+            case "recurrentToSubscription":
+                return this.recurrentToSubscription;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "amount":
+                this.amount = val == null ? 0 : (int)val;
+                break;
+            case "createdDate":
+                this.createdDate = (LocalDateTime)val;
+                break;
+            case "currency":
+                this.currency = (String)val;
+                break;
+            case "deletedDate":
+                this.deletedDate = (LocalDateTime)val;
+                break;
+            case "description":
+                this.description = (String)val;
+                break;
+            case "email":
+                this.email = (String)val;
+                break;
+            case "idRecurrent":
+                this.idRecurrent = (String)val;
+                break;
+            case "idUser":
+                this.idUser = val == null ? 0 : (long)val;
+                break;
+            case "interval":
+                this.interval = (String)val;
+                break;
+            case "modifiedDate":
+                this.modifiedDate = (LocalDateTime)val;
+                break;
+            case "period":
+                this.period = val == null ? 0 : (int)val;
+                break;
+            case "requireConfirmation":
+                this.requireConfirmation = val == null ? false : (boolean)val;
+                break;
+            case "startDate":
+                this.startDate = (LocalDateTime)val;
+                break;
+            case "status":
+                this.status = (Boolean)val;
+                break;
+            case "token":
+                this.token = (String)val;
+                break;
+            case "recurrentToSubscription":
+                this.recurrentToSubscription = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeInt(this.amount);
+        out.writeObject(this.createdDate);
+        out.writeObject(this.currency);
+        out.writeObject(this.deletedDate);
+        out.writeObject(this.description);
+        out.writeObject(this.email);
+        out.writeObject(this.idRecurrent);
+        out.writeLong(this.idUser);
+        out.writeObject(this.interval);
+        out.writeObject(this.modifiedDate);
+        out.writeInt(this.period);
+        out.writeBoolean(this.requireConfirmation);
+        out.writeObject(this.startDate);
+        out.writeObject(this.status);
+        out.writeObject(this.token);
+        out.writeObject(this.recurrentToSubscription);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.amount = in.readInt();
+        this.createdDate = (LocalDateTime)in.readObject();
+        this.currency = (String)in.readObject();
+        this.deletedDate = (LocalDateTime)in.readObject();
+        this.description = (String)in.readObject();
+        this.email = (String)in.readObject();
+        this.idRecurrent = (String)in.readObject();
+        this.idUser = in.readLong();
+        this.interval = (String)in.readObject();
+        this.modifiedDate = (LocalDateTime)in.readObject();
+        this.period = in.readInt();
+        this.requireConfirmation = in.readBoolean();
+        this.startDate = (LocalDateTime)in.readObject();
+        this.status = (Boolean)in.readObject();
+        this.token = (String)in.readObject();
+        this.recurrentToSubscription = in.readObject();
+    }
 
 }

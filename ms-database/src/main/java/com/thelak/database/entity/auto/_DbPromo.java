@@ -1,8 +1,11 @@
 package com.thelak.database.entity.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 
 import com.thelak.database.entity.DbPromoEmail;
@@ -13,7 +16,7 @@ import com.thelak.database.entity.DbPromoEmail;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _DbPromo extends CayenneDataObject {
+public abstract class _DbPromo extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -26,54 +29,165 @@ public abstract class _DbPromo extends CayenneDataObject {
     public static final Property<Integer> MONTHS = Property.create("months", Integer.class);
     public static final Property<List<DbPromoEmail>> PROMO_TO_EMAIL = Property.create("promoToEmail", List.class);
 
+    protected Boolean active;
+    protected String code;
+    protected Integer days;
+    protected String description;
+    protected int months;
+
+    protected Object promoToEmail;
+
     public void setActive(boolean active) {
-        writeProperty("active", active);
+        beforePropertyWrite("active", this.active, active);
+        this.active = active;
     }
+
 	public boolean isActive() {
-        Boolean value = (Boolean)readProperty("active");
-        return (value != null) ? value.booleanValue() : false;
+        beforePropertyRead("active");
+        if(this.active == null) {
+            return false;
+        }
+        return this.active;
     }
 
     public void setCode(String code) {
-        writeProperty("code", code);
+        beforePropertyWrite("code", this.code, code);
+        this.code = code;
     }
+
     public String getCode() {
-        return (String)readProperty("code");
+        beforePropertyRead("code");
+        return this.code;
     }
 
     public void setDays(int days) {
-        writeProperty("days", days);
+        beforePropertyWrite("days", this.days, days);
+        this.days = days;
     }
+
     public int getDays() {
-        Object value = readProperty("days");
-        return (value != null) ? (Integer) value : 0;
+        beforePropertyRead("days");
+        if(this.days == null) {
+            return 0;
+        }
+        return this.days;
     }
 
     public void setDescription(String description) {
-        writeProperty("description", description);
+        beforePropertyWrite("description", this.description, description);
+        this.description = description;
     }
+
     public String getDescription() {
-        return (String)readProperty("description");
+        beforePropertyRead("description");
+        return this.description;
     }
 
     public void setMonths(int months) {
-        writeProperty("months", months);
+        beforePropertyWrite("months", this.months, months);
+        this.months = months;
     }
+
     public int getMonths() {
-        Object value = readProperty("months");
-        return (value != null) ? (Integer) value : 0;
+        beforePropertyRead("months");
+        return this.months;
     }
 
     public void addToPromoToEmail(DbPromoEmail obj) {
         addToManyTarget("promoToEmail", obj, true);
     }
+
     public void removeFromPromoToEmail(DbPromoEmail obj) {
         removeToManyTarget("promoToEmail", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<DbPromoEmail> getPromoToEmail() {
         return (List<DbPromoEmail>)readProperty("promoToEmail");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "active":
+                return this.active;
+            case "code":
+                return this.code;
+            case "days":
+                return this.days;
+            case "description":
+                return this.description;
+            case "months":
+                return this.months;
+            case "promoToEmail":
+                return this.promoToEmail;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "active":
+                this.active = (Boolean)val;
+                break;
+            case "code":
+                this.code = (String)val;
+                break;
+            case "days":
+                this.days = (Integer)val;
+                break;
+            case "description":
+                this.description = (String)val;
+                break;
+            case "months":
+                this.months = val == null ? 0 : (int)val;
+                break;
+            case "promoToEmail":
+                this.promoToEmail = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.active);
+        out.writeObject(this.code);
+        out.writeObject(this.days);
+        out.writeObject(this.description);
+        out.writeInt(this.months);
+        out.writeObject(this.promoToEmail);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.active = (Boolean)in.readObject();
+        this.code = (String)in.readObject();
+        this.days = (Integer)in.readObject();
+        this.description = (String)in.readObject();
+        this.months = in.readInt();
+        this.promoToEmail = in.readObject();
+    }
 
 }

@@ -53,7 +53,9 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import java.nio.charset.Charset;
 import java.time.LocalDateTime;
+import java.util.Random;
 import java.util.UUID;
 
 import static com.thelak.payments.services.PaymentsHelper.buildCertificateModel;
@@ -98,26 +100,10 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
 
     @Override
     @ApiOperation(value = "Buy certificate")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(required = true,
-                    defaultValue = "Bearer ",
-                    name = "Authorization",
-                    paramType = "header")}
-    )
     @RequestMapping(value = PAYMENTS_CERT_REQ, method = {RequestMethod.POST})
     public CryptogrammPayResponse buyCertificateRequest(BuyCertificateRequest buyCertificateRequest, HttpServletRequest request) throws MicroServiceException {
         try {
             ObjectContext objectContext = databaseService.getContext();
-
-            UserInfo userInfo = null;
-            try {
-                userInfo = (UserInfo) SecurityContextHolder
-                        .getContext()
-                        .getAuthentication()
-                        .getPrincipal();
-            } catch (Exception e) {
-                throw new MsNotAuthorizedException();
-            }
 
             DbCertificate dbCertificate = SelectById.query(DbCertificate.class, buyCertificateRequest.getCertificateId())
                     .selectFirst(objectContext);
@@ -131,15 +117,16 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
             dbIssuedCertificate.setFio(buyCertificateRequest.getFio());
             dbIssuedCertificate.setDescription(buyCertificateRequest.getDescription());
             dbIssuedCertificate.setType(buyCertificateRequest.getType().name());
+            dbIssuedCertificate.setEmail(buyCertificateRequest.getEmail());
             objectContext.commitChanges();
 
             CryptogrammPayRequest cryptogrammPayRequest = CryptogrammPayRequest.builder()
-                    .AccountId(userInfo.getUserId())
+                    .AccountId(0L)
                     .Amount(dbCertificate.getPrice())
                     .CardCryptogramPacket(buyCertificateRequest.getCardCryptogramPacket())
                     .Currency("RUB")
                     .Description("Покупка сертификата Thelak на " + dbCertificate.getMonths() + " месяцев.")
-                    .Email(userInfo.getUserEmail())
+                    .Email(buyCertificateRequest.getEmail())
                     .IpAddress(request.getRemoteAddr())
                     .Name(buyCertificateRequest.getCardName())
                     .build();
@@ -171,26 +158,10 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
 
     @Override
     @ApiOperation(value = "Buy certificate")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(required = true,
-                    defaultValue = "Bearer ",
-                    name = "Authorization",
-                    paramType = "header")}
-    )
     @RequestMapping(value = PAYMENTS_CERT_CONFIRM, method = {RequestMethod.GET})
     public BuyCertificateResponse buyCertificateConfirm(@RequestParam String MD) throws MicroServiceException {
         try {
             ObjectContext objectContext = databaseService.getContext();
-
-            UserInfo userInfo = null;
-            try {
-                userInfo = (UserInfo) SecurityContextHolder
-                        .getContext()
-                        .getAuthentication()
-                        .getPrincipal();
-            } catch (Exception e) {
-                throw new MsNotAuthorizedException();
-            }
 
             DbPaymentsCryptogramm dbPaymentsCryptogramm = ObjectSelect.query(DbPaymentsCryptogramm.class)
                     .where(DbPaymentsCryptogramm.TRANSACTION_ID.eq(Long.valueOf(MD)))
@@ -221,7 +192,7 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
 
                 IssuedCertificateModel issuedCertificateModel = IssuedCertificateModel.builder()
                         .id((Long) certificate.getObjectId().getIdSnapshot().get("id"))
-                        .buyerEmail(userInfo.getUserEmail())
+                        .buyerEmail(certificate.getEmail())
                         .uuid(certificate.getUuid())
                         .fio(certificate.getFio())
                         .description(certificate.getDescription())
@@ -516,11 +487,15 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
             DbCertificate dbCertificate = SelectById.query(DbCertificate.class, request.getCertificateId())
                     .selectFirst(objectContext);
 
+            byte[] array = new byte[7]; // length is bounded by 7
+            new Random().nextBytes(array);
+            String generatedString = new String(array, Charset.forName("UTF-8"));
+
             DbIssuedCertificate dbIssuedCertificate = objectContext.newObject(DbIssuedCertificate.class);
             dbIssuedCertificate.setActive(true);
             dbIssuedCertificate.setActiveDate(LocalDateTime.now().plusMonths(1L));
             dbIssuedCertificate.setCreatedDate(LocalDateTime.now());
-            dbIssuedCertificate.setUuid(UUID.randomUUID().toString());
+            dbIssuedCertificate.setUuid(generatedString);
             dbIssuedCertificate.setIssuedToCertificate(dbCertificate);
             dbIssuedCertificate.setFio(request.getFio());
             dbIssuedCertificate.setDescription(request.getDescription());

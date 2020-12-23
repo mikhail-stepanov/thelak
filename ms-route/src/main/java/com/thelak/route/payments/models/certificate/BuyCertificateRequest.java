@@ -13,6 +13,8 @@ public class BuyCertificateRequest {
 
     Long certificateId;
 
+    String email;
+
     String fio;
 
     String description;

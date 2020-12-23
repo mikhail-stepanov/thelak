@@ -1,8 +1,11 @@
 package com.thelak.database.entity.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 
 import com.thelak.database.entity.DbOptionSubscription;
@@ -13,7 +16,7 @@ import com.thelak.database.entity.DbOptionSubscription;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _DbOptions extends CayenneDataObject {
+public abstract class _DbOptions extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -22,23 +25,87 @@ public abstract class _DbOptions extends CayenneDataObject {
     public static final Property<String> TEXT = Property.create("text", String.class);
     public static final Property<List<DbOptionSubscription>> OPTIONS_TO_OPSUB = Property.create("optionsToOpsub", List.class);
 
+    protected String text;
+
+    protected Object optionsToOpsub;
+
     public void setText(String text) {
-        writeProperty("text", text);
+        beforePropertyWrite("text", this.text, text);
+        this.text = text;
     }
+
     public String getText() {
-        return (String)readProperty("text");
+        beforePropertyRead("text");
+        return this.text;
     }
 
     public void addToOptionsToOpsub(DbOptionSubscription obj) {
         addToManyTarget("optionsToOpsub", obj, true);
     }
+
     public void removeFromOptionsToOpsub(DbOptionSubscription obj) {
         removeToManyTarget("optionsToOpsub", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<DbOptionSubscription> getOptionsToOpsub() {
         return (List<DbOptionSubscription>)readProperty("optionsToOpsub");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "text":
+                return this.text;
+            case "optionsToOpsub":
+                return this.optionsToOpsub;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "text":
+                this.text = (String)val;
+                break;
+            case "optionsToOpsub":
+                this.optionsToOpsub = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.text);
+        out.writeObject(this.optionsToOpsub);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.text = (String)in.readObject();
+        this.optionsToOpsub = in.readObject();
+    }
 
 }

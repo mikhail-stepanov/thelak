@@ -1,8 +1,11 @@
 package com.thelak.database.entity.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.time.LocalDateTime;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 
 import com.thelak.database.entity.DbIssuedCertificate;
@@ -14,7 +17,7 @@ import com.thelak.database.entity.DbSubscription;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _DbPaymentsCryptogramm extends CayenneDataObject {
+public abstract class _DbPaymentsCryptogramm extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -35,92 +38,143 @@ public abstract class _DbPaymentsCryptogramm extends CayenneDataObject {
     public static final Property<DbIssuedCertificate> CRYPTOGRAMM_TO_CERTIFICATE = Property.create("cryptogrammToCertificate", DbIssuedCertificate.class);
     public static final Property<DbSubscription> CRYPTOGRAMM_TO_SUBSCRIPTION = Property.create("cryptogrammToSubscription", DbSubscription.class);
 
+    protected int amount;
+    protected String cardCryptogram;
+    protected LocalDateTime createdDate;
+    protected String currency;
+    protected LocalDateTime deletedDate;
+    protected String description;
+    protected long idUser;
+    protected LocalDateTime modifiedDate;
+    protected String name;
+    protected String pares;
+    protected Boolean status;
+    protected long transactionId;
+
+    protected Object cryptogrammToCertificate;
+    protected Object cryptogrammToSubscription;
+
     public void setAmount(int amount) {
-        writeProperty("amount", amount);
+        beforePropertyWrite("amount", this.amount, amount);
+        this.amount = amount;
     }
+
     public int getAmount() {
-        Object value = readProperty("amount");
-        return (value != null) ? (Integer) value : 0;
+        beforePropertyRead("amount");
+        return this.amount;
     }
 
     public void setCardCryptogram(String cardCryptogram) {
-        writeProperty("cardCryptogram", cardCryptogram);
+        beforePropertyWrite("cardCryptogram", this.cardCryptogram, cardCryptogram);
+        this.cardCryptogram = cardCryptogram;
     }
+
     public String getCardCryptogram() {
-        return (String)readProperty("cardCryptogram");
+        beforePropertyRead("cardCryptogram");
+        return this.cardCryptogram;
     }
 
     public void setCreatedDate(LocalDateTime createdDate) {
-        writeProperty("createdDate", createdDate);
+        beforePropertyWrite("createdDate", this.createdDate, createdDate);
+        this.createdDate = createdDate;
     }
+
     public LocalDateTime getCreatedDate() {
-        return (LocalDateTime)readProperty("createdDate");
+        beforePropertyRead("createdDate");
+        return this.createdDate;
     }
 
     public void setCurrency(String currency) {
-        writeProperty("currency", currency);
+        beforePropertyWrite("currency", this.currency, currency);
+        this.currency = currency;
     }
+
     public String getCurrency() {
-        return (String)readProperty("currency");
+        beforePropertyRead("currency");
+        return this.currency;
     }
 
     public void setDeletedDate(LocalDateTime deletedDate) {
-        writeProperty("deletedDate", deletedDate);
+        beforePropertyWrite("deletedDate", this.deletedDate, deletedDate);
+        this.deletedDate = deletedDate;
     }
+
     public LocalDateTime getDeletedDate() {
-        return (LocalDateTime)readProperty("deletedDate");
+        beforePropertyRead("deletedDate");
+        return this.deletedDate;
     }
 
     public void setDescription(String description) {
-        writeProperty("description", description);
+        beforePropertyWrite("description", this.description, description);
+        this.description = description;
     }
+
     public String getDescription() {
-        return (String)readProperty("description");
+        beforePropertyRead("description");
+        return this.description;
     }
 
     public void setIdUser(long idUser) {
-        writeProperty("idUser", idUser);
+        beforePropertyWrite("idUser", this.idUser, idUser);
+        this.idUser = idUser;
     }
+
     public long getIdUser() {
-        Object value = readProperty("idUser");
-        return (value != null) ? (Long) value : 0;
+        beforePropertyRead("idUser");
+        return this.idUser;
     }
 
     public void setModifiedDate(LocalDateTime modifiedDate) {
-        writeProperty("modifiedDate", modifiedDate);
+        beforePropertyWrite("modifiedDate", this.modifiedDate, modifiedDate);
+        this.modifiedDate = modifiedDate;
     }
+
     public LocalDateTime getModifiedDate() {
-        return (LocalDateTime)readProperty("modifiedDate");
+        beforePropertyRead("modifiedDate");
+        return this.modifiedDate;
     }
 
     public void setName(String name) {
-        writeProperty("name", name);
+        beforePropertyWrite("name", this.name, name);
+        this.name = name;
     }
+
     public String getName() {
-        return (String)readProperty("name");
+        beforePropertyRead("name");
+        return this.name;
     }
 
     public void setPares(String pares) {
-        writeProperty("pares", pares);
+        beforePropertyWrite("pares", this.pares, pares);
+        this.pares = pares;
     }
+
     public String getPares() {
-        return (String)readProperty("pares");
+        beforePropertyRead("pares");
+        return this.pares;
     }
 
     public void setStatus(boolean status) {
-        writeProperty("status", status);
+        beforePropertyWrite("status", this.status, status);
+        this.status = status;
     }
+
 	public boolean isStatus() {
-        Boolean value = (Boolean)readProperty("status");
-        return (value != null) ? value.booleanValue() : false;
+        beforePropertyRead("status");
+        if(this.status == null) {
+            return false;
+        }
+        return this.status;
     }
 
     public void setTransactionId(long transactionId) {
-        writeProperty("transactionId", transactionId);
+        beforePropertyWrite("transactionId", this.transactionId, transactionId);
+        this.transactionId = transactionId;
     }
+
     public long getTransactionId() {
-        Object value = readProperty("transactionId");
-        return (value != null) ? (Long) value : 0;
+        beforePropertyRead("transactionId");
+        return this.transactionId;
     }
 
     public void setCryptogrammToCertificate(DbIssuedCertificate cryptogrammToCertificate) {
@@ -131,7 +185,6 @@ public abstract class _DbPaymentsCryptogramm extends CayenneDataObject {
         return (DbIssuedCertificate)readProperty("cryptogrammToCertificate");
     }
 
-
     public void setCryptogrammToSubscription(DbSubscription cryptogrammToSubscription) {
         setToOneTarget("cryptogrammToSubscription", cryptogrammToSubscription, true);
     }
@@ -140,5 +193,144 @@ public abstract class _DbPaymentsCryptogramm extends CayenneDataObject {
         return (DbSubscription)readProperty("cryptogrammToSubscription");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "amount":
+                return this.amount;
+            case "cardCryptogram":
+                return this.cardCryptogram;
+            case "createdDate":
+                return this.createdDate;
+            case "currency":
+                return this.currency;
+            case "deletedDate":
+                return this.deletedDate;
+            case "description":
+                return this.description;
+            case "idUser":
+                return this.idUser;
+            case "modifiedDate":
+                return this.modifiedDate;
+            case "name":
+                return this.name;
+            case "pares":
+                return this.pares;
+            case "status":
+                return this.status;
+            case "transactionId":
+                return this.transactionId;
+            case "cryptogrammToCertificate":
+                return this.cryptogrammToCertificate;
+            case "cryptogrammToSubscription":
+                return this.cryptogrammToSubscription;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "amount":
+                this.amount = val == null ? 0 : (int)val;
+                break;
+            case "cardCryptogram":
+                this.cardCryptogram = (String)val;
+                break;
+            case "createdDate":
+                this.createdDate = (LocalDateTime)val;
+                break;
+            case "currency":
+                this.currency = (String)val;
+                break;
+            case "deletedDate":
+                this.deletedDate = (LocalDateTime)val;
+                break;
+            case "description":
+                this.description = (String)val;
+                break;
+            case "idUser":
+                this.idUser = val == null ? 0 : (long)val;
+                break;
+            case "modifiedDate":
+                this.modifiedDate = (LocalDateTime)val;
+                break;
+            case "name":
+                this.name = (String)val;
+                break;
+            case "pares":
+                this.pares = (String)val;
+                break;
+            case "status":
+                this.status = (Boolean)val;
+                break;
+            case "transactionId":
+                this.transactionId = val == null ? 0 : (long)val;
+                break;
+            case "cryptogrammToCertificate":
+                this.cryptogrammToCertificate = val;
+                break;
+            case "cryptogrammToSubscription":
+                this.cryptogrammToSubscription = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeInt(this.amount);
+        out.writeObject(this.cardCryptogram);
+        out.writeObject(this.createdDate);
+        out.writeObject(this.currency);
+        out.writeObject(this.deletedDate);
+        out.writeObject(this.description);
+        out.writeLong(this.idUser);
+        out.writeObject(this.modifiedDate);
+        out.writeObject(this.name);
+        out.writeObject(this.pares);
+        out.writeObject(this.status);
+        out.writeLong(this.transactionId);
+        out.writeObject(this.cryptogrammToCertificate);
+        out.writeObject(this.cryptogrammToSubscription);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.amount = in.readInt();
+        this.cardCryptogram = (String)in.readObject();
+        this.createdDate = (LocalDateTime)in.readObject();
+        this.currency = (String)in.readObject();
+        this.deletedDate = (LocalDateTime)in.readObject();
+        this.description = (String)in.readObject();
+        this.idUser = in.readLong();
+        this.modifiedDate = (LocalDateTime)in.readObject();
+        this.name = (String)in.readObject();
+        this.pares = (String)in.readObject();
+        this.status = (Boolean)in.readObject();
+        this.transactionId = in.readLong();
+        this.cryptogrammToCertificate = in.readObject();
+        this.cryptogrammToSubscription = in.readObject();
+    }
 
 }

@@ -1,9 +1,12 @@
 package com.thelak.database.entity.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 
 import com.thelak.database.entity.DbIssuedCertificate;
@@ -15,7 +18,7 @@ import com.thelak.database.entity.DbOptionCertificate;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _DbCertificate extends CayenneDataObject {
+public abstract class _DbCertificate extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -37,122 +40,333 @@ public abstract class _DbCertificate extends CayenneDataObject {
     public static final Property<List<DbIssuedCertificate>> CERTIFICATE_TO_ISSUED = Property.create("certificateToIssued", List.class);
     public static final Property<List<DbOptionCertificate>> CERTIFICATE_TO_OPTION = Property.create("certificateToOption", List.class);
 
+    protected Integer cover;
+    protected LocalDateTime createdDate;
+    protected LocalDateTime deletedDate;
+    protected String description;
+    protected String htmlHorizontal;
+    protected String htmlVertical;
+    protected String length;
+    protected LocalDateTime modifiedDate;
+    protected Long months;
+    protected String name;
+    protected Integer price;
+    protected String priceStr;
+    protected String priceStr2;
+
+    protected Object certificateToIssued;
+    protected Object certificateToOption;
+
     public void setCover(int cover) {
-        writeProperty("cover", cover);
+        beforePropertyWrite("cover", this.cover, cover);
+        this.cover = cover;
     }
+
     public int getCover() {
-        Object value = readProperty("cover");
-        return (value != null) ? (Integer) value : 0;
+        beforePropertyRead("cover");
+        if(this.cover == null) {
+            return 0;
+        }
+        return this.cover;
     }
 
     public void setCreatedDate(LocalDateTime createdDate) {
-        writeProperty("createdDate", createdDate);
+        beforePropertyWrite("createdDate", this.createdDate, createdDate);
+        this.createdDate = createdDate;
     }
+
     public LocalDateTime getCreatedDate() {
-        return (LocalDateTime)readProperty("createdDate");
+        beforePropertyRead("createdDate");
+        return this.createdDate;
     }
 
     public void setDeletedDate(LocalDateTime deletedDate) {
-        writeProperty("deletedDate", deletedDate);
+        beforePropertyWrite("deletedDate", this.deletedDate, deletedDate);
+        this.deletedDate = deletedDate;
     }
+
     public LocalDateTime getDeletedDate() {
-        return (LocalDateTime)readProperty("deletedDate");
+        beforePropertyRead("deletedDate");
+        return this.deletedDate;
     }
 
     public void setDescription(String description) {
-        writeProperty("description", description);
+        beforePropertyWrite("description", this.description, description);
+        this.description = description;
     }
+
     public String getDescription() {
-        return (String)readProperty("description");
+        beforePropertyRead("description");
+        return this.description;
     }
 
     public void setHtmlHorizontal(String htmlHorizontal) {
-        writeProperty("htmlHorizontal", htmlHorizontal);
+        beforePropertyWrite("htmlHorizontal", this.htmlHorizontal, htmlHorizontal);
+        this.htmlHorizontal = htmlHorizontal;
     }
+
     public String getHtmlHorizontal() {
-        return (String)readProperty("htmlHorizontal");
+        beforePropertyRead("htmlHorizontal");
+        return this.htmlHorizontal;
     }
 
     public void setHtmlVertical(String htmlVertical) {
-        writeProperty("htmlVertical", htmlVertical);
+        beforePropertyWrite("htmlVertical", this.htmlVertical, htmlVertical);
+        this.htmlVertical = htmlVertical;
     }
+
     public String getHtmlVertical() {
-        return (String)readProperty("htmlVertical");
+        beforePropertyRead("htmlVertical");
+        return this.htmlVertical;
     }
 
     public void setLength(String length) {
-        writeProperty("length", length);
+        beforePropertyWrite("length", this.length, length);
+        this.length = length;
     }
+
     public String getLength() {
-        return (String)readProperty("length");
+        beforePropertyRead("length");
+        return this.length;
     }
 
     public void setModifiedDate(LocalDateTime modifiedDate) {
-        writeProperty("modifiedDate", modifiedDate);
+        beforePropertyWrite("modifiedDate", this.modifiedDate, modifiedDate);
+        this.modifiedDate = modifiedDate;
     }
+
     public LocalDateTime getModifiedDate() {
-        return (LocalDateTime)readProperty("modifiedDate");
+        beforePropertyRead("modifiedDate");
+        return this.modifiedDate;
     }
 
     public void setMonths(long months) {
-        writeProperty("months", months);
+        beforePropertyWrite("months", this.months, months);
+        this.months = months;
     }
+
     public long getMonths() {
-        Object value = readProperty("months");
-        return (value != null) ? (Long) value : 0;
+        beforePropertyRead("months");
+        if(this.months == null) {
+            return 0;
+        }
+        return this.months;
     }
 
     public void setName(String name) {
-        writeProperty("name", name);
+        beforePropertyWrite("name", this.name, name);
+        this.name = name;
     }
+
     public String getName() {
-        return (String)readProperty("name");
+        beforePropertyRead("name");
+        return this.name;
     }
 
     public void setPrice(int price) {
-        writeProperty("price", price);
+        beforePropertyWrite("price", this.price, price);
+        this.price = price;
     }
+
     public int getPrice() {
-        Object value = readProperty("price");
-        return (value != null) ? (Integer) value : 0;
+        beforePropertyRead("price");
+        if(this.price == null) {
+            return 0;
+        }
+        return this.price;
     }
 
     public void setPriceStr(String priceStr) {
-        writeProperty("priceStr", priceStr);
+        beforePropertyWrite("priceStr", this.priceStr, priceStr);
+        this.priceStr = priceStr;
     }
+
     public String getPriceStr() {
-        return (String)readProperty("priceStr");
+        beforePropertyRead("priceStr");
+        return this.priceStr;
     }
 
     public void setPriceStr2(String priceStr2) {
-        writeProperty("priceStr2", priceStr2);
+        beforePropertyWrite("priceStr2", this.priceStr2, priceStr2);
+        this.priceStr2 = priceStr2;
     }
+
     public String getPriceStr2() {
-        return (String)readProperty("priceStr2");
+        beforePropertyRead("priceStr2");
+        return this.priceStr2;
     }
 
     public void addToCertificateToIssued(DbIssuedCertificate obj) {
         addToManyTarget("certificateToIssued", obj, true);
     }
+
     public void removeFromCertificateToIssued(DbIssuedCertificate obj) {
         removeToManyTarget("certificateToIssued", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<DbIssuedCertificate> getCertificateToIssued() {
         return (List<DbIssuedCertificate>)readProperty("certificateToIssued");
     }
 
-
     public void addToCertificateToOption(DbOptionCertificate obj) {
         addToManyTarget("certificateToOption", obj, true);
     }
+
     public void removeFromCertificateToOption(DbOptionCertificate obj) {
         removeToManyTarget("certificateToOption", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<DbOptionCertificate> getCertificateToOption() {
         return (List<DbOptionCertificate>)readProperty("certificateToOption");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "cover":
+                return this.cover;
+            case "createdDate":
+                return this.createdDate;
+            case "deletedDate":
+                return this.deletedDate;
+            case "description":
+                return this.description;
+            case "htmlHorizontal":
+                return this.htmlHorizontal;
+            case "htmlVertical":
+                return this.htmlVertical;
+            case "length":
+                return this.length;
+            case "modifiedDate":
+                return this.modifiedDate;
+            case "months":
+                return this.months;
+            case "name":
+                return this.name;
+            case "price":
+                return this.price;
+            case "priceStr":
+                return this.priceStr;
+            case "priceStr2":
+                return this.priceStr2;
+            case "certificateToIssued":
+                return this.certificateToIssued;
+            case "certificateToOption":
+                return this.certificateToOption;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "cover":
+                this.cover = (Integer)val;
+                break;
+            case "createdDate":
+                this.createdDate = (LocalDateTime)val;
+                break;
+            case "deletedDate":
+                this.deletedDate = (LocalDateTime)val;
+                break;
+            case "description":
+                this.description = (String)val;
+                break;
+            case "htmlHorizontal":
+                this.htmlHorizontal = (String)val;
+                break;
+            case "htmlVertical":
+                this.htmlVertical = (String)val;
+                break;
+            case "length":
+                this.length = (String)val;
+                break;
+            case "modifiedDate":
+                this.modifiedDate = (LocalDateTime)val;
+                break;
+            case "months":
+                this.months = (Long)val;
+                break;
+            case "name":
+                this.name = (String)val;
+                break;
+            case "price":
+                this.price = (Integer)val;
+                break;
+            case "priceStr":
+                this.priceStr = (String)val;
+                break;
+            case "priceStr2":
+                this.priceStr2 = (String)val;
+                break;
+            case "certificateToIssued":
+                this.certificateToIssued = val;
+                break;
+            case "certificateToOption":
+                this.certificateToOption = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.cover);
+        out.writeObject(this.createdDate);
+        out.writeObject(this.deletedDate);
+        out.writeObject(this.description);
+        out.writeObject(this.htmlHorizontal);
+        out.writeObject(this.htmlVertical);
+        out.writeObject(this.length);
+        out.writeObject(this.modifiedDate);
+        out.writeObject(this.months);
+        out.writeObject(this.name);
+        out.writeObject(this.price);
+        out.writeObject(this.priceStr);
+        out.writeObject(this.priceStr2);
+        out.writeObject(this.certificateToIssued);
+        out.writeObject(this.certificateToOption);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.cover = (Integer)in.readObject();
+        this.createdDate = (LocalDateTime)in.readObject();
+        this.deletedDate = (LocalDateTime)in.readObject();
+        this.description = (String)in.readObject();
+        this.htmlHorizontal = (String)in.readObject();
+        this.htmlVertical = (String)in.readObject();
+        this.length = (String)in.readObject();
+        this.modifiedDate = (LocalDateTime)in.readObject();
+        this.months = (Long)in.readObject();
+        this.name = (String)in.readObject();
+        this.price = (Integer)in.readObject();
+        this.priceStr = (String)in.readObject();
+        this.priceStr2 = (String)in.readObject();
+        this.certificateToIssued = in.readObject();
+        this.certificateToOption = in.readObject();
+    }
 
 }

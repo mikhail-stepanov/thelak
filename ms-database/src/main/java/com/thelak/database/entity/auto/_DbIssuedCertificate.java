@@ -1,9 +1,12 @@
 package com.thelak.database.entity.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 
 import com.thelak.database.entity.DbCertificate;
@@ -15,7 +18,7 @@ import com.thelak.database.entity.DbPaymentsCryptogramm;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _DbIssuedCertificate extends CayenneDataObject {
+public abstract class _DbIssuedCertificate extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -26,6 +29,7 @@ public abstract class _DbIssuedCertificate extends CayenneDataObject {
     public static final Property<LocalDateTime> CREATED_DATE = Property.create("createdDate", LocalDateTime.class);
     public static final Property<LocalDateTime> DELETED_DATE = Property.create("deletedDate", LocalDateTime.class);
     public static final Property<String> DESCRIPTION = Property.create("description", String.class);
+    public static final Property<String> EMAIL = Property.create("email", String.class);
     public static final Property<String> FIO = Property.create("fio", String.class);
     public static final Property<LocalDateTime> MODIFIED_DATE = Property.create("modifiedDate", LocalDateTime.class);
     public static final Property<String> TYPE = Property.create("type", String.class);
@@ -33,81 +37,135 @@ public abstract class _DbIssuedCertificate extends CayenneDataObject {
     public static final Property<List<DbPaymentsCryptogramm>> CERTIFICATE_TO_CRYPTOGRAMM = Property.create("certificateToCryptogramm", List.class);
     public static final Property<DbCertificate> ISSUED_TO_CERTIFICATE = Property.create("issuedToCertificate", DbCertificate.class);
 
+    protected Boolean active;
+    protected LocalDateTime activeDate;
+    protected LocalDateTime createdDate;
+    protected LocalDateTime deletedDate;
+    protected String description;
+    protected String email;
+    protected String fio;
+    protected LocalDateTime modifiedDate;
+    protected String type;
+    protected String uuid;
+
+    protected Object certificateToCryptogramm;
+    protected Object issuedToCertificate;
+
     public void setActive(boolean active) {
-        writeProperty("active", active);
+        beforePropertyWrite("active", this.active, active);
+        this.active = active;
     }
+
 	public boolean isActive() {
-        Boolean value = (Boolean)readProperty("active");
-        return (value != null) ? value.booleanValue() : false;
+        beforePropertyRead("active");
+        if(this.active == null) {
+            return false;
+        }
+        return this.active;
     }
 
     public void setActiveDate(LocalDateTime activeDate) {
-        writeProperty("activeDate", activeDate);
+        beforePropertyWrite("activeDate", this.activeDate, activeDate);
+        this.activeDate = activeDate;
     }
+
     public LocalDateTime getActiveDate() {
-        return (LocalDateTime)readProperty("activeDate");
+        beforePropertyRead("activeDate");
+        return this.activeDate;
     }
 
     public void setCreatedDate(LocalDateTime createdDate) {
-        writeProperty("createdDate", createdDate);
+        beforePropertyWrite("createdDate", this.createdDate, createdDate);
+        this.createdDate = createdDate;
     }
+
     public LocalDateTime getCreatedDate() {
-        return (LocalDateTime)readProperty("createdDate");
+        beforePropertyRead("createdDate");
+        return this.createdDate;
     }
 
     public void setDeletedDate(LocalDateTime deletedDate) {
-        writeProperty("deletedDate", deletedDate);
+        beforePropertyWrite("deletedDate", this.deletedDate, deletedDate);
+        this.deletedDate = deletedDate;
     }
+
     public LocalDateTime getDeletedDate() {
-        return (LocalDateTime)readProperty("deletedDate");
+        beforePropertyRead("deletedDate");
+        return this.deletedDate;
     }
 
     public void setDescription(String description) {
-        writeProperty("description", description);
+        beforePropertyWrite("description", this.description, description);
+        this.description = description;
     }
+
     public String getDescription() {
-        return (String)readProperty("description");
+        beforePropertyRead("description");
+        return this.description;
+    }
+
+    public void setEmail(String email) {
+        beforePropertyWrite("email", this.email, email);
+        this.email = email;
+    }
+
+    public String getEmail() {
+        beforePropertyRead("email");
+        return this.email;
     }
 
     public void setFio(String fio) {
-        writeProperty("fio", fio);
+        beforePropertyWrite("fio", this.fio, fio);
+        this.fio = fio;
     }
+
     public String getFio() {
-        return (String)readProperty("fio");
+        beforePropertyRead("fio");
+        return this.fio;
     }
 
     public void setModifiedDate(LocalDateTime modifiedDate) {
-        writeProperty("modifiedDate", modifiedDate);
+        beforePropertyWrite("modifiedDate", this.modifiedDate, modifiedDate);
+        this.modifiedDate = modifiedDate;
     }
+
     public LocalDateTime getModifiedDate() {
-        return (LocalDateTime)readProperty("modifiedDate");
+        beforePropertyRead("modifiedDate");
+        return this.modifiedDate;
     }
 
     public void setType(String type) {
-        writeProperty("type", type);
+        beforePropertyWrite("type", this.type, type);
+        this.type = type;
     }
+
     public String getType() {
-        return (String)readProperty("type");
+        beforePropertyRead("type");
+        return this.type;
     }
 
     public void setUuid(String uuid) {
-        writeProperty("uuid", uuid);
+        beforePropertyWrite("uuid", this.uuid, uuid);
+        this.uuid = uuid;
     }
+
     public String getUuid() {
-        return (String)readProperty("uuid");
+        beforePropertyRead("uuid");
+        return this.uuid;
     }
 
     public void addToCertificateToCryptogramm(DbPaymentsCryptogramm obj) {
         addToManyTarget("certificateToCryptogramm", obj, true);
     }
+
     public void removeFromCertificateToCryptogramm(DbPaymentsCryptogramm obj) {
         removeToManyTarget("certificateToCryptogramm", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<DbPaymentsCryptogramm> getCertificateToCryptogramm() {
         return (List<DbPaymentsCryptogramm>)readProperty("certificateToCryptogramm");
     }
-
 
     public void setIssuedToCertificate(DbCertificate issuedToCertificate) {
         setToOneTarget("issuedToCertificate", issuedToCertificate, true);
@@ -117,5 +175,130 @@ public abstract class _DbIssuedCertificate extends CayenneDataObject {
         return (DbCertificate)readProperty("issuedToCertificate");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "active":
+                return this.active;
+            case "activeDate":
+                return this.activeDate;
+            case "createdDate":
+                return this.createdDate;
+            case "deletedDate":
+                return this.deletedDate;
+            case "description":
+                return this.description;
+            case "email":
+                return this.email;
+            case "fio":
+                return this.fio;
+            case "modifiedDate":
+                return this.modifiedDate;
+            case "type":
+                return this.type;
+            case "uuid":
+                return this.uuid;
+            case "certificateToCryptogramm":
+                return this.certificateToCryptogramm;
+            case "issuedToCertificate":
+                return this.issuedToCertificate;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "active":
+                this.active = (Boolean)val;
+                break;
+            case "activeDate":
+                this.activeDate = (LocalDateTime)val;
+                break;
+            case "createdDate":
+                this.createdDate = (LocalDateTime)val;
+                break;
+            case "deletedDate":
+                this.deletedDate = (LocalDateTime)val;
+                break;
+            case "description":
+                this.description = (String)val;
+                break;
+            case "email":
+                this.email = (String)val;
+                break;
+            case "fio":
+                this.fio = (String)val;
+                break;
+            case "modifiedDate":
+                this.modifiedDate = (LocalDateTime)val;
+                break;
+            case "type":
+                this.type = (String)val;
+                break;
+            case "uuid":
+                this.uuid = (String)val;
+                break;
+            case "certificateToCryptogramm":
+                this.certificateToCryptogramm = val;
+                break;
+            case "issuedToCertificate":
+                this.issuedToCertificate = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.active);
+        out.writeObject(this.activeDate);
+        out.writeObject(this.createdDate);
+        out.writeObject(this.deletedDate);
+        out.writeObject(this.description);
+        out.writeObject(this.email);
+        out.writeObject(this.fio);
+        out.writeObject(this.modifiedDate);
+        out.writeObject(this.type);
+        out.writeObject(this.uuid);
+        out.writeObject(this.certificateToCryptogramm);
+        out.writeObject(this.issuedToCertificate);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.active = (Boolean)in.readObject();
+        this.activeDate = (LocalDateTime)in.readObject();
+        this.createdDate = (LocalDateTime)in.readObject();
+        this.deletedDate = (LocalDateTime)in.readObject();
+        this.description = (String)in.readObject();
+        this.email = (String)in.readObject();
+        this.fio = (String)in.readObject();
+        this.modifiedDate = (LocalDateTime)in.readObject();
+        this.type = (String)in.readObject();
+        this.uuid = (String)in.readObject();
+        this.certificateToCryptogramm = in.readObject();
+        this.issuedToCertificate = in.readObject();
+    }
 
 }

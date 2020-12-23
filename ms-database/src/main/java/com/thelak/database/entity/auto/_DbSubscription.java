@@ -1,9 +1,12 @@
 package com.thelak.database.entity.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 
 import com.thelak.database.entity.DbOptionSubscription;
@@ -16,7 +19,7 @@ import com.thelak.database.entity.DbPaymentsRecurrent;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _DbSubscription extends CayenneDataObject {
+public abstract class _DbSubscription extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -36,114 +39,300 @@ public abstract class _DbSubscription extends CayenneDataObject {
     public static final Property<List<DbOptionSubscription>> SUBSCRIPTION_TO_OPSUB = Property.create("subscriptionToOpsub", List.class);
     public static final Property<List<DbPaymentsRecurrent>> SUBSCRIPTION_TO_RECURRENT = Property.create("subscriptionToRecurrent", List.class);
 
+    protected Integer cover;
+    protected LocalDateTime createdDate;
+    protected Integer days;
+    protected LocalDateTime deletedDate;
+    protected LocalDateTime modifiedDate;
+    protected Integer months;
+    protected String next;
+    protected String pre;
+    protected int price;
+    protected String type;
+
+    protected Object subscriptionToCryptogramm;
+    protected Object subscriptionToOpsub;
+    protected Object subscriptionToRecurrent;
+
     public void setCover(int cover) {
-        writeProperty("cover", cover);
+        beforePropertyWrite("cover", this.cover, cover);
+        this.cover = cover;
     }
+
     public int getCover() {
-        Object value = readProperty("cover");
-        return (value != null) ? (Integer) value : 0;
+        beforePropertyRead("cover");
+        if(this.cover == null) {
+            return 0;
+        }
+        return this.cover;
     }
 
     public void setCreatedDate(LocalDateTime createdDate) {
-        writeProperty("createdDate", createdDate);
+        beforePropertyWrite("createdDate", this.createdDate, createdDate);
+        this.createdDate = createdDate;
     }
+
     public LocalDateTime getCreatedDate() {
-        return (LocalDateTime)readProperty("createdDate");
+        beforePropertyRead("createdDate");
+        return this.createdDate;
     }
 
     public void setDays(int days) {
-        writeProperty("days", days);
+        beforePropertyWrite("days", this.days, days);
+        this.days = days;
     }
+
     public int getDays() {
-        Object value = readProperty("days");
-        return (value != null) ? (Integer) value : 0;
+        beforePropertyRead("days");
+        if(this.days == null) {
+            return 0;
+        }
+        return this.days;
     }
 
     public void setDeletedDate(LocalDateTime deletedDate) {
-        writeProperty("deletedDate", deletedDate);
+        beforePropertyWrite("deletedDate", this.deletedDate, deletedDate);
+        this.deletedDate = deletedDate;
     }
+
     public LocalDateTime getDeletedDate() {
-        return (LocalDateTime)readProperty("deletedDate");
+        beforePropertyRead("deletedDate");
+        return this.deletedDate;
     }
 
     public void setModifiedDate(LocalDateTime modifiedDate) {
-        writeProperty("modifiedDate", modifiedDate);
+        beforePropertyWrite("modifiedDate", this.modifiedDate, modifiedDate);
+        this.modifiedDate = modifiedDate;
     }
+
     public LocalDateTime getModifiedDate() {
-        return (LocalDateTime)readProperty("modifiedDate");
+        beforePropertyRead("modifiedDate");
+        return this.modifiedDate;
     }
 
     public void setMonths(int months) {
-        writeProperty("months", months);
+        beforePropertyWrite("months", this.months, months);
+        this.months = months;
     }
+
     public int getMonths() {
-        Object value = readProperty("months");
-        return (value != null) ? (Integer) value : 0;
+        beforePropertyRead("months");
+        if(this.months == null) {
+            return 0;
+        }
+        return this.months;
     }
 
     public void setNext(String next) {
-        writeProperty("next", next);
+        beforePropertyWrite("next", this.next, next);
+        this.next = next;
     }
+
     public String getNext() {
-        return (String)readProperty("next");
+        beforePropertyRead("next");
+        return this.next;
     }
 
     public void setPre(String pre) {
-        writeProperty("pre", pre);
+        beforePropertyWrite("pre", this.pre, pre);
+        this.pre = pre;
     }
+
     public String getPre() {
-        return (String)readProperty("pre");
+        beforePropertyRead("pre");
+        return this.pre;
     }
 
     public void setPrice(int price) {
-        writeProperty("price", price);
+        beforePropertyWrite("price", this.price, price);
+        this.price = price;
     }
+
     public int getPrice() {
-        Object value = readProperty("price");
-        return (value != null) ? (Integer) value : 0;
+        beforePropertyRead("price");
+        return this.price;
     }
 
     public void setType(String type) {
-        writeProperty("type", type);
+        beforePropertyWrite("type", this.type, type);
+        this.type = type;
     }
+
     public String getType() {
-        return (String)readProperty("type");
+        beforePropertyRead("type");
+        return this.type;
     }
 
     public void addToSubscriptionToCryptogramm(DbPaymentsCryptogramm obj) {
         addToManyTarget("subscriptionToCryptogramm", obj, true);
     }
+
     public void removeFromSubscriptionToCryptogramm(DbPaymentsCryptogramm obj) {
         removeToManyTarget("subscriptionToCryptogramm", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<DbPaymentsCryptogramm> getSubscriptionToCryptogramm() {
         return (List<DbPaymentsCryptogramm>)readProperty("subscriptionToCryptogramm");
     }
 
-
     public void addToSubscriptionToOpsub(DbOptionSubscription obj) {
         addToManyTarget("subscriptionToOpsub", obj, true);
     }
+
     public void removeFromSubscriptionToOpsub(DbOptionSubscription obj) {
         removeToManyTarget("subscriptionToOpsub", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<DbOptionSubscription> getSubscriptionToOpsub() {
         return (List<DbOptionSubscription>)readProperty("subscriptionToOpsub");
     }
 
-
     public void addToSubscriptionToRecurrent(DbPaymentsRecurrent obj) {
         addToManyTarget("subscriptionToRecurrent", obj, true);
     }
+
     public void removeFromSubscriptionToRecurrent(DbPaymentsRecurrent obj) {
         removeToManyTarget("subscriptionToRecurrent", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<DbPaymentsRecurrent> getSubscriptionToRecurrent() {
         return (List<DbPaymentsRecurrent>)readProperty("subscriptionToRecurrent");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "cover":
+                return this.cover;
+            case "createdDate":
+                return this.createdDate;
+            case "days":
+                return this.days;
+            case "deletedDate":
+                return this.deletedDate;
+            case "modifiedDate":
+                return this.modifiedDate;
+            case "months":
+                return this.months;
+            case "next":
+                return this.next;
+            case "pre":
+                return this.pre;
+            case "price":
+                return this.price;
+            case "type":
+                return this.type;
+            case "subscriptionToCryptogramm":
+                return this.subscriptionToCryptogramm;
+            case "subscriptionToOpsub":
+                return this.subscriptionToOpsub;
+            case "subscriptionToRecurrent":
+                return this.subscriptionToRecurrent;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "cover":
+                this.cover = (Integer)val;
+                break;
+            case "createdDate":
+                this.createdDate = (LocalDateTime)val;
+                break;
+            case "days":
+                this.days = (Integer)val;
+                break;
+            case "deletedDate":
+                this.deletedDate = (LocalDateTime)val;
+                break;
+            case "modifiedDate":
+                this.modifiedDate = (LocalDateTime)val;
+                break;
+            case "months":
+                this.months = (Integer)val;
+                break;
+            case "next":
+                this.next = (String)val;
+                break;
+            case "pre":
+                this.pre = (String)val;
+                break;
+            case "price":
+                this.price = val == null ? 0 : (int)val;
+                break;
+            case "type":
+                this.type = (String)val;
+                break;
+            case "subscriptionToCryptogramm":
+                this.subscriptionToCryptogramm = val;
+                break;
+            case "subscriptionToOpsub":
+                this.subscriptionToOpsub = val;
+                break;
+            case "subscriptionToRecurrent":
+                this.subscriptionToRecurrent = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.cover);
+        out.writeObject(this.createdDate);
+        out.writeObject(this.days);
+        out.writeObject(this.deletedDate);
+        out.writeObject(this.modifiedDate);
+        out.writeObject(this.months);
+        out.writeObject(this.next);
+        out.writeObject(this.pre);
+        out.writeInt(this.price);
+        out.writeObject(this.type);
+        out.writeObject(this.subscriptionToCryptogramm);
+        out.writeObject(this.subscriptionToOpsub);
+        out.writeObject(this.subscriptionToRecurrent);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.cover = (Integer)in.readObject();
+        this.createdDate = (LocalDateTime)in.readObject();
+        this.days = (Integer)in.readObject();
+        this.deletedDate = (LocalDateTime)in.readObject();
+        this.modifiedDate = (LocalDateTime)in.readObject();
+        this.months = (Integer)in.readObject();
+        this.next = (String)in.readObject();
+        this.pre = (String)in.readObject();
+        this.price = in.readInt();
+        this.type = (String)in.readObject();
+        this.subscriptionToCryptogramm = in.readObject();
+        this.subscriptionToOpsub = in.readObject();
+        this.subscriptionToRecurrent = in.readObject();
+    }
 
 }

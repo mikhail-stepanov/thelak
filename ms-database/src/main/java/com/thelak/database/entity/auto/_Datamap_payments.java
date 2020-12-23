@@ -9,5 +9,4 @@ import org.apache.cayenne.ObjectContext;
  * If you need to make any customizations, please use subclass.
  */
 public class _Datamap_payments {
-
 }
