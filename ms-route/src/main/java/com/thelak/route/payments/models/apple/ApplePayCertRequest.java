@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ApplePayCertRequest {
 
+    String email;
+
     String cryptogram;
 
     Long certificateId;

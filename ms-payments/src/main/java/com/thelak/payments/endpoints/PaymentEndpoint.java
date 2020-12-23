@@ -108,11 +108,15 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
             DbCertificate dbCertificate = SelectById.query(DbCertificate.class, buyCertificateRequest.getCertificateId())
                     .selectFirst(objectContext);
 
+            byte[] array = new byte[7]; // length is bounded by 7
+            new Random().nextBytes(array);
+            String generatedString = new String(array, Charset.forName("UTF-8"));
+
             DbIssuedCertificate dbIssuedCertificate = objectContext.newObject(DbIssuedCertificate.class);
             dbIssuedCertificate.setActive(true);
             dbIssuedCertificate.setActiveDate(LocalDateTime.now().plusMonths(1L));
             dbIssuedCertificate.setCreatedDate(LocalDateTime.now());
-            dbIssuedCertificate.setUuid(UUID.randomUUID().toString());
+            dbIssuedCertificate.setUuid(generatedString);
             dbIssuedCertificate.setIssuedToCertificate(dbCertificate);
             dbIssuedCertificate.setFio(buyCertificateRequest.getFio());
             dbIssuedCertificate.setDescription(buyCertificateRequest.getDescription());
@@ -463,26 +467,10 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
 
     @Override
     @ApiOperation(value = "Buy certificate (Apple Pay)")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(required = true,
-                    defaultValue = "Bearer ",
-                    name = "Authorization",
-                    paramType = "header")}
-    )
     @RequestMapping(value = PAYMENTS_CERT_APPLE, method = {RequestMethod.POST})
     public BuyCertificateResponse buyCertificateApplePay(@RequestBody ApplePayCertRequest request, HttpServletRequest httpRequest) throws MicroServiceException {
         try {
             ObjectContext objectContext = databaseService.getContext();
-
-            UserInfo userInfo;
-            try {
-                userInfo = (UserInfo) SecurityContextHolder
-                        .getContext()
-                        .getAuthentication()
-                        .getPrincipal();
-            } catch (Exception e) {
-                throw new MsNotAuthorizedException();
-            }
 
             DbCertificate dbCertificate = SelectById.query(DbCertificate.class, request.getCertificateId())
                     .selectFirst(objectContext);
@@ -500,15 +488,16 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
             dbIssuedCertificate.setFio(request.getFio());
             dbIssuedCertificate.setDescription(request.getDescription());
             dbIssuedCertificate.setType(request.getType().name());
+            dbIssuedCertificate.setEmail(request.getEmail());
             objectContext.commitChanges();
 
             CryptogrammPayRequest cryptogrammPayRequest = CryptogrammPayRequest.builder()
-                    .AccountId(userInfo.getUserId())
+                    .AccountId(0L)
                     .Amount(dbCertificate.getPrice())
                     .CardCryptogramPacket(request.getCryptogram())
                     .Currency("RUB")
                     .Description("Покупка сертификата Thelak на " + dbCertificate.getMonths() + " месяцев.")
-                    .Email(userInfo.getUserEmail())
+                    .Email(request.getEmail())
                     .IpAddress(httpRequest.getRemoteAddr())
                     .build();
 
@@ -542,6 +531,20 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
                 dbPromo.setMonths((int) certificate.getIssuedToCertificate().getMonths());
 
                 objectContext.commitChanges();
+
+                IssuedCertificateModel issuedCertificateModel = IssuedCertificateModel.builder()
+                        .id((Long) certificate.getObjectId().getIdSnapshot().get("id"))
+                        .buyerEmail(certificate.getEmail())
+                        .uuid(certificate.getUuid())
+                        .fio(certificate.getFio())
+                        .description(certificate.getDescription())
+                        .active(certificate.isActive())
+                        .activeDate(certificate.getActiveDate())
+                        .type(CertificateViewType.valueOf(certificate.getType()))
+                        .certificateModel(buildCertificateModel(certificate.getIssuedToCertificate()))
+                        .build();
+
+                messageService.publish(userCertificateQueue, issuedCertificateModel);
 
                 return BuyCertificateResponse.builder()
                         .success(result.getSuccess())
