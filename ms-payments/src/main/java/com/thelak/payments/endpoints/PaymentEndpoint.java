@@ -6,10 +6,7 @@ import com.thelak.core.models.UserInfo;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.*;
 import com.thelak.route.auth.interfaces.IAuthenticationService;
-import com.thelak.route.exceptions.MicroServiceException;
-import com.thelak.route.exceptions.MsInternalErrorException;
-import com.thelak.route.exceptions.MsNotAuthorizedException;
-import com.thelak.route.exceptions.MsObjectNotFoundException;
+import com.thelak.route.exceptions.*;
 import com.thelak.route.message.IMessageService;
 import com.thelak.route.payments.interfaces.IPaymentService;
 import com.thelak.route.payments.models.CardUpdateRequest;
@@ -103,65 +100,68 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
     @RequestMapping(value = PAYMENTS_CERT_REQ, method = {RequestMethod.POST})
     public CryptogrammPayResponse buyCertificateRequest(BuyCertificateRequest buyCertificateRequest, HttpServletRequest request) throws MicroServiceException {
         try {
-            ObjectContext objectContext = databaseService.getContext();
+            if(buyCertificateRequest.getEmail()!=null && !buyCertificateRequest.getEmail().isEmpty()) {
+                ObjectContext objectContext = databaseService.getContext();
 
-            DbCertificate dbCertificate = SelectById.query(DbCertificate.class, buyCertificateRequest.getCertificateId())
-                    .selectFirst(objectContext);
+                DbCertificate dbCertificate = SelectById.query(DbCertificate.class, buyCertificateRequest.getCertificateId())
+                        .selectFirst(objectContext);
 
-            int leftLimit = 48; // numeral '0'
-            int rightLimit = 122; // letter 'z'
-            int targetStringLength = 10;
-            Random random = new Random();
+                int leftLimit = 48; // numeral '0'
+                int rightLimit = 122; // letter 'z'
+                int targetStringLength = 10;
+                Random random = new Random();
 
-            String generatedString = random.ints(leftLimit, rightLimit + 1)
-                    .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
-                    .limit(targetStringLength)
-                    .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                    .toString();
+                String generatedString = random.ints(leftLimit, rightLimit + 1)
+                        .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                        .limit(targetStringLength)
+                        .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                        .toString();
 
-            DbIssuedCertificate dbIssuedCertificate = objectContext.newObject(DbIssuedCertificate.class);
-            dbIssuedCertificate.setActive(true);
-            dbIssuedCertificate.setActiveDate(LocalDateTime.now().plusMonths(1L));
-            dbIssuedCertificate.setCreatedDate(LocalDateTime.now());
-            dbIssuedCertificate.setUuid(generatedString);
-            dbIssuedCertificate.setIssuedToCertificate(dbCertificate);
-            dbIssuedCertificate.setFio(buyCertificateRequest.getFio());
-            dbIssuedCertificate.setDescription(buyCertificateRequest.getDescription());
-            dbIssuedCertificate.setType(buyCertificateRequest.getType().name());
-            dbIssuedCertificate.setEmail(buyCertificateRequest.getEmail());
-            objectContext.commitChanges();
+                DbIssuedCertificate dbIssuedCertificate = objectContext.newObject(DbIssuedCertificate.class);
+                dbIssuedCertificate.setActive(true);
+                dbIssuedCertificate.setActiveDate(LocalDateTime.now().plusMonths(1L));
+                dbIssuedCertificate.setCreatedDate(LocalDateTime.now());
+                dbIssuedCertificate.setUuid(generatedString);
+                dbIssuedCertificate.setIssuedToCertificate(dbCertificate);
+                dbIssuedCertificate.setFio(buyCertificateRequest.getFio());
+                dbIssuedCertificate.setDescription(buyCertificateRequest.getDescription());
+                dbIssuedCertificate.setType(buyCertificateRequest.getType().name());
+                dbIssuedCertificate.setEmail(buyCertificateRequest.getEmail());
+                objectContext.commitChanges();
 
-            CryptogrammPayRequest cryptogrammPayRequest = CryptogrammPayRequest.builder()
-                    .AccountId(0L)
-                    .Amount(dbCertificate.getPrice())
-                    .CardCryptogramPacket(buyCertificateRequest.getCardCryptogramPacket())
-                    .Currency("RUB")
-                    .Description("Покупка сертификата Thelak на " + dbCertificate.getMonths() + " месяцев.")
-                    .Email(buyCertificateRequest.getEmail())
-                    .IpAddress(request.getRemoteAddr())
-                    .Name(buyCertificateRequest.getCardName())
-                    .build();
+                CryptogrammPayRequest cryptogrammPayRequest = CryptogrammPayRequest.builder()
+                        .AccountId(0L)
+                        .Amount(dbCertificate.getPrice())
+                        .CardCryptogramPacket(buyCertificateRequest.getCardCryptogramPacket())
+                        .Currency("RUB")
+                        .Description("Покупка сертификата Thelak на " + dbCertificate.getMonths() + " месяцев.")
+                        .Email(buyCertificateRequest.getEmail())
+                        .IpAddress(request.getRemoteAddr())
+                        .Name(buyCertificateRequest.getCardName())
+                        .build();
 
-            DbPaymentConfig dbPaymentConfig = ObjectSelect.query(DbPaymentConfig.class)
-                    .where(DbPaymentConfig.NAME.eq("CRYPTOGRAMM_CHARGE_URL")).selectFirst(objectContext);
+                DbPaymentConfig dbPaymentConfig = ObjectSelect.query(DbPaymentConfig.class)
+                        .where(DbPaymentConfig.NAME.eq("CRYPTOGRAMM_CHARGE_URL")).selectFirst(objectContext);
 
-            ResponseEntity<String> responseEntity = restTemplate.postForEntity(dbPaymentConfig.getValue(), cryptogrammPayRequest, String.class);
-            CryptogrammPayResponse result = gson.fromJson(responseEntity.getBody(), CryptogrammPayResponse.class);
-            DbPaymentsCryptogramm dbPaymentsCryptogramm = objectContext.newObject(DbPaymentsCryptogramm.class);
-            dbPaymentsCryptogramm.setAmount(cryptogrammPayRequest.getAmount());
-            dbPaymentsCryptogramm.setCardCryptogram(cryptogrammPayRequest.getCardCryptogramPacket());
-            dbPaymentsCryptogramm.setCreatedDate(LocalDateTime.now());
-            dbPaymentsCryptogramm.setCurrency(cryptogrammPayRequest.getCurrency());
-            dbPaymentsCryptogramm.setDescription(cryptogrammPayRequest.getDescription());
-            dbPaymentsCryptogramm.setIdUser(cryptogrammPayRequest.getAccountId());
-            dbPaymentsCryptogramm.setName(cryptogrammPayRequest.getName());
-            dbPaymentsCryptogramm.setStatus(false);
-            dbPaymentsCryptogramm.setCryptogrammToCertificate(dbIssuedCertificate);
-            dbPaymentsCryptogramm.setTransactionId(result.getModel().getTransactionId());
+                ResponseEntity<String> responseEntity = restTemplate.postForEntity(dbPaymentConfig.getValue(), cryptogrammPayRequest, String.class);
+                CryptogrammPayResponse result = gson.fromJson(responseEntity.getBody(), CryptogrammPayResponse.class);
+                DbPaymentsCryptogramm dbPaymentsCryptogramm = objectContext.newObject(DbPaymentsCryptogramm.class);
+                dbPaymentsCryptogramm.setAmount(cryptogrammPayRequest.getAmount());
+                dbPaymentsCryptogramm.setCardCryptogram(cryptogrammPayRequest.getCardCryptogramPacket());
+                dbPaymentsCryptogramm.setCreatedDate(LocalDateTime.now());
+                dbPaymentsCryptogramm.setCurrency(cryptogrammPayRequest.getCurrency());
+                dbPaymentsCryptogramm.setDescription(cryptogrammPayRequest.getDescription());
+                dbPaymentsCryptogramm.setIdUser(cryptogrammPayRequest.getAccountId());
+                dbPaymentsCryptogramm.setName(cryptogrammPayRequest.getName());
+                dbPaymentsCryptogramm.setStatus(false);
+                dbPaymentsCryptogramm.setCryptogrammToCertificate(dbIssuedCertificate);
+                dbPaymentsCryptogramm.setTransactionId(result.getModel().getTransactionId());
 
-            objectContext.commitChanges();
+                objectContext.commitChanges();
 
-            return result;
+                return result;
+            }
+            throw new MsBadRequestException("Please specify email address");
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
         }
@@ -172,6 +172,7 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
     @RequestMapping(value = PAYMENTS_CERT_CONFIRM, method = {RequestMethod.GET})
     public BuyCertificateResponse buyCertificateConfirm(@RequestParam String MD) throws MicroServiceException {
         try {
+
             ObjectContext objectContext = databaseService.getContext();
 
             DbPaymentsCryptogramm dbPaymentsCryptogramm = ObjectSelect.query(DbPaymentsCryptogramm.class)
@@ -473,103 +474,108 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
     @RequestMapping(value = PAYMENTS_CERT_APPLE, method = {RequestMethod.POST})
     public BuyCertificateResponse buyCertificateApplePay(@RequestBody ApplePayCertRequest request, HttpServletRequest httpRequest) throws MicroServiceException {
         try {
-            ObjectContext objectContext = databaseService.getContext();
+            if(request.getEmail()!=null && !request.getEmail().isEmpty()) {
+                ObjectContext objectContext = databaseService.getContext();
 
-            DbCertificate dbCertificate = SelectById.query(DbCertificate.class, request.getCertificateId())
-                    .selectFirst(objectContext);
+                DbCertificate dbCertificate = SelectById.query(DbCertificate.class, request.getCertificateId())
+                        .selectFirst(objectContext);
 
-            int leftLimit = 48; // numeral '0'
-            int rightLimit = 122; // letter 'z'
-            int targetStringLength = 10;
-            Random random = new Random();
+                int leftLimit = 48; // numeral '0'
+                int rightLimit = 122; // letter 'z'
+                int targetStringLength = 10;
+                Random random = new Random();
 
-            String generatedString = random.ints(leftLimit, rightLimit + 1)
-                    .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
-                    .limit(targetStringLength)
-                    .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                    .toString();
+                String generatedString = random.ints(leftLimit, rightLimit + 1)
+                        .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                        .limit(targetStringLength)
+                        .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                        .toString();
 
-            DbIssuedCertificate dbIssuedCertificate = objectContext.newObject(DbIssuedCertificate.class);
-            dbIssuedCertificate.setActive(true);
-            dbIssuedCertificate.setActiveDate(LocalDateTime.now().plusMonths(1L));
-            dbIssuedCertificate.setCreatedDate(LocalDateTime.now());
-            dbIssuedCertificate.setUuid(generatedString);
-            dbIssuedCertificate.setIssuedToCertificate(dbCertificate);
-            dbIssuedCertificate.setFio(request.getFio());
-            dbIssuedCertificate.setDescription(request.getDescription());
-            dbIssuedCertificate.setType(request.getType().name());
-            dbIssuedCertificate.setEmail(request.getEmail());
-            objectContext.commitChanges();
+                DbIssuedCertificate dbIssuedCertificate = objectContext.newObject(DbIssuedCertificate.class);
+                dbIssuedCertificate.setActive(true);
+                dbIssuedCertificate.setActiveDate(LocalDateTime.now().plusMonths(1L));
+                dbIssuedCertificate.setCreatedDate(LocalDateTime.now());
+                dbIssuedCertificate.setUuid(generatedString);
+                dbIssuedCertificate.setIssuedToCertificate(dbCertificate);
+                dbIssuedCertificate.setFio(request.getFio());
+                dbIssuedCertificate.setDescription(request.getDescription());
+                dbIssuedCertificate.setType(request.getType().name());
+                dbIssuedCertificate.setEmail(request.getEmail());
+                objectContext.commitChanges();
 
-            CryptogrammPayRequest cryptogrammPayRequest = CryptogrammPayRequest.builder()
-                    .AccountId(0L)
-                    .Amount(dbCertificate.getPrice())
-                    .CardCryptogramPacket(request.getCryptogram())
-                    .Currency("RUB")
-                    .Description("Покупка сертификата Thelak на " + dbCertificate.getMonths() + " месяцев.")
-                    .Email(request.getEmail())
-                    .IpAddress(httpRequest.getRemoteAddr())
-                    .build();
+                CryptogrammPayRequest cryptogrammPayRequest = CryptogrammPayRequest.builder()
+                        .AccountId(0L)
+                        .Amount(dbCertificate.getPrice())
+                        .CardCryptogramPacket(request.getCryptogram())
+                        .Currency("RUB")
+                        .Description("Покупка сертификата Thelak на " + dbCertificate.getMonths() + " месяцев.")
+                        .Email(request.getEmail())
+                        .IpAddress(httpRequest.getRemoteAddr())
+                        .build();
 
-            DbPaymentConfig dbPaymentConfig = ObjectSelect.query(DbPaymentConfig.class)
-                    .where(DbPaymentConfig.NAME.eq("CRYPTOGRAMM_CHARGE_URL")).selectFirst(objectContext);
+                DbPaymentConfig dbPaymentConfig = ObjectSelect.query(DbPaymentConfig.class)
+                        .where(DbPaymentConfig.NAME.eq("CRYPTOGRAMM_CHARGE_URL")).selectFirst(objectContext);
 
-            ResponseEntity<String> responseEntity = restTemplate.postForEntity(dbPaymentConfig.getValue(), cryptogrammPayRequest, String.class);
-            CryptogrammPayResponse result = gson.fromJson(responseEntity.getBody(), CryptogrammPayResponse.class);
-            DbPaymentsCryptogramm dbPaymentsCryptogramm = objectContext.newObject(DbPaymentsCryptogramm.class);
-            dbPaymentsCryptogramm.setAmount(cryptogrammPayRequest.getAmount());
-            dbPaymentsCryptogramm.setCardCryptogram(cryptogrammPayRequest.getCardCryptogramPacket());
-            dbPaymentsCryptogramm.setCreatedDate(LocalDateTime.now());
-            dbPaymentsCryptogramm.setCurrency(cryptogrammPayRequest.getCurrency());
-            dbPaymentsCryptogramm.setDescription(cryptogrammPayRequest.getDescription());
-            dbPaymentsCryptogramm.setIdUser(cryptogrammPayRequest.getAccountId());
-            dbPaymentsCryptogramm.setName(cryptogrammPayRequest.getName());
-            dbPaymentsCryptogramm.setStatus(false);
-            dbPaymentsCryptogramm.setCryptogrammToCertificate(dbIssuedCertificate);
-            dbPaymentsCryptogramm.setTransactionId(result.getModel().getTransactionId());
-
-            objectContext.commitChanges();
-
-            if (result.getSuccess()) {
-                dbPaymentsCryptogramm.setStatus(true);
-                dbPaymentsCryptogramm.setModifiedDate(LocalDateTime.now());
-
-                DbIssuedCertificate certificate = dbPaymentsCryptogramm.getCryptogrammToCertificate();
+                ResponseEntity<String> responseEntity = restTemplate.postForEntity(dbPaymentConfig.getValue(), cryptogrammPayRequest, String.class);
+                CryptogrammPayResponse result = gson.fromJson(responseEntity.getBody(), CryptogrammPayResponse.class);
+                DbPaymentsCryptogramm dbPaymentsCryptogramm = objectContext.newObject(DbPaymentsCryptogramm.class);
+                dbPaymentsCryptogramm.setAmount(cryptogrammPayRequest.getAmount());
+                dbPaymentsCryptogramm.setCardCryptogram(cryptogrammPayRequest.getCardCryptogramPacket());
+                dbPaymentsCryptogramm.setCreatedDate(LocalDateTime.now());
+                dbPaymentsCryptogramm.setCurrency(cryptogrammPayRequest.getCurrency());
+                dbPaymentsCryptogramm.setDescription(cryptogrammPayRequest.getDescription());
+                dbPaymentsCryptogramm.setIdUser(cryptogrammPayRequest.getAccountId());
+                dbPaymentsCryptogramm.setName(cryptogrammPayRequest.getName());
+                dbPaymentsCryptogramm.setStatus(false);
+                dbPaymentsCryptogramm.setCryptogrammToCertificate(dbIssuedCertificate);
+                dbPaymentsCryptogramm.setTransactionId(result.getModel().getTransactionId());
 
                 objectContext.commitChanges();
 
-                IssuedCertificateModel issuedCertificateModel = IssuedCertificateModel.builder()
-                        .id((Long) certificate.getObjectId().getIdSnapshot().get("id"))
-                        .buyerEmail(dbIssuedCertificate.getEmail())
-                        .uuid(certificate.getUuid())
-                        .fio(certificate.getFio())
-                        .description(certificate.getDescription())
-                        .active(certificate.isActive())
-                        .activeDate(certificate.getActiveDate())
-                        .type(CertificateViewType.valueOf(certificate.getType()))
-                        .certificateModel(buildCertificateModel(certificate.getIssuedToCertificate()))
-                        .build();
+                if (result.getSuccess()) {
+                    dbPaymentsCryptogramm.setStatus(true);
+                    dbPaymentsCryptogramm.setModifiedDate(LocalDateTime.now());
 
-                messageService.publish(userCertificateQueue, issuedCertificateModel);
+                    DbIssuedCertificate certificate = dbPaymentsCryptogramm.getCryptogrammToCertificate();
+
+                    objectContext.commitChanges();
+
+                    IssuedCertificateModel issuedCertificateModel = IssuedCertificateModel.builder()
+                            .id((Long) certificate.getObjectId().getIdSnapshot().get("id"))
+                            .buyerEmail(dbIssuedCertificate.getEmail())
+                            .uuid(certificate.getUuid())
+                            .fio(certificate.getFio())
+                            .description(certificate.getDescription())
+                            .active(certificate.isActive())
+                            .activeDate(certificate.getActiveDate())
+                            .type(CertificateViewType.valueOf(certificate.getType()))
+                            .certificateModel(buildCertificateModel(certificate.getIssuedToCertificate()))
+                            .build();
+
+                    messageService.publish(userCertificateQueue, issuedCertificateModel);
+
+                    return BuyCertificateResponse.builder()
+                            .success(result.getSuccess())
+                            .certificate(IssuedCertificateModel.builder()
+                                    .id((Long) certificate.getObjectId().getIdSnapshot().get("id"))
+                                    .uuid(certificate.getUuid())
+                                    .fio(certificate.getFio())
+                                    .description(certificate.getDescription())
+                                    .active(certificate.isActive())
+                                    .activeDate(certificate.getActiveDate())
+                                    .type(CertificateViewType.valueOf(certificate.getType()))
+                                    .certificateModel(buildCertificateModel(certificate.getIssuedToCertificate()))
+                                    .build())
+                            .build();
+
+                }
 
                 return BuyCertificateResponse.builder()
                         .success(result.getSuccess())
-                        .certificate(IssuedCertificateModel.builder()
-                                .id((Long) certificate.getObjectId().getIdSnapshot().get("id"))
-                                .uuid(certificate.getUuid())
-                                .fio(certificate.getFio())
-                                .description(certificate.getDescription())
-                                .active(certificate.isActive())
-                                .activeDate(certificate.getActiveDate())
-                                .type(CertificateViewType.valueOf(certificate.getType()))
-                                .certificateModel(buildCertificateModel(certificate.getIssuedToCertificate()))
-                                .build())
                         .build();
-
             }
-
             return BuyCertificateResponse.builder()
-                    .success(result.getSuccess())
+                    .success(false)
                     .build();
 
         } catch (Exception e) {
