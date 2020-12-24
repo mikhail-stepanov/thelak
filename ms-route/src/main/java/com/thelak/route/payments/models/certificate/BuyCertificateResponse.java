@@ -16,5 +16,7 @@ public class BuyCertificateResponse {
 
     IssuedCertificateModel certificate;
 
+    String MD;
+
     Boolean success;
 }

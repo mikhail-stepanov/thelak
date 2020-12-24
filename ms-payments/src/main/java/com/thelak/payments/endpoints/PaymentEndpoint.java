@@ -100,7 +100,7 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
     @RequestMapping(value = PAYMENTS_CERT_REQ, method = {RequestMethod.POST})
     public CryptogrammPayResponse buyCertificateRequest(BuyCertificateRequest buyCertificateRequest, HttpServletRequest request) throws MicroServiceException {
         try {
-            if(buyCertificateRequest.getEmail()!=null && !buyCertificateRequest.getEmail().isEmpty()) {
+            if (buyCertificateRequest.getEmail() != null && !buyCertificateRequest.getEmail().isEmpty()) {
                 ObjectContext objectContext = databaseService.getContext();
 
                 DbCertificate dbCertificate = SelectById.query(DbCertificate.class, buyCertificateRequest.getCertificateId())
@@ -474,7 +474,7 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
     @RequestMapping(value = PAYMENTS_CERT_APPLE, method = {RequestMethod.POST})
     public BuyCertificateResponse buyCertificateApplePay(@RequestBody ApplePayCertRequest request, HttpServletRequest httpRequest) throws MicroServiceException {
         try {
-            if(request.getEmail()!=null && !request.getEmail().isEmpty()) {
+            if (request.getEmail() != null && !request.getEmail().isEmpty()) {
                 ObjectContext objectContext = databaseService.getContext();
 
                 DbCertificate dbCertificate = SelectById.query(DbCertificate.class, request.getCertificateId())
@@ -556,6 +556,7 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
 
                     return BuyCertificateResponse.builder()
                             .success(result.getSuccess())
+                            .MD(String.valueOf(result.getModel().getTransactionId()))
                             .certificate(IssuedCertificateModel.builder()
                                     .id((Long) certificate.getObjectId().getIdSnapshot().get("id"))
                                     .uuid(certificate.getUuid())
@@ -586,12 +587,13 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
     @Override
     @ApiOperation(value = "Redirect before confirm")
     @RequestMapping(value = PAYMENTS_REDIRECT, method = {RequestMethod.POST})
-    public ModelAndView redirectBeforeConfirm(@RequestParam String MD, @RequestParam String PaRes, HttpServletRequest request) throws MicroServiceException {
+    public ModelAndView redirectBeforeConfirm(@RequestParam String MD, @RequestParam(required = false) String PaRes, HttpServletRequest request) throws MicroServiceException {
         ObjectContext objectContext = databaseService.getContext();
         DbPaymentsCryptogramm dbPaymentsCryptogramm = ObjectSelect.query(DbPaymentsCryptogramm.class)
                 .where(DbPaymentsCryptogramm.TRANSACTION_ID.eq(Long.valueOf(MD)))
                 .selectFirst(objectContext);
-        dbPaymentsCryptogramm.setPares(PaRes);
+        if (PaRes != null)
+            dbPaymentsCryptogramm.setPares(PaRes);
         objectContext.commitChanges();
         if (dbPaymentsCryptogramm.getCryptogrammToCertificate() != null) {
             RedirectView rv = new RedirectView();
@@ -759,7 +761,7 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
             try {
                 dbPromo = ObjectSelect.query(DbPromo.class)
                         .where(DbPromo.CODE.lower().eq(code.toLowerCase())).selectFirst(objectContext);
-            } catch (Exception e){
+            } catch (Exception e) {
                 throw new MsObjectNotFoundException("Can't find certificate or promo: ", code);
             }
             try {
