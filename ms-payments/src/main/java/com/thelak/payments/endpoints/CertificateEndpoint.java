@@ -11,6 +11,7 @@ import com.thelak.route.exceptions.MsBadRequestException;
 import com.thelak.route.exceptions.MsInternalErrorException;
 import com.thelak.route.payments.interfaces.ICertificateService;
 import com.thelak.route.payments.models.certificate.CertificateModel;
+import com.thelak.route.payments.models.certificate.CertificateViewType;
 import com.thelak.route.payments.models.certificate.CreateCertificateRequest;
 import com.thelak.route.payments.models.certificate.IssuedCertificateModel;
 import com.thelak.route.payments.models.subscription.SetSubscriptionModel;
@@ -205,6 +206,7 @@ public class CertificateEndpoint extends MicroserviceAdvice implements ICertific
                     .uuid(dbIssuedCertificate.getUuid())
                     .fio(dbIssuedCertificate.getFio())
                     .description(dbIssuedCertificate.getDescription())
+                    .type(CertificateViewType.valueOf(dbIssuedCertificate.getType()))
                     .certificateModel(buildCertificateModel(dbIssuedCertificate.getIssuedToCertificate()))
                     .build();
 
