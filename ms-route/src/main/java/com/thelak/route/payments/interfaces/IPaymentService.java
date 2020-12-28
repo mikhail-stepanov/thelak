@@ -30,7 +30,6 @@ public interface IPaymentService {
     String PAYMENTS_REDIRECT = "/v1/payments/redir";
     String PAYMENTS_UPDATE_CARD = "/v1/payments/card/update";
     String PAYMENTS_CONFIG = "/v1/payments/config";
-
     String PAYMENTS_PROMO_ENTER = "/v1/payments/promo/enter";
 
     CryptogrammPayResponse buyCertificateRequest(BuyCertificateRequest buyCertificateRequest, HttpServletRequest request) throws MicroServiceException;

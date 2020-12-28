@@ -11,7 +11,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PaymentsConfigModel {
 
-    String name;
+    String publicId;
 
-    String value;
+    String merchantId;
+
+    String googleId;
 }

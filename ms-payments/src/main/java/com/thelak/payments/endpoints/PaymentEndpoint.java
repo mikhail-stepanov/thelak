@@ -725,12 +725,17 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
     @RequestMapping(value = PAYMENTS_CONFIG, method = {RequestMethod.GET})
     public PaymentsConfigModel getConfig() throws MicroServiceException {
         ObjectContext objectContext = databaseService.getContext();
-        DbPaymentConfig dbPaymentConfig = ObjectSelect.query(DbPaymentConfig.class)
+        DbPaymentConfig publicId = ObjectSelect.query(DbPaymentConfig.class)
                 .where(DbPaymentConfig.NAME.eq("PUBLIC_ID")).selectFirst(objectContext);
+        DbPaymentConfig merchantId = ObjectSelect.query(DbPaymentConfig.class)
+                .where(DbPaymentConfig.NAME.eq("MERCHANT_ID")).selectFirst(objectContext);
+        DbPaymentConfig googleId = ObjectSelect.query(DbPaymentConfig.class)
+                .where(DbPaymentConfig.NAME.eq("GOOGLE_ID")).selectFirst(objectContext);
 
         return PaymentsConfigModel.builder()
-                .name(dbPaymentConfig.getName())
-                .value(dbPaymentConfig.getValue())
+                .publicId(publicId.getValue())
+                .merchantId(merchantId.getValue())
+                .googleId(googleId.getValue())
                 .build();
     }
 
