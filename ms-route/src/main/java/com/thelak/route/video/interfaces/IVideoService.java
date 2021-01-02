@@ -14,6 +14,7 @@ public interface IVideoService {
     String VIDEO_GET = "/v1/video/get";
     String VIDEO_GET_IDS = "/v1/video/get/ids";
     String VIDEO_LIST = "/v1/video/list";
+    String VIDEO_SLIDER = "/v1/video/slider";
     String VIDEO_CREATE = "/v1/video/create";
     String VIDEO_UPDATE = "/v1/video/update";
     String VIDEO_DELETE = "/v1/video/delete";
@@ -24,6 +25,8 @@ public interface IVideoService {
     VideoModel get(Long id) throws MicroServiceException;
 
     List<VideoModel> getByIds(List<Long> ids) throws MicroServiceException;
+
+    List<VideoModel> getSliderVideos() throws MicroServiceException;
 
     List<VideoModel> list(Integer page, Integer size, VideoSortEnum sort, VideoSortTypeEnum sortType,
                           List<String> countryFilter, List<Integer> yearFilter,

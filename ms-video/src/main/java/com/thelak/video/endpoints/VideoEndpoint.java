@@ -153,6 +153,53 @@ public class VideoEndpoint extends MicroserviceAdvice implements IVideoService {
     }
 
     @Override
+    @ApiOperation(value = "Get list of video by ids")
+    @RequestMapping(value = VIDEO_SLIDER, method = {RequestMethod.GET})
+    public List<VideoModel> getSliderVideos() throws MicroServiceException {
+        try {
+            ObjectContext objectContext = databaseService.getContext();
+
+            UserInfo userInfo = null;
+            try {
+                userInfo = (UserInfo) SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getPrincipal();
+            } catch (Exception ignored) {
+            }
+
+            List<DbVideo> dbVideos;
+            dbVideos = ObjectSelect.query(DbVideo.class).
+                    where(DbVideo.POSTER_URL.isNotNull())
+                    .and(DbVideo.DELETED_DATE.isNull())
+                    .select(objectContext);
+
+            List<VideoModel> videos = new ArrayList<>();
+
+            UserInfo finalUserInfo = userInfo;
+            dbVideos.forEach(dbVideo -> {
+                List<CategoryModel> categoryModel = null;
+                try {
+                    categoryModel = categoryService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
+                } catch (MicroServiceException e) {
+                    log.error(e.staticMessage());
+                }
+                List<SpeakerModel> speakerModel = null;
+                try {
+                    speakerModel = speakerService.getByVideo((Long) dbVideo.getObjectId().getIdSnapshot().get("id"));
+                } catch (MicroServiceException e) {
+                    log.error(e.staticMessage());
+                }
+                videos.add(buildVideoModel(dbVideo, categoryModel, speakerModel, finalUserInfo, false));
+            });
+
+            return videos;
+        } catch (Exception e) {
+            throw new MsInternalErrorException(e.getMessage());
+        }
+    }
+
+    @Override
     @ApiOperation(value = "Get list of videos")
     @ApiImplicitParams({
             @ApiImplicitParam(
