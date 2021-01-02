@@ -96,14 +96,35 @@ public class EmailEndpoint extends MicroserviceAdvice implements IEmailService {
     @ApiOperation(value = "Send partnership request by email")
     @RequestMapping(value = EMAIL_PARTNER_REQUEST, method = {RequestMethod.POST})
     public Boolean sendPartnerRequest(PartnerRequest request) throws MicroServiceException {
-        return true;
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo("ineed@thelak.com");
+            message.setSubject("Thelak. Партнерская заявка.");
+            message.setText("Получен запрос на сотрудничество от - " + request.getEmail() + "(" + request.getFio() + ")" + "\n\nС текстом:\n" + request.getText() + "\n\n\nС уважением,\nКоманда Thelak");
+            emailSender.send(message);
+
+            return true;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return false;
+        }
     }
 
     @Override
     @ApiOperation(value = "Send question request by email")
     @RequestMapping(value = EMAIL_QUESTION, method = {RequestMethod.POST})
     public Boolean sendQuestion(QuestionRequest request) throws MicroServiceException {
-        return true;
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo("ineed@thelak.com");
+            message.setSubject("Thelak. Вопрос от пользователя.");
+            message.setText("Получен вопрос от пользователя - " + request.getEmail() + "(" + request.getFio() + ")" + "\n\nТекст вопроса:\n" + request.getQuestion() + "\n\n\nС уважением,\nКоманда Thelak");
+            emailSender.send(message);
+            return true;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return false;
+        }
     }
 
     @Override
