@@ -95,7 +95,7 @@ public class EmailEndpoint extends MicroserviceAdvice implements IEmailService {
     @Override
     @ApiOperation(value = "Send partnership request by email")
     @RequestMapping(value = EMAIL_PARTNER_REQUEST, method = {RequestMethod.POST})
-    public Boolean sendPartnerRequest(PartnerRequest request) throws MicroServiceException {
+    public Boolean sendPartnerRequest(@RequestBody PartnerRequest request) throws MicroServiceException {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo("ineed@thelak.com");
@@ -113,7 +113,7 @@ public class EmailEndpoint extends MicroserviceAdvice implements IEmailService {
     @Override
     @ApiOperation(value = "Send question request by email")
     @RequestMapping(value = EMAIL_QUESTION, method = {RequestMethod.POST})
-    public Boolean sendQuestion(QuestionRequest request) throws MicroServiceException {
+    public Boolean sendQuestion(@RequestBody QuestionRequest request) throws MicroServiceException {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo("ineed@thelak.com");
