@@ -495,6 +495,10 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
                         .renew(dbUser.isRenew())
                         .createdDate(dbUser.getCreatedDate())
                         .modifiedDate(dbUser.getModifiedDate())
+                        .lastArticleView(LocalDateTime.now())
+                        .lastVideoView(LocalDateTime.now())
+                        .articleViewCount(1)
+                        .videoViewCount(1)
                         .lastLoginDate(dbUser.getUserToSession().size() > 0 ? dbUser.getUserToSession().get(dbUser.getUserToSession().size() - 1).getCreatedDate() : null)
                         .build());
             });

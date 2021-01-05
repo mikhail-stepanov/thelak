@@ -34,7 +34,15 @@ public class UserInfoModel {
 
     Boolean renew;
 
+    Integer videoViewCount;
+
+    Integer articleViewCount;
+
     LocalDateTime lastLoginDate;
+
+    LocalDateTime lastVideoView;
+
+    LocalDateTime lastArticleView;
 
     LocalDateTime subscriptionDate;
 

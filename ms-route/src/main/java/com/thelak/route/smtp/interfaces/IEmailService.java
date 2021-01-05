@@ -15,6 +15,8 @@ public interface IEmailService {
     String EMAIL_PARTNER_REQUEST = "/v1/email/partner";
     String EMAIL_QUESTION = "/v1/email/question";
 
+    String EMAIL_ALL = "/v1/email/all";
+
     Boolean sendMessage(SendEmailRequest request) throws MicroServiceException;
 
     Boolean sendHtmlMessage(String to, String subject, String link, Long templateId) throws MicroServiceException;
@@ -24,5 +26,7 @@ public interface IEmailService {
     Boolean sendQuestion(QuestionRequest request) throws MicroServiceException;
 
     Boolean sendRestorePassword(String to, String link) throws MicroServiceException;
+
+    Boolean sendEmailForAll(EmailAllRequest request) throws MicroServiceException;
 
 }

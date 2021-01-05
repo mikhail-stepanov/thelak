@@ -8,6 +8,7 @@ import com.thelak.database.entity.DbPaymentConfig;
 import com.thelak.database.entity.DbSmtpTemplate;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.smtp.interfaces.IEmailService;
+import com.thelak.route.smtp.models.EmailAllRequest;
 import com.thelak.route.smtp.models.PartnerRequest;
 import com.thelak.route.smtp.models.QuestionRequest;
 import com.thelak.route.smtp.models.SendEmailRequest;
@@ -143,5 +144,12 @@ public class EmailEndpoint extends MicroserviceAdvice implements IEmailService {
             log.error(e.getMessage());
             return false;
         }
+    }
+
+
+    @Override
+    @ApiOperation(value = "Send email for group of users")
+    @RequestMapping(value = EMAIL_ALL, method = {RequestMethod.POST})    public Boolean sendEmailForAll(EmailAllRequest request) throws MicroServiceException {
+        return true;
     }
 }

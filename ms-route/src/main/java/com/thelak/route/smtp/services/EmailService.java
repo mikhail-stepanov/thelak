@@ -3,6 +3,7 @@ package com.thelak.route.smtp.services;
 import com.thelak.route.common.services.BaseMicroservice;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.smtp.interfaces.IEmailService;
+import com.thelak.route.smtp.models.EmailAllRequest;
 import com.thelak.route.smtp.models.PartnerRequest;
 import com.thelak.route.smtp.models.QuestionRequest;
 import com.thelak.route.smtp.models.SendEmailRequest;
@@ -42,6 +43,11 @@ public class EmailService extends BaseMicroservice implements IEmailService {
                 .queryParam("to", to)
                 .queryParam("link", link);
         return retry(() -> restTemplate.getForEntity(builder.toUriString(), Boolean.class, to, link).getBody());
+    }
+
+    @Override
+    public Boolean sendEmailForAll(EmailAllRequest request) throws MicroServiceException {
+        return null;
     }
 
 }
