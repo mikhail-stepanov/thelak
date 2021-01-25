@@ -166,11 +166,14 @@ public class ArticleFunctionsEndpoint extends MicroserviceAdvice implements IArt
 
             HashMap<Long, LocalDateTime> result = new HashMap<>();
             ids.forEach(id -> {
-                DbArticleView dbArticleView = ObjectSelect.query(DbArticleView.class)
-                        .where(DbArticleView.ID_USER.eq(id))
-                        .orderBy(DbArticleView.CREATED_DATE.desc())
-                        .selectFirst(objectContext);
-                result.put(id, dbArticleView.getCreatedDate());
+                DbArticleView dbArticleView = null;
+                try {
+                    dbArticleView = ObjectSelect.query(DbArticleView.class)
+                            .where(DbArticleView.ID_USER.eq(id))
+                            .orderBy(DbArticleView.CREATED_DATE.desc())
+                            .selectFirst(objectContext);
+                }catch (Exception ingored){}
+                result.put(id, dbArticleView != null ? dbArticleView.getCreatedDate() : null);
             });
             return result;
         } catch (Exception e) {

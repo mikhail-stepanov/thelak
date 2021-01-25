@@ -696,11 +696,14 @@ public class VideoEndpoint extends MicroserviceAdvice implements IVideoService {
 
             HashMap<Long, LocalDateTime> result = new HashMap<>();
             ids.forEach(id -> {
-                DbVideoViews dbVideoViews = ObjectSelect.query(DbVideoViews.class)
-                        .where(DbVideoViews.ID_USER.eq(id))
-                        .orderBy(DbVideoViews.CREATED_DATE.desc())
-                        .selectFirst(objectContext);
-                result.put(id, dbVideoViews.getCreatedDate());
+                DbVideoViews dbVideoViews = null;
+                try {
+                    dbVideoViews = ObjectSelect.query(DbVideoViews.class)
+                            .where(DbVideoViews.ID_USER.eq(id))
+                            .orderBy(DbVideoViews.CREATED_DATE.desc())
+                            .selectFirst(objectContext);
+                }catch (Exception ingored){}
+                result.put(id, dbVideoViews != null ? dbVideoViews.getCreatedDate() : null);
             });
             return result;
         } catch (Exception e) {
