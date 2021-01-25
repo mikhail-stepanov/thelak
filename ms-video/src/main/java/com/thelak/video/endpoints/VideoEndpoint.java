@@ -669,45 +669,43 @@ public class VideoEndpoint extends MicroserviceAdvice implements IVideoService {
     }
 
     @ApiOperation(value = "Get videos view count by userId")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(required = true,
-                    defaultValue = "Bearer ",
-                    name = "Authorization",
-                    paramType = "header")}
-    )
     @RequestMapping(value = VIDEO_STAT_VIEWS, method = {RequestMethod.GET})
     public HashMap<Long, Integer> getViewCount(@RequestParam List<Long> ids) throws MicroServiceException {
-        ObjectContext objectContext = databaseService.getContext();
+        try {
+            ObjectContext objectContext = databaseService.getContext();
 
-        HashMap<Long, Integer> result = new HashMap<>();
-        ids.forEach(id -> {
-            List<DbVideoViews> dbVideoViews = ObjectSelect.query(DbVideoViews.class)
-                    .where(DbVideoViews.ID_USER.eq(id))
-                    .select(objectContext);
-            result.put(id, dbVideoViews.size());
-        });
-        return result;
+            HashMap<Long, Integer> result = new HashMap<>();
+            ids.forEach(id -> {
+                List<DbVideoViews> dbVideoViews = ObjectSelect.query(DbVideoViews.class)
+                        .where(DbVideoViews.ID_USER.eq(id))
+                        .select(objectContext);
+                result.put(id, dbVideoViews.size());
+            });
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MsInternalErrorException(e.getMessage());
+        }
     }
 
     @ApiOperation(value = "Get videos last view by userId")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(required = true,
-                    defaultValue = "Bearer ",
-                    name = "Authorization",
-                    paramType = "header")}
-    )
     @RequestMapping(value = VIDEO_STAT_LAST, method = {RequestMethod.GET})
     public HashMap<Long, LocalDateTime> getLastView(@RequestParam List<Long> ids) throws MicroServiceException {
-        ObjectContext objectContext = databaseService.getContext();
+        try {
+            ObjectContext objectContext = databaseService.getContext();
 
-        HashMap<Long, LocalDateTime> result = new HashMap<>();
-        ids.forEach(id -> {
-            DbVideoViews dbVideoViews = ObjectSelect.query(DbVideoViews.class)
-                    .where(DbVideoViews.ID_USER.eq(id))
-                    .orderBy(DbVideoViews.CREATED_DATE.desc())
-                    .selectFirst(objectContext);
-            result.put(id, dbVideoViews.getCreatedDate());
-        });
-        return result;
+            HashMap<Long, LocalDateTime> result = new HashMap<>();
+            ids.forEach(id -> {
+                DbVideoViews dbVideoViews = ObjectSelect.query(DbVideoViews.class)
+                        .where(DbVideoViews.ID_USER.eq(id))
+                        .orderBy(DbVideoViews.CREATED_DATE.desc())
+                        .selectFirst(objectContext);
+                result.put(id, dbVideoViews.getCreatedDate());
+            });
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MsInternalErrorException(e.getMessage());
+        }
     }
 }

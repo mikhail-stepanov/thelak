@@ -10,6 +10,7 @@ import com.thelak.database.entity.DbVideo;
 import com.thelak.route.article.interfaces.IArticleFunctionsService;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.exceptions.MsBadRequestException;
+import com.thelak.route.exceptions.MsInternalErrorException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -136,46 +137,46 @@ public class ArticleFunctionsEndpoint extends MicroserviceAdvice implements IArt
     }
 
     @ApiOperation(value = "Get Articles view count by userId")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(required = true,
-                    defaultValue = "Bearer ",
-                    name = "Authorization",
-                    paramType = "header")}
-    )
+
     @RequestMapping(value = ARTICLE_STAT_VIEWS, method = {RequestMethod.GET})
     public HashMap<Long, Integer> getViewCount(@RequestParam List<Long> ids) throws MicroServiceException {
-        ObjectContext objectContext = databaseService.getContext();
+        try {
+            ObjectContext objectContext = databaseService.getContext();
 
-        HashMap<Long, Integer> result = new HashMap<>();
-        ids.forEach(id -> {
-            List<DbArticleView> dbArticleViews = ObjectSelect.query(DbArticleView.class)
-                    .where(DbArticleView.ID_USER.eq(id))
-                    .select(objectContext);
-            result.put(id, dbArticleViews.size());
-        });
-        return result;
+            HashMap<Long, Integer> result = new HashMap<>();
+            ids.forEach(id -> {
+                List<DbArticleView> dbArticleViews = ObjectSelect.query(DbArticleView.class)
+                        .where(DbArticleView.ID_USER.eq(id))
+                        .select(objectContext);
+                result.put(id, dbArticleViews.size());
+            });
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MsInternalErrorException(e.getMessage());
+        }
     }
 
     @ApiOperation(value = "Get Articles last view by userId")
-    @ApiImplicitParams(
-            {@ApiImplicitParam(required = true,
-                    defaultValue = "Bearer ",
-                    name = "Authorization",
-                    paramType = "header")}
-    )
     @RequestMapping(value = ARTICLE_STAT_LAST, method = {RequestMethod.GET})
     public HashMap<Long, LocalDateTime> getLastView(@RequestParam List<Long> ids) throws MicroServiceException {
-        ObjectContext objectContext = databaseService.getContext();
 
-        HashMap<Long, LocalDateTime> result = new HashMap<>();
-        ids.forEach(id -> {
-            DbArticleView dbArticleView = ObjectSelect.query(DbArticleView.class)
-                    .where(DbArticleView.ID_USER.eq(id))
-                    .orderBy(DbArticleView.CREATED_DATE.desc())
-                    .selectFirst(objectContext);
-            result.put(id, dbArticleView.getCreatedDate());
-        });
-        return result;
+        try {
+            ObjectContext objectContext = databaseService.getContext();
+
+            HashMap<Long, LocalDateTime> result = new HashMap<>();
+            ids.forEach(id -> {
+                DbArticleView dbArticleView = ObjectSelect.query(DbArticleView.class)
+                        .where(DbArticleView.ID_USER.eq(id))
+                        .orderBy(DbArticleView.CREATED_DATE.desc())
+                        .selectFirst(objectContext);
+                result.put(id, dbArticleView.getCreatedDate());
+            });
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MsInternalErrorException(e.getMessage());
+        }
     }
 
 
