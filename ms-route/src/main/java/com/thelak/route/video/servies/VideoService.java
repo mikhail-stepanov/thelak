@@ -9,6 +9,7 @@ import com.thelak.route.video.models.VideoCreateRequest;
 import com.thelak.route.video.models.VideoFilterModel;
 import com.thelak.route.video.models.VideoModel;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -71,11 +72,14 @@ public class VideoService extends BaseMicroservice implements IVideoService {
 
     @Override
     public HashMap<Long, Integer> getViewCount(List<Long> ids) throws MicroServiceException {
-        return retry(() -> restTemplate.getForEntity(buildUrl(VIDEO_STAT_VIEWS), HashMap.class, ids).getBody());
-    }
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(buildUrl(VIDEO_STAT_VIEWS))
+                .queryParam("ids", ids);
+        return retry(() -> restTemplate.getForEntity(builder.toUriString(), HashMap.class, ids).getBody());    }
 
     @Override
     public HashMap<Long, LocalDateTime> getLastView(List<Long> ids) throws MicroServiceException {
-        return retry(() -> restTemplate.getForEntity(buildUrl(VIDEO_STAT_LAST), HashMap.class, ids).getBody());
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(buildUrl(VIDEO_STAT_LAST))
+                .queryParam("ids", ids);
+        return retry(() -> restTemplate.getForEntity(builder.toUriString(), HashMap.class, ids).getBody());
     }
 }
