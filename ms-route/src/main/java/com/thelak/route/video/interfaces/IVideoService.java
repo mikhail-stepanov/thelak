@@ -7,6 +7,8 @@ import com.thelak.route.video.models.VideoCreateRequest;
 import com.thelak.route.video.models.VideoFilterModel;
 import com.thelak.route.video.models.VideoModel;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 
 public interface IVideoService {
@@ -21,6 +23,8 @@ public interface IVideoService {
     String VIDEO_SEARCH = "/v1/video/search";
     String VIDEO_FILTER_GET = "/v1/video/filter";
 
+    String VIDEO_STAT_VIEWS = "/v1/video/stat/views";
+    String VIDEO_STAT_LAST = "/v1/video/stat/last";
 
     VideoModel get(Long id) throws MicroServiceException;
 
@@ -42,4 +46,8 @@ public interface IVideoService {
     Boolean delete(Long id) throws MicroServiceException;
 
     VideoFilterModel getFilters() throws MicroServiceException;
+
+    HashMap<Long, Integer> getViewCount(List<Long> ids) throws MicroServiceException;
+
+    HashMap<Long, LocalDateTime> getLastView(List<Long> ids) throws MicroServiceException;
 }

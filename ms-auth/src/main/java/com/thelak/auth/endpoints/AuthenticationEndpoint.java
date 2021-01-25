@@ -9,11 +9,13 @@ import com.thelak.database.entity.DbNotification;
 import com.thelak.database.entity.DbPasswordRestore;
 import com.thelak.database.entity.DbUser;
 import com.thelak.database.entity.DbUserSession;
+import com.thelak.route.article.interfaces.IArticleFunctionsService;
 import com.thelak.route.auth.interfaces.IAuthenticationService;
 import com.thelak.route.auth.models.*;
 import com.thelak.route.exceptions.*;
 import com.thelak.route.payments.models.subscription.SetSubscriptionModel;
 import com.thelak.route.smtp.interfaces.IEmailService;
+import com.thelak.route.video.interfaces.IVideoService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -33,6 +35,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -49,6 +52,12 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
 
     @Autowired
     private IEmailService emailService;
+
+    @Autowired
+    private IArticleFunctionsService articleFunctionsService;
+
+    @Autowired
+    private IVideoService videoService;
 
     @Override
     @ApiOperation(value = "Get user info by token")
@@ -94,7 +103,7 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
     @Override
     @ApiOperation(value = "Sign up")
     @RequestMapping(value = AUTH_SIGN_UP, method = {RequestMethod.POST})
-    public VueHelpModel signUp(@RequestBody AuthSignupRequest request) throws MicroServiceException, ParseException {
+    public VueHelpModel signUp(@RequestBody AuthSignupRequest request) throws MicroServiceException {
         ObjectContext objectContext = databaseService.getContext();
         if (!checkEmailExists(request.getEmail()) && request.getPassword() != null) {
 
@@ -136,7 +145,7 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
                     .status("success").build();
 
         } else
-            throw new MsBadRequestException(request.getEmail());
+            throw new MsAlreadyExistsException();
     }
 
     @Override
@@ -478,6 +487,15 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
                         dbUsers = dbUsers.subList(page * size - size, dbUsers.size() - 1);
                 }
             }
+            List<Long> ids = new ArrayList<>();
+            dbUsers.forEach(dbUser -> {
+                ids.add((Long) dbUser.getObjectId().getIdSnapshot().get("id"));
+            });
+            HashMap<Long, LocalDateTime> articleLast = articleFunctionsService.getLastView(ids);
+            HashMap<Long, Integer> articleCount = articleFunctionsService.getViewCount(ids);
+            HashMap<Long, LocalDateTime> videoLast = videoService.getLastView(ids);
+            HashMap<Long, Integer> videoCount = videoService.getViewCount(ids);
+
 
             List<UserInfoModel> users = new ArrayList<>();
             dbUsers.forEach(dbUser -> {
@@ -495,10 +513,10 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
                         .renew(dbUser.isRenew())
                         .createdDate(dbUser.getCreatedDate())
                         .modifiedDate(dbUser.getModifiedDate())
-                        .lastArticleView(LocalDateTime.now())
-                        .lastVideoView(LocalDateTime.now())
-                        .articleViewCount(1)
-                        .videoViewCount(1)
+                        .lastArticleView(articleLast.get((Long) dbUser.getObjectId().getIdSnapshot().get("id")))
+                        .lastVideoView(videoLast.get((Long) dbUser.getObjectId().getIdSnapshot().get("id")))
+                        .articleViewCount(articleCount.get((Long) dbUser.getObjectId().getIdSnapshot().get("id")))
+                        .videoViewCount(videoCount.get((Long) dbUser.getObjectId().getIdSnapshot().get("id")))
                         .lastLoginDate(dbUser.getUserToSession().size() > 0 ? dbUser.getUserToSession().get(dbUser.getUserToSession().size() - 1).getCreatedDate() : null)
                         .build());
             });

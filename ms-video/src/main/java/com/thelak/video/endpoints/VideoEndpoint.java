@@ -3,6 +3,7 @@ package com.thelak.video.endpoints;
 import com.thelak.core.endpoints.MicroserviceAdvice;
 import com.thelak.core.models.UserInfo;
 import com.thelak.database.DatabaseService;
+import com.thelak.database.entity.DbArticleView;
 import com.thelak.database.entity.DbVideo;
 import com.thelak.database.entity.DbVideoViews;
 import com.thelak.route.category.interfaces.ICategoryContentService;
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -373,7 +375,7 @@ public class VideoEndpoint extends MicroserviceAdvice implements IVideoService {
                             .and(yearFilterExpression)
                             .and(playgroundFilterExpression)
                             .and(languageFilterExpression)
-                            .orderBy(DbVideo.RATING.asc())
+                            .orderBy(DbVideo.RATING.desc())
                             .select(objectContext);
             } else
                 dbVideos = ObjectSelect.query(DbVideo.class)
@@ -664,5 +666,48 @@ public class VideoEndpoint extends MicroserviceAdvice implements IVideoService {
                 .languages(languages)
                 .years(years)
                 .build();
+    }
+
+    @ApiOperation(value = "Get videos view count by userId")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(required = true,
+                    defaultValue = "Bearer ",
+                    name = "Authorization",
+                    paramType = "header")}
+    )
+    @RequestMapping(value = VIDEO_STAT_VIEWS, method = {RequestMethod.GET})
+    public HashMap<Long, Integer> getViewCount(@RequestParam List<Long> ids) throws MicroServiceException {
+        ObjectContext objectContext = databaseService.getContext();
+
+        HashMap<Long, Integer> result = new HashMap<>();
+        ids.forEach(id -> {
+            List<DbVideoViews> dbVideoViews = ObjectSelect.query(DbVideoViews.class)
+                    .where(DbVideoViews.ID_USER.eq(id))
+                    .select(objectContext);
+            result.put(id, dbVideoViews.size());
+        });
+        return result;
+    }
+
+    @ApiOperation(value = "Get videos last view by userId")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(required = true,
+                    defaultValue = "Bearer ",
+                    name = "Authorization",
+                    paramType = "header")}
+    )
+    @RequestMapping(value = VIDEO_STAT_LAST, method = {RequestMethod.GET})
+    public HashMap<Long, LocalDateTime> getLastView(@RequestParam List<Long> ids) throws MicroServiceException {
+        ObjectContext objectContext = databaseService.getContext();
+
+        HashMap<Long, LocalDateTime> result = new HashMap<>();
+        ids.forEach(id -> {
+            DbVideoViews dbVideoViews = ObjectSelect.query(DbVideoViews.class)
+                    .where(DbVideoViews.ID_USER.eq(id))
+                    .orderBy(DbVideoViews.CREATED_DATE.desc())
+                    .selectFirst(objectContext);
+            result.put(id, dbVideoViews.getCreatedDate());
+        });
+        return result;
     }
 }
