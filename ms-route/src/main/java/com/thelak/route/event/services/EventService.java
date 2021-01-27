@@ -28,7 +28,7 @@ public class EventService extends BaseMicroservice implements IEventService {
     }
 
     @Override
-    public List<EventModel> list(Integer page, Integer size, ZonedDateTime startDate, ZonedDateTime endDate) throws MicroServiceException {
+    public List<EventModel> list(Integer page, Integer size, String startDate, String endDate) throws MicroServiceException {
         return retry(() -> restTemplate.getForEntity(buildUrl(EVENT_LIST), List.class,
                 page, size).getBody());
     }

@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -96,19 +97,19 @@ public class EventEndpoint extends MicroserviceAdvice implements IEventService {
     @RequestMapping(value = EVENT_LIST, method = {RequestMethod.GET})
     public List<EventModel> list(@RequestParam(required = false) Integer page,
                                  @RequestParam(required = false) Integer size,
-                                 @RequestParam(required = false) ZonedDateTime startDate,
-                                 @RequestParam(required = false) ZonedDateTime endDate) throws MicroServiceException {
+                                 @RequestParam(required = false) String startDate,
+                                 @RequestParam(required = false) String endDate) throws MicroServiceException {
         try {
             ObjectContext objectContext = databaseService.getContext();
 
             final Expression startDateExpression;
             if (startDate != null)
-                startDateExpression = DbEvent.START_DATE.gte(startDate.toLocalDateTime());
+                startDateExpression = DbEvent.START_DATE.gte(LocalDateTime.parse(startDate,DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")));
             else startDateExpression = DbVideo.TITLE.isNotNull();
 
             final Expression endDateExpression;
             if (endDate != null)
-                endDateExpression = DbEvent.END_DATE.lte(endDate.toLocalDateTime());
+                endDateExpression = DbEvent.END_DATE.lte(LocalDateTime.parse(endDate,DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")));
             else endDateExpression = DbVideo.TITLE.isNotNull();
 
             List<DbEvent> dbEvents;

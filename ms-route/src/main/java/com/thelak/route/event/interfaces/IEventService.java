@@ -23,7 +23,7 @@ public interface IEventService {
 
     List<EventModel> getByIds(List<Long> ids) throws MicroServiceException;
 
-    List<EventModel> list(Integer page, Integer size, ZonedDateTime startDate, ZonedDateTime endDate) throws MicroServiceException;
+    List<EventModel> list(Integer page, Integer size, String startDate, String endDate) throws MicroServiceException;
 
     List<EventModel> search(String search, Integer page, Integer size) throws MicroServiceException;
 
