@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -95,19 +96,19 @@ public class EventEndpoint extends MicroserviceAdvice implements IEventService {
     @RequestMapping(value = EVENT_LIST, method = {RequestMethod.GET})
     public List<EventModel> list(@RequestParam(required = false) Integer page,
                                  @RequestParam(required = false) Integer size,
-                                 @RequestParam(required = false) LocalDateTime startDate,
-                                 @RequestParam(required = false) LocalDateTime endDate) throws MicroServiceException {
+                                 @RequestParam(required = false) ZonedDateTime startDate,
+                                 @RequestParam(required = false) ZonedDateTime endDate) throws MicroServiceException {
         try {
             ObjectContext objectContext = databaseService.getContext();
 
             final Expression startDateExpression;
             if (startDate != null)
-                startDateExpression = DbEvent.START_DATE.gte(startDate);
+                startDateExpression = DbEvent.START_DATE.gte(startDate.toLocalDateTime());
             else startDateExpression = DbVideo.TITLE.isNotNull();
 
             final Expression endDateExpression;
             if (endDate != null)
-                endDateExpression = DbEvent.END_DATE.lte(endDate);
+                endDateExpression = DbEvent.END_DATE.lte(endDate.toLocalDateTime());
             else endDateExpression = DbVideo.TITLE.isNotNull();
 
             List<DbEvent> dbEvents;
