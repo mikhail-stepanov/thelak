@@ -40,9 +40,9 @@ public class UserInfoModel {
 
     LocalDateTime lastLoginDate;
 
-    LocalDateTime lastVideoView;
+    String lastVideoView;
 
-    LocalDateTime lastArticleView;
+    String lastArticleView;
 
     LocalDateTime subscriptionDate;
 
