@@ -491,13 +491,13 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
             dbUsers.forEach(dbUser -> {
                 ids.add((Long) dbUser.getObjectId().getIdSnapshot().get("id"));
             });
-            HashMap<Long, LocalDateTime> articleLast = articleFunctionsService.getLastView(ids);
-            HashMap<Long, Integer> articleCount = articleFunctionsService.getViewCount(ids);
-            HashMap<Long, LocalDateTime> videoLast = videoService.getLastView(ids);
-            HashMap<Long, Integer> videoCount = videoService.getViewCount(ids);
+            HashMap<String, LocalDateTime> articleLast = articleFunctionsService.getLastView(ids);
+            HashMap<String, Integer> articleCount = articleFunctionsService.getViewCount(ids);
+            HashMap<String, LocalDateTime> videoLast = videoService.getLastView(ids);
+            HashMap<String, Integer> videoCount = videoService.getViewCount(ids);
 
             dbUsers.forEach(dbUser -> {
-                Long userId = (long) dbUser.getObjectId().getIdSnapshot().get("id");
+                String userId = dbUser.getObjectId().getIdSnapshot().get("id").toString();
                 System.out.println("articleLast: " + userId + "=" + articleLast.get(userId) + "   origin:" + articleLast);
                 System.out.println("articleCount: " + userId + "=" + articleCount.get(userId) + "   origin:" + articleCount);
                 System.out.println("videoLast: " + userId + "=" + videoLast.get(userId) + "   origin:" + videoLast);
@@ -506,9 +506,9 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
 
             List<UserInfoModel> users = new ArrayList<>();
             dbUsers.forEach(dbUser -> {
-                Long userId = (long) dbUser.getObjectId().getIdSnapshot().get("id");
+                String userId = dbUser.getObjectId().getIdSnapshot().get("id").toString();
                 users.add(UserInfoModel.builder()
-                        .id(userId)
+                        .id(Long.valueOf(userId))
                         .email(dbUser.getEmail())
                         .name(dbUser.getName())
                         .phone(dbUser.getPhone())

@@ -21,7 +21,7 @@ public interface IArticleFunctionsService {
 
     Boolean checkRating(Long articleId) throws MicroServiceException;
 
-    HashMap<Long, Integer> getViewCount(List<Long> ids) throws MicroServiceException;
+    HashMap<String, Integer> getViewCount(List<Long> ids) throws MicroServiceException;
 
-    HashMap<Long, LocalDateTime> getLastView(List<Long> ids) throws MicroServiceException;
+    HashMap<String, LocalDateTime> getLastView(List<Long> ids) throws MicroServiceException;
 }

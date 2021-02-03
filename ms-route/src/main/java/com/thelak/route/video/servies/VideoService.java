@@ -71,13 +71,13 @@ public class VideoService extends BaseMicroservice implements IVideoService {
     }
 
     @Override
-    public HashMap<Long, Integer> getViewCount(List<Long> ids) throws MicroServiceException {
+    public HashMap<String, Integer> getViewCount(List<Long> ids) throws MicroServiceException {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(buildUrl(VIDEO_STAT_VIEWS))
                 .queryParam("ids", ids.toArray());
         return retry(() -> restTemplate.getForEntity(builder.toUriString(), HashMap.class, ids).getBody());    }
 
     @Override
-    public HashMap<Long, LocalDateTime> getLastView(List<Long> ids) throws MicroServiceException {
+    public HashMap<String, LocalDateTime> getLastView(List<Long> ids) throws MicroServiceException {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(buildUrl(VIDEO_STAT_LAST))
                 .queryParam("ids", ids.toArray());
         return retry(() -> restTemplate.getForEntity(builder.toUriString(), HashMap.class, ids).getBody());

@@ -670,16 +670,16 @@ public class VideoEndpoint extends MicroserviceAdvice implements IVideoService {
 
     @ApiOperation(value = "Get videos view count by userId")
     @RequestMapping(value = VIDEO_STAT_VIEWS, method = {RequestMethod.GET})
-    public HashMap<Long, Integer> getViewCount(@RequestParam List<Long> ids) throws MicroServiceException {
+    public HashMap<String, Integer> getViewCount(@RequestParam List<Long> ids) throws MicroServiceException {
         try {
             ObjectContext objectContext = databaseService.getContext();
 
-            HashMap<Long, Integer> result = new HashMap<>();
+            HashMap<String, Integer> result = new HashMap<>();
             ids.forEach(id -> {
                 List<DbVideoViews> dbVideoViews = ObjectSelect.query(DbVideoViews.class)
                         .where(DbVideoViews.ID_USER.eq(id))
                         .select(objectContext);
-                result.put(id, dbVideoViews.size());
+                result.put(id.toString(), dbVideoViews.size());
             });
             return result;
         } catch (Exception e) {
@@ -690,11 +690,11 @@ public class VideoEndpoint extends MicroserviceAdvice implements IVideoService {
 
     @ApiOperation(value = "Get videos last view by userId")
     @RequestMapping(value = VIDEO_STAT_LAST, method = {RequestMethod.GET})
-    public HashMap<Long, LocalDateTime> getLastView(@RequestParam List<Long> ids) throws MicroServiceException {
+    public HashMap<String, LocalDateTime> getLastView(@RequestParam List<Long> ids) throws MicroServiceException {
         try {
             ObjectContext objectContext = databaseService.getContext();
 
-            HashMap<Long, LocalDateTime> result = new HashMap<>();
+            HashMap<String, LocalDateTime> result = new HashMap<>();
             ids.forEach(id -> {
                 DbVideoViews dbVideoViews = null;
                 try {
@@ -703,7 +703,7 @@ public class VideoEndpoint extends MicroserviceAdvice implements IVideoService {
                             .orderBy(DbVideoViews.CREATED_DATE.desc())
                             .selectFirst(objectContext);
                 }catch (Exception ingored){}
-                result.put(id, dbVideoViews != null ? dbVideoViews.getCreatedDate() : null);
+                result.put(id.toString(), dbVideoViews != null ? dbVideoViews.getCreatedDate() : null);
             });
             return result;
         } catch (Exception e) {

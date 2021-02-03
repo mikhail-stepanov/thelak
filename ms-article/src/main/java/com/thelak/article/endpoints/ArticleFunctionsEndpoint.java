@@ -139,16 +139,16 @@ public class ArticleFunctionsEndpoint extends MicroserviceAdvice implements IArt
     @ApiOperation(value = "Get Articles view count by userId")
 
     @RequestMapping(value = ARTICLE_STAT_VIEWS, method = {RequestMethod.GET})
-    public HashMap<Long, Integer> getViewCount(@RequestParam List<Long> ids) throws MicroServiceException {
+    public HashMap<String, Integer> getViewCount(@RequestParam List<Long> ids) throws MicroServiceException {
         try {
             ObjectContext objectContext = databaseService.getContext();
 
-            HashMap<Long, Integer> result = new HashMap<>();
+            HashMap<String, Integer> result = new HashMap<>();
             ids.forEach(id -> {
                 List<DbArticleView> dbArticleViews = ObjectSelect.query(DbArticleView.class)
                         .where(DbArticleView.ID_USER.eq(id))
                         .select(objectContext);
-                result.put(id, dbArticleViews.size());
+                result.put(id.toString(), dbArticleViews.size());
             });
             return result;
         } catch (Exception e) {
@@ -159,12 +159,12 @@ public class ArticleFunctionsEndpoint extends MicroserviceAdvice implements IArt
 
     @ApiOperation(value = "Get Articles last view by userId")
     @RequestMapping(value = ARTICLE_STAT_LAST, method = {RequestMethod.GET})
-    public HashMap<Long, LocalDateTime> getLastView(@RequestParam List<Long> ids) throws MicroServiceException {
+    public HashMap<String, LocalDateTime> getLastView(@RequestParam List<Long> ids) throws MicroServiceException {
 
         try {
             ObjectContext objectContext = databaseService.getContext();
 
-            HashMap<Long, LocalDateTime> result = new HashMap<>();
+            HashMap<String, LocalDateTime> result = new HashMap<>();
             ids.forEach(id -> {
                 DbArticleView dbArticleView = null;
                 try {
@@ -173,7 +173,7 @@ public class ArticleFunctionsEndpoint extends MicroserviceAdvice implements IArt
                             .orderBy(DbArticleView.CREATED_DATE.desc())
                             .selectFirst(objectContext);
                 }catch (Exception ingored){}
-                result.put(id, dbArticleView != null ? dbArticleView.getCreatedDate() : null);
+                result.put(id.toString(), dbArticleView != null ? dbArticleView.getCreatedDate() : null);
             });
             return result;
         } catch (Exception e) {
