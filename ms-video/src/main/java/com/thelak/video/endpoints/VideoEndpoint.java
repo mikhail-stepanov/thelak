@@ -282,7 +282,7 @@ public class VideoEndpoint extends MicroserviceAdvice implements IVideoService {
             else playgroundFilterExpression = DbVideo.TITLE.isNotNull();
 
             final Expression languageFilterExpression;
-            if (playgroundFilter != null)
+            if (languageFilter != null)
                 languageFilterExpression = DbVideo.PLAYGROUND.in(playgroundFilter);
             else languageFilterExpression = DbVideo.TITLE.isNotNull();
 

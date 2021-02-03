@@ -495,6 +495,11 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
             HashMap<Long, Integer> articleCount = articleFunctionsService.getViewCount(ids);
             HashMap<Long, LocalDateTime> videoLast = videoService.getLastView(ids);
             HashMap<Long, Integer> videoCount = videoService.getViewCount(ids);
+            System.out.println("articleLast:" + articleLast);
+            System.out.println("articleCount:" + articleCount);
+            System.out.println("videoLast:" + videoLast);
+            System.out.println("videoCount:" + videoCount);
+
 
 
             List<UserInfoModel> users = new ArrayList<>();
@@ -513,10 +518,10 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
                         .renew(dbUser.isRenew())
                         .createdDate(dbUser.getCreatedDate())
                         .modifiedDate(dbUser.getModifiedDate())
-                        .lastArticleView(articleLast.get((Long) dbUser.getObjectId().getIdSnapshot().get("id")))
-                        .lastVideoView(videoLast.get((Long) dbUser.getObjectId().getIdSnapshot().get("id")))
-                        .articleViewCount(articleCount.get((Long) dbUser.getObjectId().getIdSnapshot().get("id")))
-                        .videoViewCount(videoCount.get((Long) dbUser.getObjectId().getIdSnapshot().get("id")))
+                        .lastArticleView(articleLast.get(dbUser.getObjectId().getIdSnapshot().get("id")))
+                        .lastVideoView(videoLast.get(dbUser.getObjectId().getIdSnapshot().get("id")))
+                        .articleViewCount(articleCount.get(dbUser.getObjectId().getIdSnapshot().get("id")))
+                        .videoViewCount(videoCount.get(dbUser.getObjectId().getIdSnapshot().get("id")))
                         .lastLoginDate(dbUser.getUserToSession().size() > 0 ? dbUser.getUserToSession().get(dbUser.getUserToSession().size() - 1).getCreatedDate() : null)
                         .build());
             });

@@ -171,6 +171,7 @@ public class EventEndpoint extends MicroserviceAdvice implements IEventService {
                         where(DbEvent.DELETED_DATE.isNull())
                         .and(DbEvent.DESCRIPTION.containsIgnoreCase(search.toLowerCase()))
                         .or(DbEvent.TITLE.containsIgnoreCase(search.toLowerCase()))
+                        .and(DbEvent.DELETED_DATE.isNull())
                         .pageSize(30)
                         .select(objectContext);
             else {
@@ -178,6 +179,7 @@ public class EventEndpoint extends MicroserviceAdvice implements IEventService {
                         where(DbEvent.DELETED_DATE.isNull())
                         .and(DbEvent.DESCRIPTION.containsIgnoreCase(search.toLowerCase()))
                         .or(DbEvent.TITLE.containsIgnoreCase(search.toLowerCase()))
+                        .and(DbEvent.DELETED_DATE.isNull())
                         .pageSize(size)
                         .select(objectContext);
                 if (dbEvents.size() >= size * page)
