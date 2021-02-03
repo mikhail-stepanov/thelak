@@ -23,5 +23,5 @@ public interface IArticleFunctionsService {
 
     HashMap<String, Integer> getViewCount(List<Long> ids) throws MicroServiceException;
 
-    HashMap<String, LocalDateTime> getLastView(List<Long> ids) throws MicroServiceException;
+    HashMap<String, String> getLastView(List<Long> ids) throws MicroServiceException;
 }

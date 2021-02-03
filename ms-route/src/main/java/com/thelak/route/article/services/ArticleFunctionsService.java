@@ -38,7 +38,7 @@ public class ArticleFunctionsService extends BaseMicroservice implements IArticl
         return retry(() -> restTemplate.getForEntity(builder.toUriString(), HashMap.class, ids).getBody());    }
 
     @Override
-    public HashMap<String, LocalDateTime> getLastView(List<Long> ids) throws MicroServiceException {
+    public HashMap<String, String> getLastView(List<Long> ids) throws MicroServiceException {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(buildUrl(ARTICLE_STAT_LAST))
                 .queryParam("ids", ids.toArray());
         return retry(() -> restTemplate.getForEntity(builder.toUriString(), HashMap.class, ids).getBody());

@@ -690,11 +690,11 @@ public class VideoEndpoint extends MicroserviceAdvice implements IVideoService {
 
     @ApiOperation(value = "Get videos last view by userId")
     @RequestMapping(value = VIDEO_STAT_LAST, method = {RequestMethod.GET})
-    public HashMap<String, LocalDateTime> getLastView(@RequestParam List<Long> ids) throws MicroServiceException {
+    public HashMap<String, String> getLastView(@RequestParam List<Long> ids) throws MicroServiceException {
         try {
             ObjectContext objectContext = databaseService.getContext();
 
-            HashMap<String, LocalDateTime> result = new HashMap<>();
+            HashMap<String, String> result = new HashMap<>();
             ids.forEach(id -> {
                 DbVideoViews dbVideoViews = null;
                 try {
@@ -703,7 +703,7 @@ public class VideoEndpoint extends MicroserviceAdvice implements IVideoService {
                             .orderBy(DbVideoViews.CREATED_DATE.desc())
                             .selectFirst(objectContext);
                 }catch (Exception ingored){}
-                result.put(id.toString(), dbVideoViews != null ? dbVideoViews.getCreatedDate() : null);
+                result.put(id.toString(), dbVideoViews != null ? dbVideoViews.getCreatedDate().toString() : null);
             });
             return result;
         } catch (Exception e) {

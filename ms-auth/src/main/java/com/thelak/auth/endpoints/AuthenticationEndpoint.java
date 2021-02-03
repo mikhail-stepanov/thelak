@@ -491,9 +491,9 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
             dbUsers.forEach(dbUser -> {
                 ids.add((Long) dbUser.getObjectId().getIdSnapshot().get("id"));
             });
-            HashMap<String, LocalDateTime> articleLast = articleFunctionsService.getLastView(ids);
+            HashMap<String, String> articleLast = articleFunctionsService.getLastView(ids);
             HashMap<String, Integer> articleCount = articleFunctionsService.getViewCount(ids);
-            HashMap<String, LocalDateTime> videoLast = videoService.getLastView(ids);
+            HashMap<String, String> videoLast = videoService.getLastView(ids);
             HashMap<String, Integer> videoCount = videoService.getViewCount(ids);
 
             List<UserInfoModel> users = new ArrayList<>();
@@ -513,8 +513,8 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
                         .renew(dbUser.isRenew())
                         .createdDate(dbUser.getCreatedDate())
                         .modifiedDate(dbUser.getModifiedDate())
-                        .lastArticleView(articleLast.get(userId).toString())
-                        .lastVideoView(videoLast.get(userId).toString())
+                        .lastArticleView(articleLast.get(userId))
+                        .lastVideoView(videoLast.get(userId))
                         .articleViewCount(articleCount.get(userId))
                         .videoViewCount(videoCount.get(userId))
                         .lastLoginDate(dbUser.getUserToSession().size() > 0 ? dbUser.getUserToSession().get(dbUser.getUserToSession().size() - 1).getCreatedDate() : null)

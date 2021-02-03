@@ -159,12 +159,12 @@ public class ArticleFunctionsEndpoint extends MicroserviceAdvice implements IArt
 
     @ApiOperation(value = "Get Articles last view by userId")
     @RequestMapping(value = ARTICLE_STAT_LAST, method = {RequestMethod.GET})
-    public HashMap<String, LocalDateTime> getLastView(@RequestParam List<Long> ids) throws MicroServiceException {
+    public HashMap<String, String> getLastView(@RequestParam List<Long> ids) throws MicroServiceException {
 
         try {
             ObjectContext objectContext = databaseService.getContext();
 
-            HashMap<String, LocalDateTime> result = new HashMap<>();
+            HashMap<String, String> result = new HashMap<>();
             ids.forEach(id -> {
                 DbArticleView dbArticleView = null;
                 try {
@@ -173,7 +173,7 @@ public class ArticleFunctionsEndpoint extends MicroserviceAdvice implements IArt
                             .orderBy(DbArticleView.CREATED_DATE.desc())
                             .selectFirst(objectContext);
                 }catch (Exception ingored){}
-                result.put(id.toString(), dbArticleView != null ? dbArticleView.getCreatedDate() : null);
+                result.put(id.toString(), dbArticleView != null ? dbArticleView.getCreatedDate().toString() : null);
             });
             return result;
         } catch (Exception e) {
