@@ -523,6 +523,7 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
 
             return users;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new MsInternalErrorException(e.getMessage());
         }
     }
