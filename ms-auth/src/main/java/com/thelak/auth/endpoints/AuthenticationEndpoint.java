@@ -496,7 +496,13 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
             HashMap<Long, LocalDateTime> videoLast = videoService.getLastView(ids);
             HashMap<Long, Integer> videoCount = videoService.getViewCount(ids);
 
-
+            dbUsers.forEach(dbUser -> {
+                Long userId = (Long) dbUser.getObjectId().getIdSnapshot().get("id");
+                System.out.println("articleLast: " + userId + "=" + articleLast.get(userId) + "   origin:" + articleLast);
+                System.out.println("articleCount: " + userId + "=" + articleCount.get(userId) + "   origin:" + articleCount);
+                System.out.println("videoLast: " + userId + "=" + videoLast.get(userId) + "   origin:" + videoLast);
+                System.out.println("videoCount: " + userId + "=" + videoCount.get(userId) + "   origin:" + videoCount);
+            });
 
             List<UserInfoModel> users = new ArrayList<>();
             dbUsers.forEach(dbUser -> {
