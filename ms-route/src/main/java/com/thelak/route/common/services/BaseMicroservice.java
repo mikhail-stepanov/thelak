@@ -96,7 +96,7 @@ public class BaseMicroservice implements ApplicationContextAware {
 
         _exceptionFactory.put(MsObjectNotFoundException.class.getSimpleName(), error -> new MsObjectNotFoundException(error.getError(), error.getError()));
 
-        _exceptionFactory.put(MsAlreadyExistsException.class.getSimpleName(), error -> new MsAlreadyExistsException());
+        _exceptionFactory.put(MsAlreadyExistsException.class.getSimpleName(), error -> new MsAlreadyExistsException(error.getError()));
 
         _exceptionFactory.put(MsNotAllowedException.class.getSimpleName(), error -> new MsNotAllowedException());
 

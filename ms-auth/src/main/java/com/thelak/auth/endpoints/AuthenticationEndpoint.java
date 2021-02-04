@@ -145,7 +145,7 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
                     .status("success").build();
 
         } else
-            throw new MsAlreadyExistsException();
+            throw new MsAlreadyExistsException(request.getEmail());
     }
 
     @Override

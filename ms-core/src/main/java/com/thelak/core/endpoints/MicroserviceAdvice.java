@@ -43,6 +43,12 @@ public abstract class MicroserviceAdvice {
         return handleMicroserviceException(ex, request, HttpStatus.BAD_REQUEST);
     }
 
+
+    @ExceptionHandler(MsAlreadyExistsException.class)
+    public final ResponseEntity<ErrorResponse> handleMsBadRequestException(MsAlreadyExistsException ex, WebRequest request) {
+        return handleMicroserviceException(ex, request, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(MsNotAuthorizedException.class)
     public final ResponseEntity<ErrorResponse> handleMsNotAuthorizedException(MsNotAuthorizedException ex, WebRequest request) {
         return handleMicroserviceException(ex, request, HttpStatus.FORBIDDEN);

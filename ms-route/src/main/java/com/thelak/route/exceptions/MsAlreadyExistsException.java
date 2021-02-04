@@ -2,8 +2,8 @@ package com.thelak.route.exceptions;
 
 public class MsAlreadyExistsException extends MicroServiceException {
 
-    public MsAlreadyExistsException() {
-        super("Object already exists.");
+    public MsAlreadyExistsException(String ex) {
+        super(ex);
     }
 
     @Override
