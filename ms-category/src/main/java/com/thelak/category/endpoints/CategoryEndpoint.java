@@ -169,7 +169,9 @@ public class CategoryEndpoint extends MicroserviceAdvice implements ICategorySer
 
             DbCategory dbCategory = objectContext.newObject(DbCategory.class);
             dbCategory.setTitle(request.getTitle());
-            dbCategory.setCoverUrl(request.getImageUrl());
+            if(request.getImageUrl()!=null) {
+                dbCategory.setCoverUrl(request.getImageUrl());
+            }
             dbCategory.setCreatedDate(LocalDateTime.now());
 
             objectContext.commitChanges();
@@ -190,7 +192,9 @@ public class CategoryEndpoint extends MicroserviceAdvice implements ICategorySer
             DbCategory dbCategory = SelectById.query(DbCategory.class, request.getId()).selectFirst(objectContext);
 
             dbCategory.setTitle(request.getTitle());
-            dbCategory.setCoverUrl(request.getImageUrl());
+            if(request.getImageUrl()!=null) {
+                dbCategory.setCoverUrl(request.getImageUrl());
+            }
             dbCategory.setModifiedDate(LocalDateTime.now());
 
             objectContext.commitChanges();
