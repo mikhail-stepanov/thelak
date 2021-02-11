@@ -468,7 +468,7 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
                     if (dbUsers.size() >= size * page)
                         dbUsers = dbUsers.subList(page * size - size, page * size);
                     else if (dbUsers.size() >= size * (page - 1))
-                        dbUsers = dbUsers.subList(page * size - size, dbUsers.size() - 1);
+                        dbUsers = dbUsers.subList(page * size - size, dbUsers.size());
                 }
             } else {
                 if (page == null || size == null)

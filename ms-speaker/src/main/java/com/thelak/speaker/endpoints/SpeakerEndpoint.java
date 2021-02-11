@@ -233,7 +233,7 @@ public class SpeakerEndpoint extends MicroserviceAdvice implements ISpeakerServi
                 if (dbSpeakers.size() >= size * page)
                     dbSpeakers = dbSpeakers.subList(page * size - size, page * size);
                 else if (dbSpeakers.size() >= size * (page - 1))
-                    dbSpeakers = dbSpeakers.subList(page * size - size, dbSpeakers.size() - 1);
+                    dbSpeakers = dbSpeakers.subList(page * size - size, dbSpeakers.size());
                 else
                     dbSpeakers = new ArrayList<>();
             }

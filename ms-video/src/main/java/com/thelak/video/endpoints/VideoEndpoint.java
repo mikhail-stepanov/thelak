@@ -469,7 +469,7 @@ public class VideoEndpoint extends MicroserviceAdvice implements IVideoService {
                 if (dbVideos.size() >= size * page)
                     dbVideos = dbVideos.subList(page * size - size, page * size);
                 else if (dbVideos.size() >= size * (page - 1))
-                    dbVideos = dbVideos.subList(page * size - size, dbVideos.size() - 1);
+                    dbVideos = dbVideos.subList(page * size - size, dbVideos.size());
                 else
                     dbVideos = new ArrayList<>();
             }

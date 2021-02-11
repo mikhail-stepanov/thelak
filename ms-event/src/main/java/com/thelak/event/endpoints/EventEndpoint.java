@@ -184,7 +184,7 @@ public class EventEndpoint extends MicroserviceAdvice implements IEventService {
                 if (dbEvents.size() >= size * page)
                     dbEvents = dbEvents.subList(page * size - size, page * size);
                 else if (dbEvents.size() >= size * (page - 1))
-                    dbEvents = dbEvents.subList(page * size - size, dbEvents.size() - 1);
+                    dbEvents = dbEvents.subList(page * size - size, dbEvents.size());
                 else
                     dbEvents = new ArrayList<>();
             }

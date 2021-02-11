@@ -232,7 +232,7 @@ public class ArticleEndpoint extends MicroserviceAdvice implements IArticleServi
                 if (dbArticles.size() >= size * page)
                     dbArticles = dbArticles.subList(page * size - size, page * size);
                 else if (dbArticles.size() >= size * (page - 1))
-                    dbArticles = dbArticles.subList(page * size - size, dbArticles.size() - 1);
+                    dbArticles = dbArticles.subList(page * size - size, dbArticles.size());
                 else
                     dbArticles = new ArrayList<>();
             }
