@@ -629,6 +629,7 @@ public class VideoEndpoint extends MicroserviceAdvice implements IVideoService {
 
             return buildVideoModel(dbVideo, categoryModels, speakerModel, userInfo, true);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new MsInternalErrorException(e.getMessage());
         }
     }

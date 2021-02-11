@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import static com.thelak.speaker.services.SpeakerHelper.buildSpeakerModel;
@@ -263,6 +264,7 @@ public class SpeakerEndpoint extends MicroserviceAdvice implements ISpeakerServi
             dbSpeaker.setShortDescription(request.getShortDescription());
             dbSpeaker.setCountry(request.getCountry());
             dbSpeaker.setPhotoUrl(request.getPhotoUrl());
+            dbSpeaker.setCountryFlagCode(request.getCountry().toLowerCase());
             dbSpeaker.setCreatedDate(LocalDateTime.now());
 
             objectContext.commitChanges();
@@ -288,6 +290,9 @@ public class SpeakerEndpoint extends MicroserviceAdvice implements ISpeakerServi
             dbSpeaker.setShortDescription(Optional.ofNullable(request.getShortDescription()).orElse(dbSpeaker.getShortDescription()));
             dbSpeaker.setCountry(Optional.ofNullable(request.getCountry()).orElse(dbSpeaker.getCountry()));
             dbSpeaker.setPhotoUrl(Optional.ofNullable(request.getPhotoUrl()).orElse(dbSpeaker.getPhotoUrl()));
+            if (request.getCountry()!=null) {
+                dbSpeaker.setCountryFlagCode(request.getCountryFlagCode().toLowerCase());
+            }
             dbSpeaker.setModifiedDate(LocalDateTime.now());
 
             objectContext.commitChanges();
