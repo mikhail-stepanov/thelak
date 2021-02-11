@@ -606,8 +606,6 @@ public class VideoEndpoint extends MicroserviceAdvice implements IVideoService {
             dbVideo.setPartnerLogoUrl(Optional.ofNullable(request.getPartnerLogoUrl()).orElse(dbVideo.getPartnerLogoUrl()));
             dbVideo.setCoverUrl(Optional.ofNullable(request.getCoverUrl()).orElse(dbVideo.getCoverUrl()));
             dbVideo.setPosterUrl(Optional.ofNullable(request.getPosterUrl()).orElse(dbVideo.getPosterUrl()));
-            if(request.getPosterUrl().equals(""))
-                dbVideo.setPosterUrl(null);
             dbVideo.setIsSubscription(Optional.ofNullable(request.getSubscription()).orElse(dbVideo.isIsSubscription()));
             dbVideo.setModifiedDate(LocalDateTime.now());
 
