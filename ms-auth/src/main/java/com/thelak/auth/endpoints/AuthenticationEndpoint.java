@@ -445,6 +445,9 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
     @RequestMapping(value = AUTH_USER_INFO, method = {RequestMethod.GET})
     public List<UserInfoModel> infoList(@RequestParam(required = false) String search, @RequestParam Integer page, @RequestParam Integer size) throws MicroServiceException {
         try {
+
+            search = search.replaceAll("!", "");
+
             ObjectContext objectContext = databaseService.getContext();
 
             List<DbUser> dbUsers;

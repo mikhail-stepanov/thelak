@@ -163,6 +163,8 @@ public class EventEndpoint extends MicroserviceAdvice implements IEventService {
                                    @RequestParam(required = false) Integer page,
                                    @RequestParam(required = false) Integer size) throws MicroServiceException {
         try {
+            search = search.replaceAll("!", "");
+
             ObjectContext objectContext = databaseService.getContext();
 
             List<DbEvent> dbEvents;

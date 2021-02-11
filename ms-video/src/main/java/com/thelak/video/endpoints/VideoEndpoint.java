@@ -438,6 +438,7 @@ public class VideoEndpoint extends MicroserviceAdvice implements IVideoService {
     @RequestMapping(value = VIDEO_SEARCH, method = {RequestMethod.GET})
     public List<VideoModel> search(@RequestParam String search, @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) throws MicroServiceException {
         try {
+            search = search.replaceAll("!", "");
             ObjectContext objectContext = databaseService.getContext();
 
             UserInfo userInfo = null;
@@ -605,6 +606,8 @@ public class VideoEndpoint extends MicroserviceAdvice implements IVideoService {
             dbVideo.setPartnerLogoUrl(Optional.ofNullable(request.getPartnerLogoUrl()).orElse(dbVideo.getPartnerLogoUrl()));
             dbVideo.setCoverUrl(Optional.ofNullable(request.getCoverUrl()).orElse(dbVideo.getCoverUrl()));
             dbVideo.setPosterUrl(Optional.ofNullable(request.getPosterUrl()).orElse(dbVideo.getPosterUrl()));
+            if(request.getPosterUrl().equals(""))
+                dbVideo.setPosterUrl(null);
             dbVideo.setIsSubscription(Optional.ofNullable(request.getSubscription()).orElse(dbVideo.isIsSubscription()));
             dbVideo.setModifiedDate(LocalDateTime.now());
 
