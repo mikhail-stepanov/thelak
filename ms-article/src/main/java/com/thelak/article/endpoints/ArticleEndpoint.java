@@ -210,9 +210,6 @@ public class ArticleEndpoint extends MicroserviceAdvice implements IArticleServi
                                      @RequestParam(required = false) Integer page,
                                      @RequestParam(required = false) Integer size) throws MicroServiceException {
         try {
-
-            search = search.replaceAll("!", "");
-
             ObjectContext objectContext = databaseService.getContext();
 
             List<DbArticle> dbArticles;

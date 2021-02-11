@@ -438,7 +438,6 @@ public class VideoEndpoint extends MicroserviceAdvice implements IVideoService {
     @RequestMapping(value = VIDEO_SEARCH, method = {RequestMethod.GET})
     public List<VideoModel> search(@RequestParam String search, @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) throws MicroServiceException {
         try {
-            search = search.replaceAll("!", "");
             ObjectContext objectContext = databaseService.getContext();
 
             UserInfo userInfo = null;
@@ -496,6 +495,7 @@ public class VideoEndpoint extends MicroserviceAdvice implements IVideoService {
 
             return videos;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new MsInternalErrorException(e.getMessage());
         }
     }

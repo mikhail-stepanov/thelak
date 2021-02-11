@@ -213,8 +213,6 @@ public class SpeakerEndpoint extends MicroserviceAdvice implements ISpeakerServi
                                      @RequestParam(required = false) Integer page,
                                      @RequestParam(required = false) Integer size) throws MicroServiceException {
         try {
-            search = search.replaceAll("!", "");
-
             ObjectContext objectContext = databaseService.getContext();
 
             List<DbSpeaker> dbSpeakers;
