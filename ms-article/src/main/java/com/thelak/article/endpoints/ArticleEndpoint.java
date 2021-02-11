@@ -5,6 +5,7 @@ import com.thelak.core.models.UserInfo;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbArticle;
 import com.thelak.database.entity.DbArticleView;
+import com.thelak.database.entity.DbEvent;
 import com.thelak.route.article.enums.ArticleSortEnum;
 import com.thelak.route.article.enums.ArticleSortTypeEnum;
 import com.thelak.route.article.interfaces.IArticleService;
@@ -218,7 +219,9 @@ public class ArticleEndpoint extends MicroserviceAdvice implements IArticleServi
                         where(DbArticle.DELETED_DATE.isNull())
                         .and(DbArticle.DESCRIPTION.containsIgnoreCase(search.toLowerCase()))
                         .or(DbArticle.TITLE.containsIgnoreCase(search.toLowerCase()))
+                        .and(DbEvent.DELETED_DATE.isNull())
                         .or(DbArticle.AUTHOR.containsIgnoreCase(search.toLowerCase()))
+                        .and(DbEvent.DELETED_DATE.isNull())
                         .pageSize(30)
                         .select(objectContext);
             else {
@@ -226,7 +229,9 @@ public class ArticleEndpoint extends MicroserviceAdvice implements IArticleServi
                         where(DbArticle.DELETED_DATE.isNull())
                         .and(DbArticle.DESCRIPTION.containsIgnoreCase(search.toLowerCase()))
                         .or(DbArticle.TITLE.containsIgnoreCase(search.toLowerCase()))
+                        .and(DbEvent.DELETED_DATE.isNull())
                         .or(DbArticle.AUTHOR.containsIgnoreCase(search.toLowerCase()))
+                        .and(DbEvent.DELETED_DATE.isNull())
                         .pageSize(size)
                         .select(objectContext);
                 if (dbArticles.size() >= size * page)
