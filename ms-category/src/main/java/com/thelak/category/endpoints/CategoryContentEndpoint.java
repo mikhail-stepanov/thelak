@@ -154,6 +154,7 @@ public class CategoryContentEndpoint extends MicroserviceAdvice implements ICate
     }
 
     @Override
+    @RequestMapping(value = CATEGORY_VIDEO_DELETE, method = {RequestMethod.GET})
     public Boolean videoToCategoryDelete(Long videoId) throws MicroServiceException {
         ObjectContext objectContext = databaseService.getContext();
         List<DbCategoryVideos> dbCategoryVideos = ObjectSelect.query(DbCategoryVideos.class)
@@ -165,6 +166,7 @@ public class CategoryContentEndpoint extends MicroserviceAdvice implements ICate
     }
 
     @Override
+    @RequestMapping(value = CATEGORY_ARTICLE_DELETE, method = {RequestMethod.GET})
     public Boolean articleToCategoryDelete(Long articleId) throws MicroServiceException {
         ObjectContext objectContext = databaseService.getContext();
         List<DbCategoryArticles> dbCategoryArticles = ObjectSelect.query(DbCategoryArticles.class)
@@ -176,6 +178,7 @@ public class CategoryContentEndpoint extends MicroserviceAdvice implements ICate
     }
 
     @Override
+    @RequestMapping(value = CATEGORY_EVENT_DELETE, method = {RequestMethod.GET})
     public Boolean eventToCategory(Long eventId) throws MicroServiceException {
         ObjectContext objectContext = databaseService.getContext();
         List<DbCategoryEvents> dbCategoryEvents = ObjectSelect.query(DbCategoryEvents.class)
