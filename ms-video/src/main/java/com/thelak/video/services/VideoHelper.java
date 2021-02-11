@@ -35,7 +35,7 @@ public class VideoHelper {
                     .label("720p")
                     .res(720).build());
             sourceModels.add(VideoSourceModel.builder()
-                    .src(dbVideo.getContentUrl720())
+                    .src(dbVideo.getContentUrl1080())
                     .type("video/mp4")
                     .label("1080p")
                     .res(1080).build());
