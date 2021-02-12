@@ -145,7 +145,7 @@ public class CategoryEndpoint extends MicroserviceAdvice implements ICategorySer
             List<DbCategory> dbCategories;
             dbCategories = ObjectSelect.query(DbCategory.class).
                     where(DbCategory.DELETED_DATE.isNull())
-                    .or(DbCategory.TITLE.containsIgnoreCase(search.toLowerCase()))
+                    .and(DbCategory.TITLE.containsIgnoreCase(search.toLowerCase()))
                     .select(objectContext);
 
             List<CategoryModel> categoryModels = new ArrayList<>();
