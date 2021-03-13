@@ -23,4 +23,6 @@ public class ApplePayCertRequest {
     String description;
 
     CertificateViewType type;
+
+    Long promoId;
 }

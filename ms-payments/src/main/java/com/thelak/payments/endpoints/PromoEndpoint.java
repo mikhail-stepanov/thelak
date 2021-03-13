@@ -6,6 +6,7 @@ import com.thelak.database.entity.DbPromo;
 import com.thelak.database.entity.DbPromoEmail;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.exceptions.MsInternalErrorException;
+import com.thelak.route.exceptions.MsObjectNotFoundException;
 import com.thelak.route.payments.interfaces.IPromoService;
 import com.thelak.route.payments.models.promo.PromoCodeCreateRequest;
 import com.thelak.route.payments.models.promo.PromoCodeModel;
@@ -85,7 +86,8 @@ public class PromoEndpoint extends MicroserviceAdvice implements IPromoService {
                     name = "Authorization",
                     paramType = "header")}
     )
-    @RequestMapping(value = PROMO_CREATE, method = {RequestMethod.POST})    public PromoCodeModel create(@RequestBody PromoCodeCreateRequest request) throws MicroServiceException {
+    @RequestMapping(value = PROMO_CREATE, method = {RequestMethod.POST})
+    public PromoCodeModel create(@RequestBody PromoCodeCreateRequest request) throws MicroServiceException {
         try {
             ObjectContext objectContext = databaseService.getContext();
 
@@ -168,6 +170,33 @@ public class PromoEndpoint extends MicroserviceAdvice implements IPromoService {
             return true;
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
+        }
+    }
+
+    @Override
+    @ApiOperation(value = "Check promo for existing")
+    @ApiImplicitParams(
+            {@ApiImplicitParam(required = true,
+                    defaultValue = "Bearer ",
+                    name = "Authorization",
+                    paramType = "header")}
+    )
+    @RequestMapping(value = PROMO_DELETE, method = {RequestMethod.DELETE})
+    public PromoCodeModel check(String promo) throws MicroServiceException {
+        try{
+            ObjectContext objectContext = databaseService.getContext();
+
+            DbPromo dbPromo = ObjectSelect
+                    .query(DbPromo.class)
+                    .where(DbPromo.CODE.lower().eq(promo.toLowerCase()))
+                    .selectFirst(objectContext);
+
+            objectContext.commitChanges();
+
+            return buildPromoModel(dbPromo);
+
+        }catch (Exception e){
+            throw new MsObjectNotFoundException("Can't find promo:", promo);
         }
     }
 }

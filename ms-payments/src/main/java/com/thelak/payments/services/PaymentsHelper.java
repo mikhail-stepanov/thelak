@@ -62,6 +62,7 @@ public class PaymentsHelper {
                 .description(dbPromo.getDescription())
                 .months(dbPromo.getMonths())
                 .emails(list)
+                .percent(dbPromo.getPercent())
                 .build();
     }
 }

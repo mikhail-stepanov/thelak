@@ -25,4 +25,6 @@ public class PromoCodeModel {
 
     List<String> emails;
 
+    Integer percent;
+
 }

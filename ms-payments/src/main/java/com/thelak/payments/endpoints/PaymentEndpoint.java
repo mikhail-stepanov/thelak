@@ -129,9 +129,22 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
                 dbIssuedCertificate.setEmail(buyCertificateRequest.getEmail());
                 objectContext.commitChanges();
 
+                DbPromo dbPromo = null;
+                try {
+                    if (buyCertificateRequest.getPromoId() != null) {
+                        dbPromo = SelectById.query(DbPromo.class, buyCertificateRequest.getPromoId())
+                                .selectFirst(objectContext);
+                        if (dbPromo.getPercent() <= 0) {
+                            throw new MsBadRequestException("Wrong promo", "");
+                        }
+                    }
+                } catch (Exception e) {
+                    throw new MsBadRequestException("Wrong promo", "");
+                }
+
                 CryptogrammPayRequest cryptogrammPayRequest = CryptogrammPayRequest.builder()
                         .AccountId(0L)
-                        .Amount(dbCertificate.getPrice())
+                        .Amount(dbPromo != null ? (dbCertificate.getPrice() - dbCertificate.getPrice() * dbPromo.getPercent() / 100) : dbCertificate.getPrice())
                         .CardCryptogramPacket(buyCertificateRequest.getCardCryptogramPacket())
                         .Currency("RUB")
                         .Description("Покупка сертификата Thelak на " + dbCertificate.getMonths() + " месяцев.")
@@ -374,9 +387,22 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
             DbSubscription dbSubscription = SelectById.query(DbSubscription.class, request.getSubscriptionId())
                     .selectFirst(objectContext);
 
+            DbPromo dbPromo = null;
+            try {
+                if (request.getPromoId() != null) {
+                    dbPromo = SelectById.query(DbPromo.class, request.getPromoId())
+                            .selectFirst(objectContext);
+                    if (dbPromo.getPercent() <= 0) {
+                        throw new MsBadRequestException("Wrong promo", "");
+                    }
+                }
+            } catch (Exception e) {
+                throw new MsBadRequestException("Wrong promo", "");
+            }
+
             CryptogrammPayRequest cryptogrammPayRequest = CryptogrammPayRequest.builder()
                     .AccountId(userInfo.getUserId())
-                    .Amount(dbSubscription.getPrice())
+                    .Amount(dbPromo != null ? (dbSubscription.getPrice() - dbSubscription.getPrice() * dbPromo.getPercent() / 100) : dbSubscription.getPrice())
                     .CardCryptogramPacket(request.getCryptogram())
                     .Currency("RUB")
                     .Description("Покупка подписки Thelak на " + dbSubscription.getMonths() + " месяцев.")
@@ -423,7 +449,7 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
                 try {
                     RecurrentPayRequest recurrentPayRequest = RecurrentPayRequest.builder()
                             .accountId(userInfo.getUserId().toString())
-                            .amount(subscription.getPrice())
+                            .amount(dbPaymentsCryptogramm.getAmount())
                             .currency("RUB")
                             .description("Подписка Thelak на " + subscription.getMonths() + " месяцев.")
                             .email(userInfo.getUserEmail())
@@ -503,9 +529,22 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
                 dbIssuedCertificate.setEmail(request.getEmail());
                 objectContext.commitChanges();
 
+                DbPromo dbPromo = null;
+                try {
+                    if (request.getPromoId() != null) {
+                        dbPromo = SelectById.query(DbPromo.class, request.getPromoId())
+                                .selectFirst(objectContext);
+                        if (dbPromo.getPercent() <= 0) {
+                            throw new MsBadRequestException("Wrong promo", "");
+                        }
+                    }
+                } catch (Exception e) {
+                    throw new MsBadRequestException("Wrong promo", "");
+                }
+
                 CryptogrammPayRequest cryptogrammPayRequest = CryptogrammPayRequest.builder()
                         .AccountId(0L)
-                        .Amount(dbCertificate.getPrice())
+                        .Amount(dbPromo != null ? (dbCertificate.getPrice() - dbCertificate.getPrice() * dbPromo.getPercent() / 100) : dbCertificate.getPrice())
                         .CardCryptogramPacket(request.getCryptogram())
                         .Currency("RUB")
                         .Description("Покупка сертификата Thelak на " + dbCertificate.getMonths() + " месяцев.")
@@ -633,9 +672,22 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
             DbSubscription dbSubscription = SelectById.query(DbSubscription.class, buySubscriptionRequest.getSubscriptionId())
                     .selectFirst(objectContext);
 
+            DbPromo dbPromo = null;
+            try {
+                if (buySubscriptionRequest.getPromoId() != null) {
+                    dbPromo = SelectById.query(DbPromo.class, buySubscriptionRequest.getPromoId())
+                            .selectFirst(objectContext);
+                    if (dbPromo.getPercent() <= 0) {
+                        throw new MsBadRequestException("Wrong promo", "");
+                    }
+                }
+            } catch (Exception e) {
+                throw new MsBadRequestException("Wrong promo", "");
+            }
+
             CryptogrammPayRequest cryptogrammPayRequest = CryptogrammPayRequest.builder()
                     .AccountId(userInfo.getUserId())
-                    .Amount(dbSubscription.getPrice())
+                    .Amount(dbPromo != null ? (dbSubscription.getPrice() - dbSubscription.getPrice() * dbPromo.getPercent() / 100) : dbSubscription.getPrice())
                     .CardCryptogramPacket(buySubscriptionRequest.getCardCryptogramPacket())
                     .Currency("RUB")
                     .Description("Покупка подписки Thelak на " + dbSubscription.getMonths() + " месяцев.")

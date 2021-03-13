@@ -39,4 +39,9 @@ public class PromoService extends BaseMicroservice implements IPromoService {
     public Boolean delete(Long id) throws MicroServiceException {
         return null;
     }
+
+    @Override
+    public PromoCodeModel check(String promo) throws MicroServiceException {
+        return null;
+    }
 }

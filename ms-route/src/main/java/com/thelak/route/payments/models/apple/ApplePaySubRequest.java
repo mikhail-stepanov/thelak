@@ -14,4 +14,6 @@ public class ApplePaySubRequest {
     String cryptogram;
 
     Long subscriptionId;
+
+    Long promoId;
 }

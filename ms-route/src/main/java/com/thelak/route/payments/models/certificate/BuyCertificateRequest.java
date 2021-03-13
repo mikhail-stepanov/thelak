@@ -24,4 +24,6 @@ public class BuyCertificateRequest {
     String cardCryptogramPacket;
 
     String cardName;
+
+    Long promoId;
 }

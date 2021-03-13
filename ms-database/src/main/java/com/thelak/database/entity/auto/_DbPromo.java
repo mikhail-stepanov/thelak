@@ -27,6 +27,7 @@ public abstract class _DbPromo extends BaseDataObject {
     public static final Property<Integer> DAYS = Property.create("days", Integer.class);
     public static final Property<String> DESCRIPTION = Property.create("description", String.class);
     public static final Property<Integer> MONTHS = Property.create("months", Integer.class);
+    public static final Property<Integer> PERCENT = Property.create("percent", Integer.class);
     public static final Property<List<DbPromoEmail>> PROMO_TO_EMAIL = Property.create("promoToEmail", List.class);
 
     protected Boolean active;
@@ -34,6 +35,7 @@ public abstract class _DbPromo extends BaseDataObject {
     protected Integer days;
     protected String description;
     protected int months;
+    protected Integer percent;
 
     protected Object promoToEmail;
 
@@ -93,6 +95,19 @@ public abstract class _DbPromo extends BaseDataObject {
         return this.months;
     }
 
+    public void setPercent(int percent) {
+        beforePropertyWrite("percent", this.percent, percent);
+        this.percent = percent;
+    }
+
+    public int getPercent() {
+        beforePropertyRead("percent");
+        if(this.percent == null) {
+            return 0;
+        }
+        return this.percent;
+    }
+
     public void addToPromoToEmail(DbPromoEmail obj) {
         addToManyTarget("promoToEmail", obj, true);
     }
@@ -123,6 +138,8 @@ public abstract class _DbPromo extends BaseDataObject {
                 return this.description;
             case "months":
                 return this.months;
+            case "percent":
+                return this.percent;
             case "promoToEmail":
                 return this.promoToEmail;
             default:
@@ -152,6 +169,9 @@ public abstract class _DbPromo extends BaseDataObject {
             case "months":
                 this.months = val == null ? 0 : (int)val;
                 break;
+            case "percent":
+                this.percent = (Integer)val;
+                break;
             case "promoToEmail":
                 this.promoToEmail = val;
                 break;
@@ -176,6 +196,7 @@ public abstract class _DbPromo extends BaseDataObject {
         out.writeObject(this.days);
         out.writeObject(this.description);
         out.writeInt(this.months);
+        out.writeObject(this.percent);
         out.writeObject(this.promoToEmail);
     }
 
@@ -187,6 +208,7 @@ public abstract class _DbPromo extends BaseDataObject {
         this.days = (Integer)in.readObject();
         this.description = (String)in.readObject();
         this.months = in.readInt();
+        this.percent = (Integer)in.readObject();
         this.promoToEmail = in.readObject();
     }
 

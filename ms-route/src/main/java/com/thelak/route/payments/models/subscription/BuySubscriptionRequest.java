@@ -17,4 +17,6 @@ public class BuySubscriptionRequest {
 
     String cardName;
 
+    Long promoId;
+
 }

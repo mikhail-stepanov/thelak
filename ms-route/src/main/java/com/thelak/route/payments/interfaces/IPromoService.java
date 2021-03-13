@@ -13,6 +13,7 @@ public interface IPromoService {
     String PROMO_UPDATE = "/v1/promo/update";
     String PROMO_DELETE = "/v1/promo/delete";
     String PROMO_LIST = "/v1/promo/list";
+    String PROMO_CHECK = "/v1/promo/check";
 
     PromoCodeModel get(Long id) throws MicroServiceException;
 
@@ -23,4 +24,7 @@ public interface IPromoService {
     PromoCodeModel update(PromoCodeModel request) throws MicroServiceException;
 
     Boolean delete(Long id) throws MicroServiceException;
+
+    PromoCodeModel check(String promo) throws MicroServiceException;
+
 }
