@@ -181,8 +181,8 @@ public class PromoEndpoint extends MicroserviceAdvice implements IPromoService {
                     name = "Authorization",
                     paramType = "header")}
     )
-    @RequestMapping(value = PROMO_DELETE, method = {RequestMethod.DELETE})
-    public PromoCodeModel check(String promo) throws MicroServiceException {
+    @RequestMapping(value = PROMO_CHECK, method = {RequestMethod.GET})
+    public PromoCodeModel check(@RequestParam String promo) throws MicroServiceException {
         try{
             ObjectContext objectContext = databaseService.getContext();
 
