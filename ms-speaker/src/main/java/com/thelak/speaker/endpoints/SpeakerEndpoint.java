@@ -222,6 +222,7 @@ public class SpeakerEndpoint extends MicroserviceAdvice implements ISpeakerServi
                         where(DbSpeaker.DELETED_DATE.isNull())
                         .and(DbSpeaker.DESCRIPTION.containsIgnoreCase(search.toLowerCase()))
                         .or(DbSpeaker.NAME.containsIgnoreCase(search.toLowerCase()))
+                        .and(DbSpeaker.DELETED_DATE.isNull())
                         .pageSize(30)
                         .select(objectContext);
             else {
@@ -229,6 +230,7 @@ public class SpeakerEndpoint extends MicroserviceAdvice implements ISpeakerServi
                         where(DbSpeaker.DELETED_DATE.isNull())
                         .and(DbSpeaker.DESCRIPTION.containsIgnoreCase(search.toLowerCase()))
                         .or(DbSpeaker.NAME.containsIgnoreCase(search.toLowerCase()))
+                        .and(DbSpeaker.DELETED_DATE.isNull())
                         .pageSize(size)
                         .select(objectContext);
                 if (dbSpeakers.size() >= size * page)

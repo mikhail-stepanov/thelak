@@ -605,7 +605,10 @@ public class VideoEndpoint extends MicroserviceAdvice implements IVideoService {
             dbVideo.setPlayground(Optional.ofNullable(request.getPlayground()).orElse(dbVideo.getPlayground()));
             dbVideo.setPartnerLogoUrl(Optional.ofNullable(request.getPartnerLogoUrl()).orElse(dbVideo.getPartnerLogoUrl()));
             dbVideo.setCoverUrl(Optional.ofNullable(request.getCoverUrl()).orElse(dbVideo.getCoverUrl()));
-            dbVideo.setPosterUrl(Optional.ofNullable(request.getPosterUrl()).orElse(dbVideo.getPosterUrl()));
+            if (request.getPosterUrl() != null && !request.getPosterUrl().isEmpty())
+                dbVideo.setPosterUrl(Optional.ofNullable(request.getPosterUrl()).orElse(dbVideo.getPosterUrl()));
+            else
+                dbVideo.setPosterUrl(null);
             dbVideo.setIsSubscription(Optional.ofNullable(request.getSubscription()).orElse(dbVideo.isIsSubscription()));
             dbVideo.setModifiedDate(LocalDateTime.now());
 
@@ -704,7 +707,8 @@ public class VideoEndpoint extends MicroserviceAdvice implements IVideoService {
                             .where(DbVideoViews.ID_USER.eq(id))
                             .orderBy(DbVideoViews.CREATED_DATE.desc())
                             .selectFirst(objectContext);
-                }catch (Exception ingored){}
+                } catch (Exception ingored) {
+                }
                 result.put(id.toString(), dbVideoViews != null ? dbVideoViews.getCreatedDate().toString() : null);
             });
             return result;

@@ -148,11 +148,13 @@ public class ArticleEndpoint extends MicroserviceAdvice implements IArticleServi
             if (page == null || size == null)
                 dbArticles = ObjectSelect.query(DbArticle.class)
                         .where(DbArticle.DELETED_DATE.isNull())
+                        .orderBy(DbArticle.CREATED_DATE.desc())
                         .pageSize(30)
                         .select(objectContext);
             else {
                 dbArticles = ObjectSelect.query(DbArticle.class)
                         .where(DbArticle.DELETED_DATE.isNull())
+                        .orderBy(DbArticle.CREATED_DATE.desc())
                         .pageSize(size)
                         .select(objectContext);
                 if (dbArticles.size() >= size * page)
@@ -219,9 +221,10 @@ public class ArticleEndpoint extends MicroserviceAdvice implements IArticleServi
                         where(DbArticle.DELETED_DATE.isNull())
                         .and(DbArticle.DESCRIPTION.containsIgnoreCase(search.toLowerCase()))
                         .or(DbArticle.TITLE.containsIgnoreCase(search.toLowerCase()))
-                        .and(DbEvent.DELETED_DATE.isNull())
+                        .and(DbArticle.DELETED_DATE.isNull())
                         .or(DbArticle.AUTHOR.containsIgnoreCase(search.toLowerCase()))
-                        .and(DbEvent.DELETED_DATE.isNull())
+                        .and(DbArticle.DELETED_DATE.isNull())
+                        .orderBy(DbArticle.CREATED_DATE.desc())
                         .pageSize(30)
                         .select(objectContext);
             else {
@@ -229,9 +232,10 @@ public class ArticleEndpoint extends MicroserviceAdvice implements IArticleServi
                         where(DbArticle.DELETED_DATE.isNull())
                         .and(DbArticle.DESCRIPTION.containsIgnoreCase(search.toLowerCase()))
                         .or(DbArticle.TITLE.containsIgnoreCase(search.toLowerCase()))
-                        .and(DbEvent.DELETED_DATE.isNull())
+                        .and(DbArticle.DELETED_DATE.isNull())
                         .or(DbArticle.AUTHOR.containsIgnoreCase(search.toLowerCase()))
-                        .and(DbEvent.DELETED_DATE.isNull())
+                        .and(DbArticle.DELETED_DATE.isNull())
+                        .orderBy(DbArticle.CREATED_DATE.desc())
                         .pageSize(size)
                         .select(objectContext);
                 if (dbArticles.size() >= size * page)

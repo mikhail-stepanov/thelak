@@ -34,7 +34,7 @@ public abstract class _DbPromo extends BaseDataObject {
     protected String code;
     protected Integer days;
     protected String description;
-    protected int months;
+    protected Integer months;
     protected Integer percent;
 
     protected Object promoToEmail;
@@ -92,6 +92,9 @@ public abstract class _DbPromo extends BaseDataObject {
 
     public int getMonths() {
         beforePropertyRead("months");
+        if(this.months == null) {
+            return 0;
+        }
         return this.months;
     }
 
@@ -167,7 +170,7 @@ public abstract class _DbPromo extends BaseDataObject {
                 this.description = (String)val;
                 break;
             case "months":
-                this.months = val == null ? 0 : (int)val;
+                this.months = (Integer)val;
                 break;
             case "percent":
                 this.percent = (Integer)val;
@@ -195,7 +198,7 @@ public abstract class _DbPromo extends BaseDataObject {
         out.writeObject(this.code);
         out.writeObject(this.days);
         out.writeObject(this.description);
-        out.writeInt(this.months);
+        out.writeObject(this.months);
         out.writeObject(this.percent);
         out.writeObject(this.promoToEmail);
     }
@@ -207,7 +210,7 @@ public abstract class _DbPromo extends BaseDataObject {
         this.code = (String)in.readObject();
         this.days = (Integer)in.readObject();
         this.description = (String)in.readObject();
-        this.months = in.readInt();
+        this.months = (Integer)in.readObject();
         this.percent = (Integer)in.readObject();
         this.promoToEmail = in.readObject();
     }

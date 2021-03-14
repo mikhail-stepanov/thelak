@@ -97,7 +97,7 @@
 		<db-attribute name="days" type="INTEGER"/>
 		<db-attribute name="description" type="VARCHAR" length="2048"/>
 		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="months" type="INTEGER" isMandatory="true"/>
+		<db-attribute name="months" type="INTEGER"/>
 		<db-attribute name="percent" type="INTEGER"/>
 	</db-entity>
 	<db-entity name="db_promo_email" schema="public">
