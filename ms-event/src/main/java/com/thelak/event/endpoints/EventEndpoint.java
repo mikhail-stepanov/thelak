@@ -118,7 +118,8 @@ public class EventEndpoint extends MicroserviceAdvice implements IEventService {
                         .where(startDateExpression)
                         .and(endDateExpression)
                         .and(DbEvent.DELETED_DATE.isNull())
-                        .orderBy(DbEvent.START_DATE.desc())
+                        .and(DbEvent.START_DATE.gte(LocalDateTime.now()))
+                        .orderBy(DbEvent.START_DATE.asc())
                         .pageSize(30)
                         .select(objectContext);
             else {
@@ -126,7 +127,8 @@ public class EventEndpoint extends MicroserviceAdvice implements IEventService {
                         .where(startDateExpression)
                         .and(endDateExpression)
                         .and(DbEvent.DELETED_DATE.isNull())
-                        .orderBy(DbEvent.START_DATE.desc())
+                        .and(DbEvent.START_DATE.gte(LocalDateTime.now()))
+                        .orderBy(DbEvent.START_DATE.asc())
                         .pageSize(size)
                         .select(objectContext);
                 if (dbEvents.size() >= size * page)
