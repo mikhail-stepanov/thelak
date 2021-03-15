@@ -96,6 +96,7 @@ public class PromoEndpoint extends MicroserviceAdvice implements IPromoService {
             dbPromo.setCode(request.getCode());
             dbPromo.setMonths(request.getMonths());
             dbPromo.setDescription(request.getDescription());
+            dbPromo.setPercent(request.getPercent());
 
             objectContext.commitChanges();
 
@@ -131,6 +132,7 @@ public class PromoEndpoint extends MicroserviceAdvice implements IPromoService {
             dbPromo.setActive(Optional.ofNullable(request.getActive()).orElse(dbPromo.isActive()));
             dbPromo.setCode(Optional.ofNullable(request.getCode()).orElse(dbPromo.getCode()));
             dbPromo.setMonths(Optional.ofNullable(request.getMonths()).orElse(dbPromo.getMonths()));
+            dbPromo.setPercent(Optional.ofNullable(request.getPercent()).orElse(dbPromo.getPercent()));
             dbPromo.setDescription(Optional.ofNullable(request.getDescription()).orElse(dbPromo.getDescription()));
 
             objectContext.commitChanges();
@@ -193,8 +195,10 @@ public class PromoEndpoint extends MicroserviceAdvice implements IPromoService {
 
             objectContext.commitChanges();
 
-            return buildPromoModel(dbPromo);
-
+            if(dbPromo.getPercent()>0) {
+                return buildPromoModel(dbPromo);
+            }
+            throw new MsObjectNotFoundException("Can't find promo:", promo);
         }catch (Exception e){
             throw new MsObjectNotFoundException("Can't find promo:", promo);
         }

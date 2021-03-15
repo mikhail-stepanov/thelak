@@ -22,4 +22,6 @@ public class PromoCodeCreateRequest {
     String description;
 
     List<String> emails;
+
+    Integer percent;
 }
