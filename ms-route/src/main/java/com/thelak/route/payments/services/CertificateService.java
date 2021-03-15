@@ -5,6 +5,7 @@ import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.payments.interfaces.ICertificateService;
 import com.thelak.route.payments.models.certificate.CertificateModel;
 import com.thelak.route.payments.models.certificate.CreateCertificateRequest;
+import com.thelak.route.payments.models.certificate.EmailCertificateRequest;
 import com.thelak.route.payments.models.certificate.IssuedCertificateModel;
 import org.springframework.web.client.RestTemplate;
 
@@ -55,5 +56,10 @@ public class CertificateService extends BaseMicroservice implements ICertificate
     @Override
     public Boolean activate(String uuid) throws MicroServiceException {
         return retry(() -> restTemplate.getForEntity(buildUrl(CERTIFICATE_ACTIVATE), Boolean.class, uuid).getBody());
+    }
+
+    @Override
+    public Boolean email(EmailCertificateRequest request) throws MicroServiceException {
+        return null;
     }
 }

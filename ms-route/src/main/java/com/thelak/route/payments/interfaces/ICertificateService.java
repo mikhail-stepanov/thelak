@@ -3,6 +3,7 @@ package com.thelak.route.payments.interfaces;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.payments.models.certificate.CertificateModel;
 import com.thelak.route.payments.models.certificate.CreateCertificateRequest;
+import com.thelak.route.payments.models.certificate.EmailCertificateRequest;
 import com.thelak.route.payments.models.certificate.IssuedCertificateModel;
 
 import java.util.List;
@@ -18,6 +19,8 @@ public interface ICertificateService {
     String CERTIFICATE_ACTIVATE = "/v1/certificate/activate";
     String CERTIFICATE_GET_UUID = "/v1/certificate/uuid";
 
+    //the most shitty code in my life
+    String CERTIFICATE_EMAIL = "/v1/certificate/email";
 
     CertificateModel get(Long id) throws MicroServiceException;
 
@@ -34,4 +37,6 @@ public interface ICertificateService {
     IssuedCertificateModel getByUUID(String uuid) throws MicroServiceException;
 
     Boolean activate(String uuid) throws MicroServiceException;
+
+    Boolean email(EmailCertificateRequest request) throws MicroServiceException;
 }

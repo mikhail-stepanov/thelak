@@ -9,10 +9,12 @@ import com.thelak.route.auth.interfaces.IAuthenticationService;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.exceptions.MsBadRequestException;
 import com.thelak.route.exceptions.MsInternalErrorException;
+import com.thelak.route.message.IMessageService;
 import com.thelak.route.payments.interfaces.ICertificateService;
 import com.thelak.route.payments.models.certificate.CertificateModel;
 import com.thelak.route.payments.models.certificate.CertificateViewType;
 import com.thelak.route.payments.models.certificate.CreateCertificateRequest;
+import com.thelak.route.payments.models.certificate.EmailCertificateRequest;
 import com.thelak.route.payments.models.certificate.IssuedCertificateModel;
 import com.thelak.route.payments.models.subscription.SetSubscriptionModel;
 import io.swagger.annotations.Api;
@@ -23,6 +25,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +33,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 
 import static com.thelak.payments.services.PaymentsHelper.buildCertificateModel;
@@ -43,6 +47,13 @@ public class CertificateEndpoint extends MicroserviceAdvice implements ICertific
 
     @Autowired
     private IAuthenticationService authenticationService;
+
+
+    @Autowired
+    private IMessageService messageService;
+
+    @Value("${user.certificate.queue:#{null}}")
+    private String userCertificateQueue;
 
     @Override
     @ApiOperation(value = "Get certificate by id")
@@ -212,7 +223,8 @@ public class CertificateEndpoint extends MicroserviceAdvice implements ICertific
 
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
-        }    }
+        }
+    }
 
     @Override
     @ApiOperation(value = "Activate certificate")
@@ -223,7 +235,7 @@ public class CertificateEndpoint extends MicroserviceAdvice implements ICertific
                     paramType = "header")}
     )
     @RequestMapping(value = CERTIFICATE_ACTIVATE, method = {RequestMethod.GET})
-    public Boolean activate(String uuid) throws MicroServiceException {
+    public Boolean activate(@RequestParam String uuid) throws MicroServiceException {
         try {
             ObjectContext objectContext = databaseService.getContext();
 
@@ -244,6 +256,62 @@ public class CertificateEndpoint extends MicroserviceAdvice implements ICertific
             } else throw new MsBadRequestException("Certificate has expired");
         } catch (Exception e) {
             e.printStackTrace();
+            throw new MsInternalErrorException(e.getMessage());
+        }
+    }
+
+    @Override
+    @ApiOperation(value = "Send certificate over email")
+    @RequestMapping(value = CERTIFICATE_EMAIL, method = {RequestMethod.POST})
+    public Boolean email(@RequestBody EmailCertificateRequest request) throws MicroServiceException {
+        try {
+            ObjectContext objectContext = databaseService.getContext();
+
+            request.getEmail().forEach(email -> {
+                DbCertificate dbCertificate = SelectById.query(DbCertificate.class, request.getId())
+                        .selectFirst(objectContext);
+
+                int leftLimit = 48; // numeral '0'
+                int rightLimit = 122; // letter 'z'
+                int targetStringLength = 10;
+                Random random = new Random();
+
+                String generatedString = random.ints(leftLimit, rightLimit + 1)
+                        .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                        .limit(targetStringLength)
+                        .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                        .toString();
+
+                DbIssuedCertificate certificate = objectContext.newObject(DbIssuedCertificate.class);
+                certificate.setActive(true);
+                certificate.setActiveDate(LocalDateTime.now().plusMonths(1L));
+                certificate.setCreatedDate(LocalDateTime.now());
+                certificate.setUuid(generatedString);
+                certificate.setIssuedToCertificate(dbCertificate);
+                certificate.setFio(request.getFio().get(0));
+                certificate.setDescription(request.getDescription());
+                certificate.setType(request.getType().name());
+                certificate.setEmail(email);
+                objectContext.commitChanges();
+
+
+                IssuedCertificateModel issuedCertificateModel = IssuedCertificateModel.builder()
+                        .id((Long) certificate.getObjectId().getIdSnapshot().get("id"))
+                        .buyerEmail(certificate.getEmail())
+                        .uuid(certificate.getUuid())
+                        .fio(certificate.getFio())
+                        .description(certificate.getDescription())
+                        .active(certificate.isActive())
+                        .activeDate(certificate.getActiveDate())
+                        .type(CertificateViewType.valueOf(certificate.getType()))
+                        .certificateModel(buildCertificateModel(certificate.getIssuedToCertificate()))
+                        .build();
+
+                messageService.publish(userCertificateQueue, issuedCertificateModel);
+            });
+
+            return true;
+        } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
         }
     }
