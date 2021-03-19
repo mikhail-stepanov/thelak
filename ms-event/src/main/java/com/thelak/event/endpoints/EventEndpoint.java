@@ -104,12 +104,12 @@ public class EventEndpoint extends MicroserviceAdvice implements IEventService {
 
             final Expression startDateExpression;
             if (startDate != null)
-                startDateExpression = DbEvent.START_DATE.gte(LocalDateTime.parse(startDate,DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")));
+                startDateExpression = DbEvent.START_DATE.gt(LocalDateTime.parse(startDate,DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")));
             else startDateExpression = DbVideo.TITLE.isNotNull();
 
             final Expression endDateExpression;
             if (endDate != null)
-                endDateExpression = DbEvent.END_DATE.lte(LocalDateTime.parse(endDate,DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")));
+                endDateExpression = DbEvent.END_DATE.lt(LocalDateTime.parse(endDate,DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")));
             else endDateExpression = DbVideo.TITLE.isNotNull();
 
             List<DbEvent> dbEvents;
@@ -118,7 +118,6 @@ public class EventEndpoint extends MicroserviceAdvice implements IEventService {
                         .where(startDateExpression)
                         .and(endDateExpression)
                         .and(DbEvent.DELETED_DATE.isNull())
-                        .and(DbEvent.START_DATE.gte(LocalDateTime.now()))
                         .orderBy(DbEvent.START_DATE.asc())
                         .pageSize(30)
                         .select(objectContext);
@@ -127,7 +126,6 @@ public class EventEndpoint extends MicroserviceAdvice implements IEventService {
                         .where(startDateExpression)
                         .and(endDateExpression)
                         .and(DbEvent.DELETED_DATE.isNull())
-                        .and(DbEvent.START_DATE.gte(LocalDateTime.now()))
                         .orderBy(DbEvent.START_DATE.asc())
                         .pageSize(size)
                         .select(objectContext);
