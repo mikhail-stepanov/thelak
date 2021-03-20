@@ -102,30 +102,23 @@ public class EventEndpoint extends MicroserviceAdvice implements IEventService {
         try {
             ObjectContext objectContext = databaseService.getContext();
 
-            final Expression startDateExpression;
+            Expression dateExpression = DbEvent.START_DATE.gte(LocalDateTime.now());
             if (startDate != null)
-                startDateExpression = DbEvent.START_DATE.gte(LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")))
-                        .andExp(DbEvent.START_DATE.lte(LocalDateTime.parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"))));
-            else startDateExpression = DbEvent.START_DATE.gte(LocalDateTime.now());
-
-            final Expression endDateExpression;
-            if (startDate != null)
-                endDateExpression = DbEvent.END_DATE.gte(LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")));
-            else endDateExpression = DbVideo.TITLE.isNotNull();
+                dateExpression = DbEvent.START_DATE.gte(LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")))
+                        .andExp(DbEvent.START_DATE.lte(LocalDateTime.parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"))))
+                        .orExp(DbEvent.END_DATE.gte(LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"))));
 
             List<DbEvent> dbEvents;
             if (page == null || size == null)
                 dbEvents = ObjectSelect.query(DbEvent.class)
-                        .where(startDateExpression)
-                        .and(endDateExpression)
+                        .where(dateExpression)
                         .and(DbEvent.DELETED_DATE.isNull())
                         .orderBy(DbEvent.START_DATE.asc())
                         .pageSize(30)
                         .select(objectContext);
             else {
                 dbEvents = ObjectSelect.query(DbEvent.class)
-                        .where(startDateExpression)
-                        .and(endDateExpression)
+                        .where(dateExpression)
                         .and(DbEvent.DELETED_DATE.isNull())
                         .orderBy(DbEvent.START_DATE.asc())
                         .pageSize(size)
