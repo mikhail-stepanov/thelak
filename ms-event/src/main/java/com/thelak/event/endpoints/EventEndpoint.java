@@ -104,12 +104,13 @@ public class EventEndpoint extends MicroserviceAdvice implements IEventService {
 
             final Expression startDateExpression;
             if (startDate != null)
-                startDateExpression = DbEvent.START_DATE.gt(LocalDateTime.parse(startDate,DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")));
-            else startDateExpression = DbEvent.START_DATE.gt(LocalDateTime.now());
+                startDateExpression = DbEvent.START_DATE.gte(LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")))
+                        .andExp(DbEvent.START_DATE.lte(LocalDateTime.parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"))));
+            else startDateExpression = DbEvent.START_DATE.gte(LocalDateTime.now());
 
             final Expression endDateExpression;
-            if (endDate != null)
-                endDateExpression = DbEvent.END_DATE.lt(LocalDateTime.parse(endDate,DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")));
+            if (startDate != null)
+                endDateExpression = DbEvent.END_DATE.gte(LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")));
             else endDateExpression = DbVideo.TITLE.isNotNull();
 
             List<DbEvent> dbEvents;
