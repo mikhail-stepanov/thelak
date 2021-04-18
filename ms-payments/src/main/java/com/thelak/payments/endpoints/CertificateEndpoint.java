@@ -282,13 +282,14 @@ public class CertificateEndpoint extends MicroserviceAdvice implements ICertific
                         .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                         .toString();
 
+
                 DbIssuedCertificate certificate = objectContext.newObject(DbIssuedCertificate.class);
                 certificate.setActive(true);
                 certificate.setActiveDate(LocalDateTime.now().plusMonths(1L));
                 certificate.setCreatedDate(LocalDateTime.now());
                 certificate.setUuid(generatedString);
                 certificate.setIssuedToCertificate(dbCertificate);
-                certificate.setFio(request.getFio().get(0));
+                certificate.setFio(request.getFio().get(0) != null ? request.getFio().get(0) : "");
                 certificate.setDescription(request.getDescription());
                 certificate.setType(request.getType().name());
                 certificate.setEmail(email);
