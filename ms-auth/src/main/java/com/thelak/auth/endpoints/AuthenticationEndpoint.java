@@ -363,6 +363,38 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
     }
 
     @Override
+    @RequestMapping(value = AUTH_USER_BY_EMAIL, method = {RequestMethod.GET})
+    public VueHelpModel getByEmail(String email) throws MicroServiceException {
+        try{
+            ObjectContext objectContext = databaseService.getContext();
+
+            DbUser dbUser = ObjectSelect.query(DbUser.class)
+                    .where(DbUser.EMAIL.eq(email))
+                    .selectFirst(objectContext);
+
+            return VueHelpModel.builder()
+                    .status("success")
+                    .data(UserModel.builder()
+                            .id((Long) dbUser.getObjectId().getIdSnapshot().get("id"))
+                            .name(dbUser.getName())
+                            .email(dbUser.getEmail())
+                            .build())
+                    .build();
+
+        } catch (Exception e){
+            return VueHelpModel.builder()
+                    .status("success")
+                    .data(UserModel.builder()
+                            .id(0L)
+                            .name("Уважаемый Гость")
+                            .email(email)
+                            .build())
+                    .build();
+        }
+
+    }
+
+    @Override
     @ApiOperation(value = "Get user notification info")
     @ApiImplicitParams(
             {@ApiImplicitParam(required = true,

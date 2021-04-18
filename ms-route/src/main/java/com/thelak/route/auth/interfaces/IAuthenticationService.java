@@ -20,6 +20,7 @@ public interface IAuthenticationService {
     String AUTH_USER_SUBSCRIPTION = "/v1/auth/subscription";
 
     String AUTH_USER_INFO = "/v1/auth/info/list";
+    String AUTH_USER_BY_EMAIL= "/v1/auth/user/email";
 
     String AUTH_USER_NOTIFICATION_INFO = "/v1/auth/notification/info";
     String AUTH_USER_NOTIFICATION_UPDATE = "/v1/auth/notification/update";
@@ -40,6 +41,8 @@ public interface IAuthenticationService {
     VueHelpModel updateUser(UpdateUserModel user) throws MicroServiceException;
 
     VueHelpModel setSubscription(SetSubscriptionModel setSubscrip) throws MicroServiceException;
+
+    VueHelpModel getByEmail(String email) throws MicroServiceException;
 
     NotificationModel getNotificationInfo() throws MicroServiceException;
 

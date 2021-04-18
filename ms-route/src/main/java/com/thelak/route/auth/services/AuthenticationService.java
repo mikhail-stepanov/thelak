@@ -2,11 +2,13 @@ package com.thelak.route.auth.services;
 
 import com.thelak.route.auth.interfaces.IAuthenticationService;
 import com.thelak.route.auth.models.*;
+import com.thelak.route.category.models.CategoryModel;
 import com.thelak.route.common.services.BaseMicroservice;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.payments.models.subscription.SetSubscriptionModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
@@ -59,6 +61,14 @@ public class AuthenticationService extends BaseMicroservice implements IAuthenti
     @Override
     public NotificationModel getNotificationInfo() throws MicroServiceException {
         return null;
+    }
+
+    @Override
+    public VueHelpModel getByEmail(String email) throws MicroServiceException {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(buildUrl(AUTH_USER_BY_EMAIL))
+                .queryParam("email", email);
+
+        return retry(() -> restTemplate.getForEntity(builder.toUriString(), VueHelpModel.class, email).getBody());
     }
 
     @Override

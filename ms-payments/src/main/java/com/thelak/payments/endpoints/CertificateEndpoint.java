@@ -5,7 +5,9 @@ import com.thelak.core.models.UserInfo;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbCertificate;
 import com.thelak.database.entity.DbIssuedCertificate;
+import com.thelak.database.entity.DbUser;
 import com.thelak.route.auth.interfaces.IAuthenticationService;
+import com.thelak.route.auth.models.VueHelpModel;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.exceptions.MsBadRequestException;
 import com.thelak.route.exceptions.MsInternalErrorException;
@@ -282,6 +284,12 @@ public class CertificateEndpoint extends MicroserviceAdvice implements ICertific
                         .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                         .toString();
 
+                VueHelpModel dbUser = null;
+                try {
+                    dbUser = authenticationService.getByEmail(email);
+                } catch (MicroServiceException e) {
+                    e.printStackTrace();
+                }
 
                 DbIssuedCertificate certificate = objectContext.newObject(DbIssuedCertificate.class);
                 certificate.setActive(true);
@@ -289,7 +297,7 @@ public class CertificateEndpoint extends MicroserviceAdvice implements ICertific
                 certificate.setCreatedDate(LocalDateTime.now());
                 certificate.setUuid(generatedString);
                 certificate.setIssuedToCertificate(dbCertificate);
-                certificate.setFio(request.getFio().get(0) != null ? request.getFio().get(0) : "");
+                certificate.setFio(dbUser.getData().getName());
                 certificate.setDescription(request.getDescription());
                 certificate.setType(request.getType().name());
                 certificate.setEmail(email);
