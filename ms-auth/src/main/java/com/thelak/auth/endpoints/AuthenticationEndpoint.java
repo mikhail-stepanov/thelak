@@ -520,7 +520,7 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
                         .select(objectContext));
 
             request.setTo(to);
-            messageService.publish(userEmailQueue, to);
+            messageService.publish(userEmailQueue, request);
             return true;
         } catch (Exception e){
             return false;
