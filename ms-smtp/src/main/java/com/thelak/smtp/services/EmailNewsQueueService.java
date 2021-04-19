@@ -50,11 +50,15 @@ public class EmailNewsQueueService {
                 String subject = m.getSubject();
                 String text = m.getHtmlBody();
                 m.getTo().forEach(to -> {
-                    SimpleMailMessage message = new SimpleMailMessage();
-                    message.setTo(to);
-                    message.setSubject(subject);
-                    message.setText(text);
-                    emailSender.send(message);
+                    try {
+                        SimpleMailMessage message = new SimpleMailMessage();
+                        message.setTo(to);
+                        message.setSubject(subject);
+                        message.setText(text);
+                        emailSender.send(message);
+                    } catch (Exception e){
+                        System.out.println(e.getMessage());
+                    }
                 });
             });
 

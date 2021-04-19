@@ -28,7 +28,7 @@ public class EmailQueueService {
 
     private Closeable queueSubscriber;
 
-    @Value("${user.certificate.queue:#{null}}")
+    @Value("${user.certificate.queue:user_certificate_queue}")
     private String userCertificateQueue;
 
     @PostConstruct
@@ -53,10 +53,6 @@ public class EmailQueueService {
                 message.setTo(m.getBuyerEmail());
                 message.setSubject("Thelak. Сертификат.");
                 message.setText("Уважаемый пользователь Thelak!\n\nВы приобрели сертификат на подписку.\nДля его просмотра перейдите по ссылке: " + "https://thelak.com/cert/view?uuid=" + URLEncoder.encode(m.getUuid(), StandardCharsets.UTF_8) + "\n\n\nС уважением,\nКоманда Thelak");
-                try {
-                    emailSender.send(message);
-                } catch (Exception e){
-                }
             });
 
             return true;
