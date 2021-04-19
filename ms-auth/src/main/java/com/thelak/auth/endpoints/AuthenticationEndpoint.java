@@ -389,7 +389,7 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
     @Override
     @RequestMapping(value = AUTH_USER_BY_EMAIL, method = {RequestMethod.GET})
     public VueHelpModel getByEmail(@RequestParam String email) throws MicroServiceException {
-        try{
+        try {
             ObjectContext objectContext = databaseService.getContext();
 
             DbUser dbUser = ObjectSelect.query(DbUser.class)
@@ -405,7 +405,7 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
                             .build())
                     .build();
 
-        } catch (Exception e){
+        } catch (Exception e) {
             return VueHelpModel.builder()
                     .status("success")
                     .data(UserModel.builder()
@@ -493,25 +493,25 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
     @Override
     @RequestMapping(value = AUTH_USER_NOTIFICATION_EMAIL, method = {RequestMethod.POST})
     public Boolean sendNotificationEmail(@RequestBody EmailAllRequest request) throws MicroServiceException {
-        try{
+        try {
             ObjectContext objectContext = databaseService.getContext();
 
             List<String> to = new ArrayList<>();
-            if(request.getTo()!=null && !request.getTo().isEmpty())
+            if (request.getTo() != null && !request.getTo().isEmpty())
                 to.addAll(request.getTo());
-            if(request.getNews()){
-              List<DbNotification> news = ObjectSelect.query(DbNotification.class)
-                      .where(DbNotification.NEWS.eq(true))
-                      .select(objectContext);
-              news.forEach(user -> to.add(user.getNotificationToUser().getEmail()));
+            if (request.getNews() != null && request.getNews()) {
+                List<DbNotification> news = ObjectSelect.query(DbNotification.class)
+                        .where(DbNotification.NEWS.eq(true))
+                        .select(objectContext);
+                news.forEach(user -> to.add(user.getNotificationToUser().getEmail()));
             }
-            if(request.getRecommendation()){
+            if (request.getRecommendation() != null && request.getRecommendation()) {
                 List<DbNotification> news = ObjectSelect.query(DbNotification.class)
                         .where(DbNotification.RECOMMENDATION.eq(true))
                         .select(objectContext);
                 news.forEach(user -> to.add(user.getNotificationToUser().getEmail()));
             }
-            if(request.getAll())
+            if (request.getAll() != null && request.getAll())
                 to.addAll(ObjectSelect.columnQuery(DbUser.class, DbUser.EMAIL)
                         .select(objectContext));
 
@@ -519,7 +519,7 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
             System.out.println(request);
             messageService.publish(userEmailQueue, request);
             return true;
-        } catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }

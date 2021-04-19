@@ -153,7 +153,6 @@ public class EmailEndpoint extends MicroserviceAdvice implements IEmailService {
     @ApiOperation(value = "Send email for group of users")
     @RequestMapping(value = EMAIL_ALL, method = {RequestMethod.POST})
     public Boolean sendEmailForAll(@RequestBody EmailAllRequest request) throws MicroServiceException {
-        authenticationService.sendNotificationEmail(request);
-        return true;
+        return authenticationService.sendNotificationEmail(request);
     }
 }
