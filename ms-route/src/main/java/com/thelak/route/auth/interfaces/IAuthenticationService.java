@@ -3,6 +3,7 @@ package com.thelak.route.auth.interfaces;
 import com.thelak.route.auth.models.*;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.payments.models.subscription.SetSubscriptionModel;
+import com.thelak.route.smtp.models.EmailAllRequest;
 import org.springframework.http.ResponseEntity;
 
 import java.text.ParseException;
@@ -22,6 +23,7 @@ public interface IAuthenticationService {
     String AUTH_USER_INFO = "/v1/auth/info/list";
     String AUTH_USER_BY_EMAIL= "/v1/auth/user/email";
 
+    String AUTH_USER_NOTIFICATION_EMAIL = "/v1/auth/notification/email";
     String AUTH_USER_NOTIFICATION_INFO = "/v1/auth/notification/info";
     String AUTH_USER_NOTIFICATION_UPDATE = "/v1/auth/notification/update";
 
@@ -47,6 +49,8 @@ public interface IAuthenticationService {
     NotificationModel getNotificationInfo() throws MicroServiceException;
 
     NotificationModel updateNotificationInfo(NotificationModel notificationModel) throws MicroServiceException;
+
+    Boolean sendNotificationEmail(EmailAllRequest request) throws MicroServiceException;
 
     List<UserInfoModel> infoList(String search, Integer page, Integer size) throws MicroServiceException;
 }

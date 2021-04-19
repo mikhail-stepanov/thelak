@@ -19,6 +19,8 @@ public class EmailAllRequest {
 
     Boolean recommendation;
 
+    Boolean all;
+
     String subject;
 
     String htmlBody;

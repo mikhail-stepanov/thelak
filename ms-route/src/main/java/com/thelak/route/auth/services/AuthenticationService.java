@@ -6,6 +6,7 @@ import com.thelak.route.category.models.CategoryModel;
 import com.thelak.route.common.services.BaseMicroservice;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.payments.models.subscription.SetSubscriptionModel;
+import com.thelak.route.smtp.models.EmailAllRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -74,6 +75,11 @@ public class AuthenticationService extends BaseMicroservice implements IAuthenti
     @Override
     public NotificationModel updateNotificationInfo(NotificationModel notificationModel) throws MicroServiceException {
         return null;
+    }
+
+    @Override
+    public Boolean sendNotificationEmail(EmailAllRequest request) throws MicroServiceException {
+        return retry(() -> restTemplate.postForEntity(buildUrl(AUTH_USER_NOTIFICATION_EMAIL), request, Boolean.class).getBody());
     }
 
     @Override

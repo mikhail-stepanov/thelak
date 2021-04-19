@@ -11,10 +11,23 @@ import com.thelak.database.entity.DbUser;
 import com.thelak.database.entity.DbUserSession;
 import com.thelak.route.article.interfaces.IArticleFunctionsService;
 import com.thelak.route.auth.interfaces.IAuthenticationService;
-import com.thelak.route.auth.models.*;
-import com.thelak.route.exceptions.*;
+import com.thelak.route.auth.models.AuthLoginRequest;
+import com.thelak.route.auth.models.AuthSignupRequest;
+import com.thelak.route.auth.models.NotificationModel;
+import com.thelak.route.auth.models.RestorePasswordRequest;
+import com.thelak.route.auth.models.UpdateUserModel;
+import com.thelak.route.auth.models.UserInfoModel;
+import com.thelak.route.auth.models.UserModel;
+import com.thelak.route.auth.models.VueHelpModel;
+import com.thelak.route.exceptions.MicroServiceException;
+import com.thelak.route.exceptions.MsAlreadyExistsException;
+import com.thelak.route.exceptions.MsInternalErrorException;
+import com.thelak.route.exceptions.MsNotAuthorizedException;
+import com.thelak.route.exceptions.MsObjectNotFoundException;
+import com.thelak.route.message.IMessageService;
 import com.thelak.route.payments.models.subscription.SetSubscriptionModel;
 import com.thelak.route.smtp.interfaces.IEmailService;
+import com.thelak.route.smtp.models.EmailAllRequest;
 import com.thelak.route.video.interfaces.IVideoService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.annotations.Api;
@@ -22,15 +35,20 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -49,6 +67,12 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
 
     @Autowired
     private ITokenService tokenService;
+
+    @Autowired
+    private IMessageService messageService;
+
+    @Value("${user.email.news.queue:news_email_queue}")
+    private String userEmailQueue;
 
     @Autowired
     private IEmailService emailService;
@@ -364,7 +388,7 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
 
     @Override
     @RequestMapping(value = AUTH_USER_BY_EMAIL, method = {RequestMethod.GET})
-    public VueHelpModel getByEmail(String email) throws MicroServiceException {
+    public VueHelpModel getByEmail(@RequestParam String email) throws MicroServiceException {
         try{
             ObjectContext objectContext = databaseService.getContext();
 
@@ -463,6 +487,43 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
 
         } catch (Exception e) {
             throw new MsInternalErrorException(e.getMessage());
+        }
+    }
+
+    @Override
+    @RequestMapping(value = AUTH_USER_NOTIFICATION_EMAIL, method = {RequestMethod.POST})
+    public Boolean sendNotificationEmail(@RequestBody EmailAllRequest request) throws MicroServiceException {
+        try{
+            ObjectContext objectContext = databaseService.getContext();
+
+            List<String> to = new ArrayList<>();
+            if(request.getTo()!=null && !request.getTo().isEmpty())
+                to.addAll(request.getTo());
+            if(request.getNews()){
+              List<DbNotification> news = ObjectSelect.query(DbNotification.class)
+                      .where(DbNotification.NEWS.eq(true))
+                      .select(objectContext);
+              news.forEach(user ->{
+                  to.add(user.getNotificationToUser().getEmail());
+              });
+            }
+            if(request.getRecommendation()){
+                List<DbNotification> news = ObjectSelect.query(DbNotification.class)
+                        .where(DbNotification.RECOMMENDATION.eq(true))
+                        .select(objectContext);
+                news.forEach(user ->{
+                    to.add(user.getNotificationToUser().getEmail());
+                });
+            }
+            if(request.getAll())
+                to.addAll(ObjectSelect.columnQuery(DbUser.class, DbUser.EMAIL)
+                        .select(objectContext));
+
+            request.setTo(to);
+            messageService.publish(userEmailQueue, to);
+            return true;
+        } catch (Exception e){
+            return false;
         }
     }
 
