@@ -3,6 +3,7 @@ package com.thelak.smtp.endpoints;
 import com.thelak.core.endpoints.MicroserviceAdvice;
 import com.thelak.database.DatabaseService;
 import com.thelak.database.entity.DbSmtpTemplate;
+import com.thelak.route.auth.interfaces.IAuthenticationService;
 import com.thelak.route.exceptions.MicroServiceException;
 import com.thelak.route.smtp.interfaces.IEmailService;
 import com.thelak.route.smtp.models.EmailAllRequest;
@@ -40,6 +41,9 @@ public class EmailEndpoint extends MicroserviceAdvice implements IEmailService {
 
     @Autowired
     public SimpleMailMessage template;
+
+    @Autowired
+    public IAuthenticationService authenticationService;
 
     @Autowired
     private SpringTemplateEngine thymeleafTemplateEngine;
@@ -147,7 +151,9 @@ public class EmailEndpoint extends MicroserviceAdvice implements IEmailService {
 
     @Override
     @ApiOperation(value = "Send email for group of users")
-    @RequestMapping(value = EMAIL_ALL, method = {RequestMethod.POST})    public Boolean sendEmailForAll(@RequestBody EmailAllRequest request) throws MicroServiceException {
+    @RequestMapping(value = EMAIL_ALL, method = {RequestMethod.POST})
+    public Boolean sendEmailForAll(@RequestBody EmailAllRequest request) throws MicroServiceException {
+        authenticationService.sendNotificationEmail(request);
         return true;
     }
 }
