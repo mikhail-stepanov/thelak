@@ -48,12 +48,12 @@ public class EmailQueueService {
 
     private boolean handleMessage(List<IssuedCertificateModel> model) {
         try {
-            System.out.println(model);
             model.forEach(m -> {
                 SimpleMailMessage message = new SimpleMailMessage();
                 message.setTo(m.getBuyerEmail());
                 message.setSubject("Thelak. Сертификат.");
                 message.setText("Уважаемый пользователь Thelak!\n\nВы приобрели сертификат на подписку.\nДля его просмотра перейдите по ссылке: " + "https://thelak.com/cert/view?uuid=" + URLEncoder.encode(m.getUuid(), StandardCharsets.UTF_8) + "\n\n\nС уважением,\nКоманда Thelak");
+                emailSender.send(message);
             });
 
             return true;
