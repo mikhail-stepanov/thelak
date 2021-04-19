@@ -503,23 +503,20 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
               List<DbNotification> news = ObjectSelect.query(DbNotification.class)
                       .where(DbNotification.NEWS.eq(true))
                       .select(objectContext);
-              news.forEach(user ->{
-                  to.add(user.getNotificationToUser().getEmail());
-              });
+              news.forEach(user -> to.add(user.getNotificationToUser().getEmail()));
             }
             if(request.getRecommendation()){
                 List<DbNotification> news = ObjectSelect.query(DbNotification.class)
                         .where(DbNotification.RECOMMENDATION.eq(true))
                         .select(objectContext);
-                news.forEach(user ->{
-                    to.add(user.getNotificationToUser().getEmail());
-                });
+                news.forEach(user -> to.add(user.getNotificationToUser().getEmail()));
             }
             if(request.getAll())
                 to.addAll(ObjectSelect.columnQuery(DbUser.class, DbUser.EMAIL)
                         .select(objectContext));
 
             request.setTo(to);
+            System.out.println(request);
             messageService.publish(userEmailQueue, request);
             return true;
         } catch (Exception e){
