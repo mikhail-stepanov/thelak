@@ -48,6 +48,7 @@ public class EmailQueueService {
 
     private boolean handleMessage(List<IssuedCertificateModel> model) {
         try {
+            System.out.println(model);
             model.forEach(m -> {
                 SimpleMailMessage message = new SimpleMailMessage();
                 message.setTo(m.getBuyerEmail());
