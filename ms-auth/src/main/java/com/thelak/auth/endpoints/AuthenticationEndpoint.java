@@ -137,9 +137,6 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
             user.setName(request.getName());
             user.setEmail(request.getEmail());
             user.setPhone(request.getPhone());
-            user.setCity(request.getCity());
-            user.setCountry(request.getCountry());
-            user.setBirthday(LocalDate.parse(request.getBirthday(), DateTimeFormatter.ofPattern("dd.MM.yyyy")));
             user.setSalt(PasswordHelper.generateSalt());
             user.setPassword(PasswordHelper.hashPassword(request.getPassword(), user.getSalt()));
             user.setIsAdmin(false);
@@ -159,9 +156,6 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
                             .name(user.getName())
                             .email(user.getEmail())
                             .phone(user.getPhone())
-                            .city(user.getCity())
-                            .country(user.getCountry())
-                            .birthday(user.getBirthday())
                             .isSubscribe(user.isIsSubscribe())
                             .subscriptionDate(user.getSubscriptionDate())
                             .roles(user.isIsAdmin() ? "admin" : "user")
