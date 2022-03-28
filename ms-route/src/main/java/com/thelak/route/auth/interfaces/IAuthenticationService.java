@@ -52,5 +52,5 @@ public interface IAuthenticationService {
 
     Boolean sendNotificationEmail(EmailAllRequest request) throws MicroServiceException;
 
-    List<UserInfoModel> infoList(String search, Integer page, Integer size) throws MicroServiceException;
+    List<UserInfoModel> infoList(String search, Integer page, Integer size, DateSortEnum sort) throws MicroServiceException;
 }

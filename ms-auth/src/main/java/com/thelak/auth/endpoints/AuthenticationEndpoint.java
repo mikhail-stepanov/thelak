@@ -1,11 +1,11 @@
 package com.thelak.auth.endpoints;
 
+import com.thelak.route.auth.models.DateSortEnum;
 import com.thelak.auth.util.PasswordHelper;
 import com.thelak.core.endpoints.MicroserviceAdvice;
 import com.thelak.core.interfaces.ITokenService;
 import com.thelak.core.models.UserInfo;
 import com.thelak.database.DatabaseService;
-import com.thelak.database.entity.DbEvent;
 import com.thelak.database.entity.DbNotification;
 import com.thelak.database.entity.DbPasswordRestore;
 import com.thelak.database.entity.DbUser;
@@ -36,7 +36,6 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,9 +49,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -528,7 +525,7 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
                     paramType = "header")}
     )
     @RequestMapping(value = AUTH_USER_INFO, method = {RequestMethod.GET})
-    public List<UserInfoModel> infoList(@RequestParam(required = false) String search, @RequestParam Integer page, @RequestParam Integer size) throws MicroServiceException {
+    public List<UserInfoModel> infoList(@RequestParam(required = false) String search, @RequestParam Integer page, @RequestParam Integer size, @RequestParam(defaultValue = "DESC") DateSortEnum sort) throws MicroServiceException {
         try {
             ObjectContext objectContext = databaseService.getContext();
 
@@ -540,7 +537,7 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
                             .and(DbUser.NAME.containsIgnoreCase(search.toLowerCase()))
                             .or(DbUser.EMAIL.containsIgnoreCase(search.toLowerCase()))
                             .or(DbUser.PHONE.containsIgnoreCase(search.toLowerCase()))
-                            .orderBy(DbUser.CREATED_DATE.asc())
+                            .orderBy(sort == DateSortEnum.DESC ? DbUser.CREATED_DATE.desc() : DbUser.CREATED_DATE.asc())
                             .pageSize(30)
                             .select(objectContext);
                 else {
@@ -549,7 +546,7 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
                             .and(DbUser.NAME.containsIgnoreCase(search.toLowerCase()))
                             .or(DbUser.EMAIL.containsIgnoreCase(search.toLowerCase()))
                             .or(DbUser.PHONE.containsIgnoreCase(search.toLowerCase()))
-                            .orderBy(DbUser.CREATED_DATE.asc())
+                            .orderBy(sort == DateSortEnum.DESC ? DbUser.CREATED_DATE.desc() : DbUser.CREATED_DATE.asc())
                             .pageSize(size)
                             .select(objectContext);
                     if (dbUsers.size() >= size * page)
@@ -561,13 +558,13 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
                 if (page == null || size == null)
                     dbUsers = ObjectSelect.query(DbUser.class).
                             where(DbUser.DELETED_DATE.isNull())
-                            .orderBy(DbUser.CREATED_DATE.asc())
+                            .orderBy(sort == DateSortEnum.DESC ? DbUser.CREATED_DATE.desc() : DbUser.CREATED_DATE.asc())
                             .pageSize(30)
                             .select(objectContext);
                 else {
                     dbUsers = ObjectSelect.query(DbUser.class).
                             where(DbUser.DELETED_DATE.isNull())
-                            .orderBy(DbUser.CREATED_DATE.asc())
+                            .orderBy(sort == DateSortEnum.DESC ? DbUser.CREATED_DATE.desc() : DbUser.CREATED_DATE.asc())
                             .pageSize(size)
                             .select(objectContext);
                     if (dbUsers.size() >= size * page)
