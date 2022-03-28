@@ -5,6 +5,7 @@ import com.thelak.core.endpoints.MicroserviceAdvice;
 import com.thelak.core.interfaces.ITokenService;
 import com.thelak.core.models.UserInfo;
 import com.thelak.database.DatabaseService;
+import com.thelak.database.entity.DbEvent;
 import com.thelak.database.entity.DbNotification;
 import com.thelak.database.entity.DbPasswordRestore;
 import com.thelak.database.entity.DbUser;
@@ -539,6 +540,7 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
                             .and(DbUser.NAME.containsIgnoreCase(search.toLowerCase()))
                             .or(DbUser.EMAIL.containsIgnoreCase(search.toLowerCase()))
                             .or(DbUser.PHONE.containsIgnoreCase(search.toLowerCase()))
+                            .orderBy(DbUser.CREATED_DATE.asc())
                             .pageSize(30)
                             .select(objectContext);
                 else {
@@ -547,6 +549,7 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
                             .and(DbUser.NAME.containsIgnoreCase(search.toLowerCase()))
                             .or(DbUser.EMAIL.containsIgnoreCase(search.toLowerCase()))
                             .or(DbUser.PHONE.containsIgnoreCase(search.toLowerCase()))
+                            .orderBy(DbUser.CREATED_DATE.asc())
                             .pageSize(size)
                             .select(objectContext);
                     if (dbUsers.size() >= size * page)
@@ -558,11 +561,13 @@ public class AuthenticationEndpoint extends MicroserviceAdvice implements IAuthe
                 if (page == null || size == null)
                     dbUsers = ObjectSelect.query(DbUser.class).
                             where(DbUser.DELETED_DATE.isNull())
+                            .orderBy(DbUser.CREATED_DATE.asc())
                             .pageSize(30)
                             .select(objectContext);
                 else {
                     dbUsers = ObjectSelect.query(DbUser.class).
                             where(DbUser.DELETED_DATE.isNull())
+                            .orderBy(DbUser.CREATED_DATE.asc())
                             .pageSize(size)
                             .select(objectContext);
                     if (dbUsers.size() >= size * page)
