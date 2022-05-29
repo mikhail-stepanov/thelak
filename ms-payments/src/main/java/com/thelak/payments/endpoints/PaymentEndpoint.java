@@ -656,7 +656,7 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
                     paramType = "header")}
     )
     @RequestMapping(value = PAYMENTS_SUB_REQ, method = {RequestMethod.POST})
-    public CryptogrammPayResponse buySubscriptionRequest(@RequestBody BuySubscriptionRequest buySubscriptionRequest, HttpServletRequest request) throws MicroServiceException {
+    public CryptogrammPayResponse buySubscriptionRequest(BuySubscriptionRequest buySubscriptionRequest, HttpServletRequest request) throws MicroServiceException {
         try {
             ObjectContext objectContext = databaseService.getContext();
             UserInfo userInfo;
