@@ -685,9 +685,14 @@ public class PaymentEndpoint extends MicroserviceAdvice implements IPaymentServi
                 throw new MsBadRequestException("Wrong promo", "");
             }
 
+            int amount = dbPromo != null ? (dbSubscription.getPrice() - dbSubscription.getPrice() * dbPromo.getPercent() / 100) : dbSubscription.getPrice();
+            if (amount == 0){
+                amount=1;
+            }
+            System.out.println("KEK! AMOUNT:" + amount);
             CryptogrammPayRequest cryptogrammPayRequest = CryptogrammPayRequest.builder()
                     .AccountId(userInfo.getUserId())
-                    .Amount(dbPromo != null ? (dbSubscription.getPrice() - dbSubscription.getPrice() * dbPromo.getPercent() / 100) : dbSubscription.getPrice())
+                    .Amount(amount)
                     .CardCryptogramPacket(buySubscriptionRequest.getCardCryptogramPacket())
                     .Currency("RUB")
                     .Description("Покупка подписки Thelak на " + dbSubscription.getMonths() + " месяцев.")
